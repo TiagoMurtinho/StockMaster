@@ -22,11 +22,11 @@ class TipoDocumento extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'user_id', 'id');
+        return $this->belongsTo(User::class,'user_id');
     }
 
     public function documento(): HasOne
     {
-        return $this->hasOne(Documento::class, 'documento_id', 'id');
+        return $this->hasOne(Documento::class, 'tipo_documento_id');
     }
 }

@@ -22,16 +22,16 @@ class Palete extends Model
 
     public function tipo_palete(): BelongsTo
     {
-        return $this->belongsTo(TipoPalete::class, 'tipo_palete_id', 'id');
+        return $this->belongsTo(TipoPalete::class, 'tipo_palete_id');
     }
 
     public function linha_documento(): BelongsTo
     {
-        return $this->belongsTo(LinhaDocumento::class, 'linha_documento_id', 'id');
+        return $this->belongsTo(LinhaDocumento::class, 'linha_documento_id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class,'user_id', 'id');
+        return $this->belongsTo(User::class,'user_id');
     }
 }

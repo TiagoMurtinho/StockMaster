@@ -23,16 +23,16 @@ class Cliente extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function documento(): HasMany
     {
-        return $this->hasMany(Documento::class,'documento_id', 'id');
+        return $this->hasMany(Documento::class,'cliente_id');
     }
 
     public function artigo(): HasMany
     {
-        return $this->hasMany(Artigo::class, 'artigo_id', 'id');
+        return $this->hasMany(Artigo::class, 'cliente_id');
     }
 }

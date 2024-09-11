@@ -27,21 +27,21 @@ class Documento extends Model
 
     public function tipo_documento(): BelongsTo
     {
-        return $this->belongsTo(TipoDocumento::class,'tipo_documento_id', 'id');
+        return $this->belongsTo(TipoDocumento::class,'tipo_documento_id');
     }
 
     public function cliente(): BelongsTo
     {
-        return $this->belongsTo(Cliente::class,'cliente_id', 'id');
+        return $this->belongsTo(Cliente::class,'cliente_id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function linha_documento(): HasOne
     {
-        return $this->hasOne(LinhaDocumento::class, 'linha_documento_id', 'id');
+        return $this->hasOne(LinhaDocumento::class, 'documento_id');
     }
 }

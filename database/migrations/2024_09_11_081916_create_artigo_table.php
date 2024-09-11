@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('artigo', function (Blueprint $table) {
             $table->id();
-            $table->string('referencia', 45);
             $table->string('nome', 100);
+            $table->string('referencia', 45);
             $table->foreignId('cliente_id')->constrained('cliente', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

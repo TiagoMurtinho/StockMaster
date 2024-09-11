@@ -23,21 +23,21 @@ class TipoPalete extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function linha_documento(): HasMany
     {
-        return $this->hasMany(LinhaDocumento::class, 'linha_documento_id', 'id');
+        return $this->hasMany(LinhaDocumento::class, 'tipo_palete_id');
     }
 
     public function palete(): HasMany
     {
-        return $this->hasMany(Palete::class, 'palete_id', 'id');
+        return $this->hasMany(Palete::class, 'tipo_palete_id');
     }
 
     public function armazem(): HasOne
     {
-        return $this->hasOne(Armazem::class, 'armazem_id', 'id');
+        return $this->hasOne(Armazem::class, 'tipo_palete_id');
     }
 }

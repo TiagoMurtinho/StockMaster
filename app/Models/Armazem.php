@@ -23,11 +23,11 @@ class Armazem extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function tipo_palete(): BelongsTo
     {
-        return $this->belongsTo(TipoPalete::class, 'tipo_palete_id', 'id');
+        return $this->belongsTo(TipoPalete::class, 'tipo_palete_id');
     }
 }

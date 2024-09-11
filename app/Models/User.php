@@ -55,41 +55,41 @@ class User extends Authenticatable
 
     public function armazem(): HasMany
     {
-        return $this->hasMany(Armazem::class, 'armazem_id', 'id');
+        return $this->hasMany(Armazem::class, 'user_id');
     }
 
     public function artigo(): HasMany
     {
-        return $this->hasMany(Artigo::class, 'artigo_id', 'id');
+        return $this->hasMany(Artigo::class, 'user_id');
     }
 
     public function cliente(): HasMany
     {
-        return $this->hasMany(Cliente::class, 'cliente_id', 'id');
+        return $this->hasMany(Cliente::class, 'user_id');
     }
 
     public function documento(): HasMany
     {
-        return $this->hasMany(Documento::class, 'documento_id', 'id');
+        return $this->hasMany(Documento::class, 'user_id');
     }
 
     public function linha_documento(): HasMany
     {
-        return $this->hasMany(LinhaDocumento::class, 'linha_documento_id', 'id');
+        return $this->hasMany(LinhaDocumento::class, 'user_id');
     }
 
     public function palete(): HasMany
     {
-        return $this->hasMany(Palete::class, 'palete_id', 'id');
+        return $this->hasMany(Palete::class, 'user_id');
     }
 
     public function tipo_documento(): HasMany
     {
-        return $this->hasMany(TipoDocumento::class, 'tipo_documento_id', 'id');
+        return $this->hasMany(TipoDocumento::class, 'user_id');
     }
 
     public function tipo_palete(): HasMany
     {
-        return $this->hasMany(TipoPalete::class, 'tipo_palete_id', 'id');
+        return $this->hasMany(TipoPalete::class, 'user_id');
     }
 }

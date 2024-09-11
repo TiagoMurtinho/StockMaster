@@ -27,21 +27,21 @@ class LinhaDocumento extends Model
 
     public function documento(): BelongsTo
     {
-        return $this->belongsTo(Documento::class, 'documento_id', 'id');
+        return $this->belongsTo(Documento::class, 'documento_id');
     }
 
     public function tipo_palete(): BelongsTo
     {
-        return $this->belongsTo(TipoPalete::class, 'tipo_palete_id', 'id');
+        return $this->belongsTo(TipoPalete::class, 'tipo_palete_id');
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function palete(): HasMany
     {
-        return $this->hasMany(Palete::class, 'palete_id', 'id');
+        return $this->hasMany(Palete::class, 'linha_documento_id');
     }
 }
