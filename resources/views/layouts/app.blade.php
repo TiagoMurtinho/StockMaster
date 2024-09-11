@@ -24,7 +24,7 @@
     @yield('content')
 </main>
 
-<footer id="footer" class="footer">
+<footer>
     @include('layouts.footer')
 </footer>
 

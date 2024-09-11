@@ -1,20 +1,20 @@
 <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="index.html">
+        <a class="nav-link collapsed" href="#">
             <i class="bi bi-grid"></i>
-            <span>Dashboard</span>
+            <span>Home</span>
         </a>
     </li><!-- End Dashboard Nav -->
 
     <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-            <i class="bi bi-menu-button-wide"></i><span>Components</span><i class="bi bi-chevron-down ms-auto"></i>
+        <a class="nav-link collapsed" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-menu-button-wide"></i><span>Administração</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="admin-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             <li>
-                <a href="components-alerts.html">
-                    <i class="bi bi-circle"></i><span>Alerts</span>
+                <a href="{{route('tipo-palete.index')}}">
+                    <i class="bi bi-circle"></i><span>Tipo Paletes</span>
                 </a>
             </li>
             <li>
@@ -229,7 +229,3 @@
     </li><!-- End Blank Page Nav -->
 
 </ul>
-
-<div class="copyright position-absolute bottom-0 mb-3 text-center" style="margin-left: 45px; font-size: 0.9em;">
-    &copy; Copyright <strong><span>StockMaster</span></strong>. <br>All Rights Reserved
-</div>

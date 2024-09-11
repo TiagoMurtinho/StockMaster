@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome', 45);
             $table->integer('capacidade');
-            $table->foreignId('tipo_palete_id')->constrained('tipo_palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('tipo_palete_id')->constrained('tipo-palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
