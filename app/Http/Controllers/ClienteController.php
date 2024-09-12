@@ -40,7 +40,6 @@ class ClienteController extends Controller
             'morada' => 'required|string|max:255',
             'codigo_postal' => 'required|string|max:8',
             'nif' => 'required|numeric',
-            'user_id' => 'required|exists:user,id'
         ]);
 
         if ($validator->fails()) {
@@ -54,7 +53,7 @@ class ClienteController extends Controller
         $cliente->morada = $request->input('morada');
         $cliente->codigo_postal = $request->input('codigo_postal');
         $cliente->nif = $request->input('nif');
-        $cliente->user_id = $request->input('user_id');
+        $cliente->user_id = auth()->id();
         $cliente->save();
 
         return response()->json([

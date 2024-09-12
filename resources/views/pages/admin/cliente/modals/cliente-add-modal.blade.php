@@ -34,15 +34,6 @@
                         <input id="addTipoPaleteModalNif" class="form-control" type="number" name="nif">
                     </div>
 
-                    <div class="mb-3">
-                        <label for="addClienteModalUser" class="form-label">{{ __('cliente.user') }}</label>
-                        <select name="user_id" id="addClienteModalUser" class="form-select form-select-sm">
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->nome }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('tipo-palete.cancel') }}</button>
                         <button type="submit" class="btn btn-primary">{{ __('tipo-palete.add') }}</button>
