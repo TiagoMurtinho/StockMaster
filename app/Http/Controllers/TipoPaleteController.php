@@ -118,8 +118,23 @@ class TipoPaleteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, $id)
     {
-        //
+        $tipoPalete = TipoPalete::find($id);
+
+        if (!$tipoPalete) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tipo de palete não encontrado!'
+            ], 404);
+        }
+
+        $tipoPalete->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tipo de palete eliminado com sucesso!',
+            'redirect' => route('tipo-palete.index')
+        ]);
     }
 }

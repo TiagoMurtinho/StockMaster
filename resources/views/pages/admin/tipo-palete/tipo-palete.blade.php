@@ -29,13 +29,14 @@
                                     <td class="align-middle text-center">{{ $tipoPalete->user->nome }}</td>
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}">
-                                            <i class="ph ph-pencil-simple edit-pencil me-1"></i>
+                                            <i class="bi bi-pencil-square me-2"></i>
                                         </a>
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#deleteRegionModal{{ $region->id }}" onclick="confirmDelete('deleteRegionForm{{ $region->id }}','{{ route('regions.destroy', $region->id) }}')">--}}
-                                            <i class="ph ph-trash delete-trash me-1"></i>
-                                        {{--</a>--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal{{ $tipoPalete->id }}" onclick="confirmDelete('deleteTipoPaleteForm{{ $tipoPalete->id }}', '{{ route('tipo-palete.destroy', $tipoPalete->id) }}')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
                                     </td>
                                 </tr>
+                                @include('pages.admin.tipo-palete.modals.tipo-palete-delete-modal')
 
                             @endforeach
                             </tbody>
@@ -45,6 +46,9 @@
                 </div>
             </div>
         </div>
+
+
     @include('pages.admin.tipo-palete.modals.tipo-palete-edit-modal')
     @include('pages.admin.tipo-palete.modals.tipo-palete-add-modal')
+
 @endsection

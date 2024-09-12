@@ -5,3 +5,16 @@
 .plus {
     font-size: 25px;
 }
+
+.bi-pencil-square {
+    font-size: 20px;
+}
+
+.bi-trash {
+    font-size: 20px;
+    color: #dc3545;
+}
+
+.bi-trash:hover {
+    color: #4d0900;
+}
