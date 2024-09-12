@@ -32,7 +32,7 @@
                                     <td class="align-middle text-center">{{ $cliente->nif }}</td>
                                     <td class="align-middle text-center">{{ $cliente->user->nome }}</td>
                                     <td class="align-middle">
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#editClienteModal{{ $cliente->id }}">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editClienteModal{{ $cliente->id }}">
                                             <i class="bi bi-pencil-square me-2"></i>
                                         </a>
                                         {{--<a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal{{ $tipoPalete->id }}" onclick="confirmDelete('deleteTipoPaleteForm{{ $tipoPalete->id }}', '{{ route('tipo-palete.destroy', $tipoPalete->id) }}')">--}}
@@ -51,5 +51,6 @@
         </div>
 
     @include('pages.admin.cliente.modals.cliente-add-modal')
+    @include('pages.admin.cliente.modals.cliente-edit-modal')
 
 @endsection

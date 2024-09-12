@@ -84,7 +84,33 @@ class ClienteController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nome' => 'required|string|max:45',
+            'morada' => 'required|string|max:255',
+            'codigo_postal' => 'required|string|max:8',
+            'nif' => 'required|numeric',
+        ]);
+
+        $cliente = Cliente::find($id);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->toArray()
+            ], 422);
+        }
+
+        $cliente->nome = $request->input('nome');
+        $cliente->morada = $request->input('morada');
+        $cliente->codigo_postal = $request->input('codigo_postal');
+        $cliente->nif = $request->input('nif');
+        $cliente->user_id = auth()->id();
+        $cliente->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tipo de palete criado com sucesso!',
+            'redirect' => route('cliente.index')
+        ]);
     }
 
     /**
