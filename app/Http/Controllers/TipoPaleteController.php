@@ -37,7 +37,6 @@ class TipoPaleteController extends Controller
         $validator = Validator::make($request->all(), [
             'tipo' => 'required|string|max:45',
             'valor' => 'required|numeric',
-            'user_id' => 'required|exists:user,id'
         ]);
 
         if ($validator->fails()) {
@@ -49,7 +48,7 @@ class TipoPaleteController extends Controller
         $tipoPalete = new TipoPalete();
         $tipoPalete->tipo = $request->input('tipo');
         $tipoPalete->valor = $request->input('valor');
-        $tipoPalete->user_id = $request->input('user_id');
+        $tipoPalete->user_id = auth()->id();
         $tipoPalete->save();
 
         return response()->json([
@@ -84,7 +83,6 @@ class TipoPaleteController extends Controller
         $validator = Validator::make($request->all(), [
             'tipo' => 'required|string|max:45',
             'valor' => 'required|numeric',
-            'user_id' => 'required|exists:user,id'
         ]);
 
         if ($validator->fails()) {
@@ -104,7 +102,7 @@ class TipoPaleteController extends Controller
 
         $tipoPalete->tipo = $request->input('tipo');
         $tipoPalete->valor = $request->input('valor');
-        $tipoPalete->user_id = $request->input('user_id');
+        $tipoPalete->user_id = auth()->id();
         $tipoPalete->save();
 
         return response()->json([

@@ -14,21 +14,14 @@
                         @csrf
                         @method('PUT')
                         <div class="mb-3">
-                            <label for="editTipoPaleteModalTipo{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.tipo') }}</label>
+                            <label for="editTipoPaleteModalTipo{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.add_tipo') }}</label>
                             <input id="editTipoPaleteModalTipo{{ $tipoPalete->id }}" class="form-control" type="text" name="tipo" value="{{ $tipoPalete->tipo }}">
                         </div>
                         <div class="mb-3">
-                            <label for="editTipoPaleteModalValor{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.valor') }}</label>
+                            <label for="editTipoPaleteModalValor{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.add_valor') }}</label>
                             <input id="editTipoPaleteModalValor{{ $tipoPalete->id }}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="{{ $tipoPalete->valor }}">
                         </div>
-                        <div class="mb-3">
-                            <label for="editTipoPaleteModalUser{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.user') }}</label>
-                            <select name="user_id" id="editTipoPaleteModalUser{{ $tipoPalete->id }}" class="form-select form-select-sm">
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}" {{ $user->id == $tipoPalete->user_id ? 'selected' : '' }}>{{ $user->nome }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+
                         <div class="d-flex justify-content-end mt-4">
                             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('tipo-palete.cancel') }}</button>
                             <button type="submit" class="btn btn-primary">{{ __('tipo-palete.save') }}</button>

@@ -15,22 +15,13 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="addTipoPaleteModalTipo" class="form-label">{{ __('tipo-palete.tipo') }}</label>
+                        <label for="addTipoPaleteModalTipo" class="form-label">{{ __('tipo-palete.add_tipo') }}</label>
                         <input id="addTipoPaleteModalTipo" class="form-control" type="text" name="tipo">
                     </div>
 
                     <div class="mb-3">
-                        <label for="addTipoPaleteModalValor" class="form-label">{{ __('tipo-palete.valor') }}</label>
+                        <label for="addTipoPaleteModalValor" class="form-label">{{ __('tipo-palete.add_valor') }}</label>
                         <input id="addTipoPaleteModalValor" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="addTipoPaleteModalUser" class="form-label">{{ __('tipo-palete.user') }}</label>
-                        <select name="user_id" id="addTipoPaleteModalUser" class="form-select form-select-sm">
-                            @foreach($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->nome }}</option>
-                            @endforeach
-                        </select>
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">
