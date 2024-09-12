@@ -30,15 +30,16 @@
                                     <td class="align-middle text-center">{{ $armazem->tipo_palete->tipo }}</td>
                                     <td class="align-middle text-center">{{ $armazem->user->nome }}</td>
                                     <td class="align-middle">
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $cliente->id }}">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}">
                                             <i class="bi bi-pencil-square me-2"></i>
                                         </a>
-                                       {{-- <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $cliente->id }}" onclick="confirmDelete('deleteArmazemForm{{ $cliente->id }}', '{{ route('cliente.destroy', $cliente->id) }}')">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $armazem->id }}" onclick="confirmDelete('deleteArmazemForm{{ $armazem->id }}', '{{ route('armazem.destroy', $armazem->id) }}')">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </td>
                                 </tr>
 
+                                @include('pages.admin.armazem.modals.armazem-delete-modal')
 
                             @endforeach
                             </tbody>
@@ -50,5 +51,6 @@
         </div>
 
     @include('pages.admin.armazem.modals.armazem-add-modal')
+    @include('pages.admin.armazem.modals.armazem-edit-modal')
 
 @endsection

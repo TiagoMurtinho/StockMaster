@@ -82,16 +82,55 @@ class ArmazemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nome' => 'required|string|max:45',
+            'capacidade' => 'required|numeric',
+            'tipo_palete_id' => 'required|exists:tipo_palete,id'
+        ]);
+
+        $armazem = Armazem::find($id);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->toArray()
+            ], 422);
+        }
+
+        $armazem->nome = $request->input('nome');
+        $armazem->capacidade = $request->input('capacidade');
+        $armazem->tipo_palete_id = $request->input('tipo_palete_id');
+        $armazem->user_id = auth()->id();
+        $armazem->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Armazem criado com sucesso!',
+            'redirect' => route('armazem.index')
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $armazem = Armazem::find($id);
+
+        if (!$armazem) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Armazém não encontrado!'
+            ], 404);
+        }
+
+        $armazem->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Armazém eliminado com sucesso!',
+            'redirect' => route('armazem.index')
+        ]);
     }
 }
