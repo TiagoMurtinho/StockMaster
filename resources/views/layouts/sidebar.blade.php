@@ -14,12 +14,12 @@
         <ul id="admin-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
             <li>
                 <a href="{{route('tipo-palete.index')}}">
-                    <i class="bi bi-circle"></i><span>Tipo Paletes</span>
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.tipo-paletes')}}</span>
                 </a>
             </li>
             <li>
-                <a href="components-accordion.html">
-                    <i class="bi bi-circle"></i><span>Accordion</span>
+                <a href="{{route('cliente.index')}}">
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.clientes')}}</span>
                 </a>
             </li>
             <li>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TipoPaleteController;
 use Illuminate\Support\Facades\Route;
@@ -19,5 +20,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('tipo-palete', TipoPaleteController::class);
+Route::resource('cliente', ClienteController::class);
 
 require __DIR__.'/auth.php';

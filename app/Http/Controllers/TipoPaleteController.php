@@ -26,8 +26,7 @@ class TipoPaleteController extends Controller
      */
     public function create()
     {
-        $users = User::all();
-        return view('pages.admin.tipo-palete.modals.tipo-palete-add-modal', compact('users'));
+
     }
 
     /**

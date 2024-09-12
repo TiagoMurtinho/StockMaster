@@ -25,13 +25,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="addDistrictModalUser" class="form-label">{{ __('tipo-palete.user') }}</label>
-                        <select name="user_id" id="addDistrictModalUser" class="form-select form-select-sm">
+                        <label for="addTipoPaleteModalUser" class="form-label">{{ __('tipo-palete.user') }}</label>
+                        <select name="user_id" id="addTipoPaleteModalUser" class="form-select form-select-sm">
                             @foreach($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->nome }}</option>
                             @endforeach
                         </select>
-                        <div id="addDistrictModalRegions_idError" class="alert alert-danger mt-2 d-none"></div>
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">
