@@ -13,7 +13,7 @@ return [
     'cancel' => 'Cancelar',
     'save' => 'Guardar',
     'edit_tipo_palete' => 'Editar Tipo de Palete',
-    'delete_tipo_palete' => 'Eliminar Tipo de Palte',
+    'delete_tipo_palete' => 'Eliminar Tipo de Palete',
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
     'delete' => 'Eliminar'
 ];

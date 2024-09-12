@@ -14,5 +14,10 @@ return [
     'add_cliente' => 'Adicionar Cliente',
     'description' => 'Campos obrigatórios assinalados com *',
     'add' => 'Adicionar',
-    'cancel' => 'Cancelar'
+    'cancel' => 'Cancelar',
+    'delete_cliente' => 'Eliminar Cliente',
+    'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
+    'delete' => 'Eliminar',
+    'save' => 'Guardar',
+    'edit_cliente' => 'Editar Cliente'
 ];

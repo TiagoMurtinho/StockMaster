@@ -35,11 +35,13 @@
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#editClienteModal{{ $cliente->id }}">
                                             <i class="bi bi-pencil-square me-2"></i>
                                         </a>
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal{{ $tipoPalete->id }}" onclick="confirmDelete('deleteTipoPaleteForm{{ $tipoPalete->id }}', '{{ route('tipo-palete.destroy', $tipoPalete->id) }}')">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal{{ $cliente->id }}" onclick="confirmDelete('deleteClienteForm{{ $cliente->id }}', '{{ route('cliente.destroy', $cliente->id) }}')">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </td>
                                 </tr>
+
+                                @include('pages.admin.cliente.modals.cliente-delete-modal')
 
                             @endforeach
                             </tbody>
