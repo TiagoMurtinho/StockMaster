@@ -27,3 +27,36 @@ $(document).ready(function() {
 function confirmDelete(formId, url) {
     document.getElementById(formId).action = url;
 }
+
+$(document).ready(function() {
+    $('#tipo_documento').change(function() {
+        var tipoDocumentoId = $(this).val();
+
+        $('#documentoForm')[0].reset();
+
+        $('#dataEntregaField').hide();
+        $('#matriculaField').hide();
+        $('#moradaField').hide();
+        $('#horaCargaField').hide();
+        $('#descargaField').hide();
+        $('#totalField').hide();
+
+        if (tipoDocumentoId == 1) {
+            $('#dataEntregaField').show();
+        }
+
+        if (tipoDocumentoId == 2) {
+            $('#horaCargaField').show();
+        }
+
+        if (tipoDocumentoId == 3) {
+            $('#moradaField').show();
+            $('#descargaField').show();
+        }
+
+    });
+
+    $('#continuarBtn').click(function() {
+
+    });
+});

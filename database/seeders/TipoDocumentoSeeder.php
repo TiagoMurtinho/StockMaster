@@ -15,15 +15,23 @@ class TipoDocumentoSeeder extends Seeder
     {
         $tipoDocumento = [
             [
-                'nome' => 'Pedido entrega',
+                'nome' => 'Pedido de Entrega',
                 'user_id' => 1
             ],
             [
-                'nome' => 'Receção entrega',
+                'nome' => 'Receção de Entrega',
                 'user_id' => 1
             ],
             [
-                'nome' => 'Pedido retirada',
+                'nome' => 'Pedido de Retirada',
+                'user_id' => 1
+            ],
+            [
+                'nome' => 'Guia de Transporte',
+                'user_id' => 1
+            ],
+            [
+                'nome' => 'Faturação',
                 'user_id' => 1
             ],
         ];
