@@ -3,23 +3,22 @@ $(document).ready(function() {
         event.preventDefault();
 
         var $form = $(this);
-        var url = $form.attr('action');
-        var method = $form.find('input[name="_method"]').val() || 'POST'; // Pega o método especificado ou usa POST como padrão
+        var formData = new FormData($form[0]);
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
 
         $.ajax({
-            url: url,
-            method: method,
-            data: new FormData(this),
+            url: $form.attr('action'),
+            type: $form.attr('method') || 'POST',
+            data: formData,
             processData: false,
             contentType: false,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
             success: function(response) {
                 if (response.success) {
                     window.location.href = response.redirect;
                 }
+            },
+            error: function(xhr) {
+                console.log('Error:', xhr.responseText);
             }
         });
     });

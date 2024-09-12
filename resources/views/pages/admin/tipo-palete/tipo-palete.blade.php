@@ -28,9 +28,9 @@
                                     <td class="align-middle text-center">{{ $tipoPalete->valor }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->user->nome }}</td>
                                     <td class="align-middle">
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#editRegionModal{{ $region->id }}">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}">
                                             <i class="ph ph-pencil-simple edit-pencil me-1"></i>
-                                        {{--</a>--}}
+                                        </a>
                                         {{--<a href="#" data-bs-toggle="modal" data-bs-target="#deleteRegionModal{{ $region->id }}" onclick="confirmDelete('deleteRegionForm{{ $region->id }}','{{ route('regions.destroy', $region->id) }}')">--}}
                                             <i class="ph ph-trash delete-trash me-1"></i>
                                         {{--</a>--}}
@@ -45,6 +45,6 @@
                 </div>
             </div>
         </div>
-
+    @include('pages.admin.tipo-palete.modals.tipo-palete-edit-modal')
     @include('pages.admin.tipo-palete.modals.tipo-palete-add-modal')
 @endsection

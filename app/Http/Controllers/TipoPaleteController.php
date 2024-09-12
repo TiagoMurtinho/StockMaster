@@ -79,9 +79,40 @@ class TipoPaleteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id): JsonResponse
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'tipo' => 'required|string|max:45',
+            'valor' => 'required|numeric',
+            'user_id' => 'required|exists:user,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->toArray()
+            ], 422);
+        }
+
+        $tipoPalete = TipoPalete::find($id);
+
+        if (!$tipoPalete) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tipo de palete não encontrado!'
+            ], 404);
+        }
+
+        $tipoPalete->tipo = $request->input('tipo');
+        $tipoPalete->valor = $request->input('valor');
+        $tipoPalete->user_id = $request->input('user_id');
+        $tipoPalete->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tipo de palete atualizado com sucesso!',
+            'redirect' => route('tipo-palete.index')
+        ]);
     }
 
     /**
