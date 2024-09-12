@@ -12,5 +12,10 @@ return [
     'add_capacidade' => 'Capacidade*',
     'add_tipo_palete' => 'Tipo de Palete*',
     'cancel' => 'Cancelar',
-    'add' => 'Inserir'
+    'add' => 'Inserir',
+    'edit_armazem' => 'Editar Armazém',
+    'save' => 'Guardar',
+    'delete_armazem' => 'Eliminar Armazém',
+    'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
+    'delete' => 'Eliminar'
 ];
