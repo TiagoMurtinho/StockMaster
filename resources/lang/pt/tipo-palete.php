@@ -9,7 +9,7 @@ return [
     'user' => 'Criado Por:',
     'add_tipo_palete' => 'Adicionar Tipo de Palete',
     'description' => 'Campos obrigatórios assinalados com *',
-    'add' => 'Adicionar',
+    'add' => 'Inserir',
     'cancel' => 'Cancelar',
     'save' => 'Guardar',
     'edit_tipo_palete' => 'Editar Tipo de Palete',

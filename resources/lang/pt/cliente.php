@@ -13,7 +13,7 @@ return [
     'user' => 'Criado Por:',
     'add_cliente' => 'Adicionar Cliente',
     'description' => 'Campos obrigatórios assinalados com *',
-    'add' => 'Adicionar',
+    'add' => 'Inserir',
     'cancel' => 'Cancelar',
     'delete_cliente' => 'Eliminar Cliente',
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',

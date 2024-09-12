@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArmazemController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TipoPaleteController;
@@ -21,5 +22,6 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('tipo-palete', TipoPaleteController::class);
 Route::resource('cliente', ClienteController::class);
+Route::resource('armazem', ArmazemController::class);
 
 require __DIR__.'/auth.php';

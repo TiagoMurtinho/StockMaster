@@ -1,6 +1,7 @@
 <?php
 
 return [
-    'tipo_paletes' => 'Tipo Paletes',
-    'clientes' => 'Clientes'
+    'tipo_paletes' => 'Tipo de Paletes',
+    'clientes' => 'Clientes',
+    'armazens' => 'Armazéns'
 ];
