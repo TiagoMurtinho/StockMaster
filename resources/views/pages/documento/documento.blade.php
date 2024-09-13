@@ -39,8 +39,8 @@
                                     <td class="align-middle text-center">{{ $documento->hora_carga }}</td>
                                     <td class="align-middle text-center">{{ $documento->descarga }}</td>
                                     <td class="align-middle text-center">{{ $documento->total }}</td>
+                                    <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
-                                    <td class="align-middle text-center">{{ $documento->tipoDocumento->nome}}</td>
                                     <td class="align-middle text-center">{{ $documento->user->nome }}</td>
                                 </tr>
 
@@ -56,5 +56,6 @@
 
     @include('pages.documento.modals.tipo-documento-modal')
     @include('pages.documento.modals.documento-modal')
+    @include('pages.documento.modals.linha-documento-modal')
 @endsection
 

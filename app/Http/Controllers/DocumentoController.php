@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Cliente;
 use App\Models\Documento;
+use App\Models\LinhaDocumento;
 use App\Models\TipoDocumento;
+use App\Models\TipoPalete;
 use Illuminate\Http\Request;
 
 class DocumentoController extends Controller
@@ -18,7 +20,8 @@ class DocumentoController extends Controller
         $documentos = Documento::all();
         $tiposDocumento = TipoDocumento::all();
         $clientes = Cliente::all();
-        return view('pages.documento.documento', compact('documentos', 'tiposDocumento', 'clientes'));
+        $tipoPaletes = TipoPalete::all();
+        return view('pages.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes'));
     }
 
     /**
@@ -35,25 +38,53 @@ class DocumentoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
-        $validatedData = $request->validate([
-            'numero' => 'required|numeric',
-            'data' => 'required|date',
-            'matricula' => 'nullable|string|max:45',
-            'morada' => 'nullable|string|max:255',
-            'hora_carga' => 'nullable|date_format:H:i',
-            'hora_descarga' => 'nullable|date',
-            'total' => 'nullable|numeric',
-            'tipo_documento_id' => 'required|exists:tipo_documento,id',
-            'cliente_id' => 'required|exists:cliente,id',
-        ]);
+        try {
+            $validated = $request->validate([
+                'numero' => 'required|numeric',
+                'data' => 'required|date',
+                'matricula' => 'nullable|string|max:45',
+                'morada' => 'nullable|string|max:255',
+                'hora_carga' => 'nullable|date_format:H:i',
+                'hora_descarga' => 'nullable|date',
+                'total' => 'nullable|numeric',
+                'tipo_documento_id' => 'required|exists:tipo_documento,id',
+                'cliente_id' => 'required|exists:cliente,id',
+            ]);
 
-        Documento::create($validatedData);
+            $validated['user_id'] = auth()->id();
 
-        return redirect()->route('documentos.index')->with('success', 'Documento criado com sucesso.');
+            $documento = Documento::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'documento_id' => $documento->id,
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
+    public function gerarPdf($id)
+    {
+        // Buscar o Documento e suas linhas
+        $documento = Documento::with('linha_documento')->findOrFail($id);
+
+        // Gerar o PDF com base nos dados
+        $pdf = PDF::loadView('pdf.documento', compact('documento'));
+
+        // Retornar o PDF para download
+        return $pdf->download('documento_' . $documento->numero . '.pdf');
+    }
 
     /**
      * Display the specified resource.

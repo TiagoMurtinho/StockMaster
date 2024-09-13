@@ -23,6 +23,9 @@ class Documento extends Model
         'hora_carga',
         'descarga',
         'total',
+        'tipo_documento_id',
+        'cliente_id',
+        'user_id',
     ];
 
     public function tipo_documento(): BelongsTo

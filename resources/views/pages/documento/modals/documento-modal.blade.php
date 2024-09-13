@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalDocumentoLabel">Pedido de Entrega</h5>
+                <h5 class="modal-title" id="modalDocumentoLabel">Documento</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -14,9 +14,9 @@
                         <input type="text" class="form-control" id="numero" name="numero" required>
                     </div>
 
-                    <div class="mb-3" id="dataEntregaField">
-                        <label for="data" class="form-label">Data de entrega</label>
-                        <input type="datetime-local" class="form-control" id="data_entrega" name="data" required>
+                    <div class="mb-3" id="dataField">
+                        <label for="data" class="form-label">Data</label>
+                        <input type="datetime-local" class="form-control" id="data" name="data" required>
                     </div>
 
                     <div class="mb-3" id="matriculaField">
@@ -48,7 +48,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary">Continuar</button>
+                <button type="button" id="continuarModalLinhaDocumentoBtn" class="btn btn-primary">Continuar</button>
             </div>
         </div>
     </div>

@@ -28,6 +28,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{--{{route('artigo.index')}}--}}">
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.artigos')}}</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{route('tipo-documento.index')}}">
                     <i class="bi bi-circle"></i><span>{{__('sidebar.tipo_documentos')}}</span>
                 </a>

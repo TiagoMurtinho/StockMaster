@@ -22,7 +22,11 @@ class LinhaDocumento extends Model
         'morada',
         'data_entrega',
         'data_recolha',
-        'extra'
+        'extra',
+        'documento_id',
+        'tipo_palete_id',
+        'artigo_id',
+        'user_id'
     ];
 
     public function documento(): BelongsTo

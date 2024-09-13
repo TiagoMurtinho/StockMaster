@@ -5,5 +5,6 @@ return [
     'clientes' => 'Clientes',
     'armazens' => 'Armazéns',
     'tipo_documentos' => 'Tipos de Documento',
-    'documentos' => 'Documentos'
+    'documentos' => 'Documentos',
+    'artigos' => 'Artigos'
 ];

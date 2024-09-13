@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArmazemController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DocumentoController;
+use App\Http\Controllers\LinhaDocumentoController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TipoDocumentoController;
 use App\Http\Controllers\TipoPaleteController;
@@ -27,5 +28,7 @@ Route::resource('cliente', ClienteController::class);
 Route::resource('armazem', ArmazemController::class);
 Route::resource('tipo-documento', TipoDocumentoController::class);
 Route::resource('documento', DocumentoController::class);
+Route::resource('linha-documento', linhaDocumentoController::class);
+Route::get('/documento/pdf/{id}', [DocumentoController::class, 'gerarPdf'])->name('documento.pdf');
 
 require __DIR__.'/auth.php';
