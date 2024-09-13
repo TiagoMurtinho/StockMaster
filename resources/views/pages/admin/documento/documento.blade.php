@@ -54,8 +54,8 @@
 
     </div>
 
-    @include('pages.documento.modals.tipo-documento-modal')
-    @include('pages.documento.modals.documento-modal')
-    @include('pages.documento.modals.linha-documento-modal')
+    @include('pages.admin.documento.modals.tipo-documento-modal')
+    @include('pages.admin.documento.modals.documento-modal')
+    @include('pages.admin.documento.modals.linha-documento-modal')
 @endsection
 

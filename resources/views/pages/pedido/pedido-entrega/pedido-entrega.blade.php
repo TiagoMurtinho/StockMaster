@@ -5,7 +5,7 @@
         <div class="actions-card">
             <div class="card">
                 <div class="card-header d-flex align-items-center">
-                    <h5 class="mb-0 ms-2">{{ __('entrega.entregas') }}</h5>
+                    <h5 class="mb-0 ms-2">{{ __('entrega.entrega') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -36,6 +36,11 @@
                                                 @if (!$loop->last), @endif
                                             @endforeach
                                         @endforeach
+                                    </td>
+                                    <td class="align-middle">
+                                        <a href="#" {{--data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}"--}}>
+                                            <i class="bi bi-arrow-right-circle"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArmazemController;
+use App\Http\Controllers\ArtigoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\LinhaDocumentoController;
@@ -32,6 +33,7 @@ Route::resource('tipo-documento', TipoDocumentoController::class);
 Route::resource('documento', DocumentoController::class);
 Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
+Route::resource('artigo', ArtigoController::class);
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
 Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());

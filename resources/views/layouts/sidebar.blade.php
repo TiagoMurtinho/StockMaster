@@ -28,8 +28,13 @@
                 </a>
             </li>
             <li>
-                <a href="{{--{{route('artigo.index')}}--}}">
+                <a href="{{route('artigo.index')}}">
                     <i class="bi bi-circle"></i><span>{{__('sidebar.artigos')}}</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('documento.index') }}">
+                    <i class="bi bi-circle"></i><span>{{ __('sidebar.documentos') }}</span>
                 </a>
             </li>
             <li>
@@ -46,13 +51,6 @@
             <span>Profile</span>
         </a>
     </li><!-- End Profile Page Nav -->
-
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="{{ route('documento.index') }}">
-            <i class="bi bi-envelope"></i>
-            <span>{{ __('sidebar.documentos') }}</span>
-        </a>
-    </li>
 
     <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#pedidos-nav" data-bs-toggle="collapse" href="#">

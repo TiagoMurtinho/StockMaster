@@ -8,27 +8,29 @@ use App\Models\LinhaDocumento;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class DocumentoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
         // Pega os documentos do banco de dados
         $documentos = Documento::all();
         $tiposDocumento = TipoDocumento::all();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
-        return view('pages.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes'));
+        return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
         $tiposDocumentos = TipoDocumento::all();
         $clientes = Cliente::all();
@@ -39,7 +41,7 @@ class DocumentoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): \Illuminate\Http\JsonResponse
+    public function store(Request $request): JsonResponse
     {
         try {
             $validated = $request->validate([
@@ -75,7 +77,7 @@ class DocumentoController extends Controller
         }
     }
 
-    public function gerarPDF($id)
+    public function gerarPDF($id): Response
     {
         // Obter os dados do documento e das linhas do documento
         $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);

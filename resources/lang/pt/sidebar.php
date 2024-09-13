@@ -6,5 +6,6 @@ return [
     'armazens' => 'Armazéns',
     'tipo_documentos' => 'Tipos de Documento',
     'documentos' => 'Documentos',
-    'artigos' => 'Artigos'
+    'artigos' => 'Artigos',
+    'pedidos_de_entrega' => 'Pedidos de Entrega'
 ];
