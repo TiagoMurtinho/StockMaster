@@ -78,7 +78,7 @@ class DocumentoController extends Controller
     public function gerarPDF($id)
     {
         // Obter os dados do documento e das linhas do documento
-        $documento = Documento::with('linha_documento')->findOrFail($id);
+        $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);
 
         $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
 

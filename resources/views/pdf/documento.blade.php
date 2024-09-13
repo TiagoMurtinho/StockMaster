@@ -32,7 +32,8 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>Documento: {{ $documento->numero }}</h1>
+        <h1>Documento: {{ $documento->tipo_documento->nome }}</h1>
+        <p>Numero Documento: {{$documento->numero}}</p>
         <p>Cliente: {{$documento->cliente->nome}}</p>
         <p>Data: {{ $documento->data }}</p>
     </div>
@@ -43,20 +44,23 @@
             <thead>
             <tr>
                 <th>Descrição</th>
-                <th>Quantidade</th>
                 <th>Valor</th>
                 <th>Data de Entrega</th>
-                <th>Tipo de Palete</th>
+                <th>Quantidades</th>
             </tr>
             </thead>
             <tbody>
             @foreach($documento->linha_documento as $linha)
                 <tr>
                     <td>{{ $linha->descricao }}</td>
-                    <td>{{ $linha->quantidade }}</td>
                     <td>{{ $linha->valor }}</td>
                     <td>{{ $linha->data_entrega }}</td>
-                    <td>{{ $linha->tipo_palete->tipo }}</td>
+                    <td>
+                        @foreach($linha->tipo_palete as $tipoPalete)
+                            {{ $tipoPalete->pivot->quantidade }} {{ $tipoPalete->tipo }}
+                            @if (!$loop->last), @endif
+                        @endforeach
+                    </td>
                 </tr>
             @endforeach
             </tbody>

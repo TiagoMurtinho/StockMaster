@@ -121,12 +121,30 @@ $(document).ready(function() {
 
     // Terceiro botão "Continuar" (terceiro modal)
     $('#criarDocumentoBtn').click(function() {
-        var quantidade = $('#quantidade').val();
         var descricao = $('#descricao').val();
         var valor = $('#valor').val();
         var dataEntrega = $('#data_entrega').val();
-        var tipoPaleteId = $('#tipo_palete_id').val();
         var artigoId = $('#artigo_id').val();
+
+        // Coletar os dados das linhas dinâmicas
+        var tipoPaleteIds = [];
+        var quantidades = [];
+
+        $('select[name="tipo_palete_id[]"]').each(function() {
+            tipoPaleteIds.push($(this).val());
+        });
+
+        $('input[name="quantidade[]"]').each(function() {
+            quantidades.push($(this).val());
+        });
+
+        // Preparar o array de dados para enviar
+        var linhasData = tipoPaleteIds.map(function(tipoPaleteId, index) {
+            return {
+                tipo_palete_id: tipoPaleteId,
+                quantidade: quantidades[index]
+            };
+        });
 
         $.ajax({
             url: '/linha-documento',
@@ -134,12 +152,11 @@ $(document).ready(function() {
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 documento_id: documentoId,
-                quantidade: quantidade,
                 descricao: descricao,
                 valor: valor,
                 data_entrega: dataEntrega,
-                tipo_palete_id: tipoPaleteId,
-                artigo_id: artigoId
+                artigo_id: artigoId,
+                linhas: linhasData // Enviar o array de linhas
             },
             success: function(response) {
                 $('#modalLinhaDocumento').modal('hide');

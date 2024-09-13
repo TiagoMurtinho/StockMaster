@@ -28,7 +28,9 @@ class TipoPalete extends Model
 
     public function linha_documento(): HasMany
     {
-        return $this->hasMany(LinhaDocumento::class, 'tipo_palete_id');
+        return $this->belongsToMany(LinhaDocumento::class, 'linha_documento_tipo_palete')
+            ->withPivot('quantidade')
+            ->withTimestamps();
     }
 
     public function palete(): HasMany

@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('linha_documento', function (Blueprint $table) {
             $table->id();
-            $table->integer('quantidade');
             $table->string('descricao', 255);
             $table->float('valor');
             $table->string('morada', 255)->nullable();
@@ -21,7 +20,6 @@ return new class extends Migration
             $table->dateTime('data_recolha')->nullable();
             $table->float('extra')->nullable();
             $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('tipo_palete_id')->nullable()->constrained('tipo_palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('artigo_id')->nullable()->constrained('artigo', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();

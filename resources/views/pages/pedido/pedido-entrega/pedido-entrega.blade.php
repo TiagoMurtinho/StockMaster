@@ -16,7 +16,6 @@
                                 <th scope="col" class="text-center">{{ __('entrega.numero') }}</th>
                                 <th scope="col" class="text-center">{{ __('entrega.data_entrega') }}</th>
                                 <th scope="col" class="text-center">{{ __('entrega.quantidade') }}</th>
-                                <th scope="col" class="text-center">{{ __('entrega.tipo_palete') }}</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -32,12 +31,10 @@
                                     </td>
                                     <td class="align-middle text-center">
                                         @foreach($documento->linha_documento as $linha)
-                                                {{ $linha->quantidade }}
-                                        @endforeach
-                                    </td>
-                                    <td class="align-middle text-center">
-                                        @foreach($documento->linha_documento as $linha)
-                                                {{ $linha->tipo_palete->tipo }}
+                                            @foreach($linha->tipo_palete as $tipoPalete)
+                                                {{ $tipoPalete->pivot->quantidade }} {{ $tipoPalete->tipo }}
+                                                @if (!$loop->last), @endif
+                                            @endforeach
                                         @endforeach
                                     </td>
                                 </tr>
