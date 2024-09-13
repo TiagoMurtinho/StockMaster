@@ -55,11 +55,22 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="pages-register.html">
-            <i class="bi bi-card-list"></i>
-            <span>Register</span>
+        <a class="nav-link collapsed" data-bs-target="#pedidos-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-menu-button-wide"></i><span>Pedidos</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-    </li><!-- End Register Page Nav -->
+        <ul id="pedidos-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+            <li>
+                <a href="{{route('pedido-entrega.index')}}">
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.pedidos_de_entrega')}}</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{--{{route('tipo-documento.index')}}--}}">
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.tipo_documentos')}}</span>
+                </a>
+            </li>
+        </ul>
+    </li>
 
     <li class="nav-item">
         <a class="nav-link collapsed" href="pages-login.html">

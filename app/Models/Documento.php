@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Documento extends Model
@@ -43,8 +44,8 @@ class Documento extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function linha_documento(): HasOne
+    public function linha_documento(): HasMany
     {
-        return $this->hasOne(LinhaDocumento::class, 'documento_id');
+        return $this->hasMany(LinhaDocumento::class, 'documento_id');
     }
 }

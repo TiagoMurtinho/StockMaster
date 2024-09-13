@@ -148,8 +148,8 @@ $(document).ready(function() {
                 artigo_id: artigoId
             },
             success: function(response) {
-                alert('Linha do documento criada com sucesso!');
                 $('#modalLinhaDocumento').modal('hide');
+                window.location.href = '/documento/' + documentoId + '/pdf';
             },
             error: function(xhr, status, error) {
                 console.log('Erro ao criar a linha do documento: ' + xhr.responseText);

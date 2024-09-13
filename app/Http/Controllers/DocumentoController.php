@@ -7,6 +7,7 @@ use App\Models\Documento;
 use App\Models\LinhaDocumento;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class DocumentoController extends Controller
@@ -74,16 +75,18 @@ class DocumentoController extends Controller
         }
     }
 
-    public function gerarPdf($id)
+    public function gerarPDF($id)
     {
-        // Buscar o Documento e suas linhas
+        // Obter os dados do documento e das linhas do documento
         $documento = Documento::with('linha_documento')->findOrFail($id);
 
-        // Gerar o PDF com base nos dados
-        $pdf = PDF::loadView('pdf.documento', compact('documento'));
+        $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
 
-        // Retornar o PDF para download
-        return $pdf->download('documento_' . $documento->numero . '.pdf');
+        // Gerar o PDF
+        $pdf = Pdf::loadView('pdf.documento', compact('documento'));
+
+        // Fazer o download do PDF
+        return $pdf->download($nomeArquivo);
     }
 
     /**
