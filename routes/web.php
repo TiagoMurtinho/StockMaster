@@ -8,6 +8,7 @@ use App\Http\Controllers\PedidoEntregaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TipoDocumentoController;
 use App\Http\Controllers\TipoPaleteController;
+use App\Models\TipoPalete;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -32,5 +33,8 @@ Route::resource('documento', DocumentoController::class);
 Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
+Route::get('tipo-paletes', function() {
+    return response()->json(TipoPalete::all());
+});
 
 require __DIR__.'/auth.php';

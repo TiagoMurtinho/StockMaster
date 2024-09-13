@@ -6,12 +6,34 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-
                 <form id="linhaDocumentoForm">
 
-                    <div class="mb-3" id="quantidadeField">
-                        <label for="quantidade" class="form-label">Quantidade</label>
-                        <input type="number" step="1" min="0" class="form-control" id="quantidade" name="numero" required>
+                    <div id="paleteFields">
+                        <div class="palete-row mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="tipo_palete_id" class="form-label">Tipo Palete</label>
+                                    <select name="tipo_palete_id[]" class="form-select" required>
+                                        @foreach($tipoPaletes as $tipoPalete)
+                                            <option value="{{ $tipoPalete->id }}">{{ $tipoPalete->tipo }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="quantidade" class="form-label">Quantidade</label>
+                                    <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <a type="button" class="remove-palete-row">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="button" id="addPaleteRow" class="btn btn-success">Adicionar Tipo Palete</button>
                     </div>
 
                     <div class="mb-3">
@@ -40,17 +62,8 @@
                     </div>
 
                     <div class="mb-3" id="extraField">
-                        <label for="extra" class="form-label">extra</label>
+                        <label for="extra" class="form-label">Extra</label>
                         <input type="text" class="form-control" id="extra" name="extra" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="tipo_palete_id" class="form-label">Tipo Palete</label>
-                        <select name="tipo_palete_id" id="tipo_palete_id" class="form-select form-select-sm">
-                            @foreach($tipoPaletes as $tipoPalete)
-                                <option value="{{ $tipoPalete->id }}">{{ $tipoPalete->tipo }}</option>
-                            @endforeach
-                        </select>
                     </div>
 
                     <div class="mb-3" id="artigoField">
@@ -67,3 +80,5 @@
         </div>
     </div>
 </div>
+
+<select id="tipoPaleteSelect" class="form-select d-none"></select>

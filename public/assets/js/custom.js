@@ -70,16 +70,11 @@ $(document).ready(function() {
 $(document).ready(function() {
     var documentoId;
 
-    // Primeiro botão "Continuar" (primeiro modal)
     $('#continuarModalDocumentoBtn').click(function() {
 
         var tipoDocumentoId = $('#tipo_documento').val();
         var clienteId = $('#cliente').val();
 
-        console.log('Tipo Documento ID:', tipoDocumentoId);
-        console.log('Cliente ID:', clienteId);
-
-        // Armazenar dados no localStorage
         localStorage.setItem('tipo_documento_id', tipoDocumentoId);
         localStorage.setItem('cliente_id', clienteId);
 
@@ -87,7 +82,6 @@ $(document).ready(function() {
         $('#modalDocumento').modal('show');
     });
 
-    // Segundo botão "Continuar" (segundo modal)
     $('#continuarModalLinhaDocumentoBtn').click(function() {
         var tipoDocumentoId = $('#tipo_documento').val();
         var clienteId = $('#cliente').val();
@@ -155,5 +149,57 @@ $(document).ready(function() {
                 console.log('Erro ao criar a linha do documento: ' + xhr.responseText);
             }
         });
+    });
+});
+
+$(document).ready(function() {
+
+    $.ajax({
+        url: '/tipo-paletes',
+        method: 'GET',
+        success: function(response) {
+            var tipoPaleteSelect = $('#tipoPaleteSelect');
+            var options = '';
+
+            response.forEach(function(tipoPalete) {
+                options += `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`;
+            });
+
+            tipoPaleteSelect.html(options);
+
+            // Adicionar nova linha ao clicar no botão
+            $('#addPaleteRow').click(function() {
+                var newRow = `
+                    <div class="palete-row mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="tipo_palete_id" class="form-label">Tipo Palete</label>
+                                <select name="tipo_palete_id[]" class="form-select" required>
+                                    ${options}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="quantidade" class="form-label">Quantidade</label>
+                                <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <a type="button" class="remove-palete-row">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>`;
+
+                $('#paleteFields').append(newRow);
+            });
+
+            // Remover a linha ao clicar no botão de remover
+            $(document).on('click', '.remove-palete-row', function() {
+                $(this).closest('.palete-row').remove();
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar os tipos de palete:', error);
+        }
     });
 });
