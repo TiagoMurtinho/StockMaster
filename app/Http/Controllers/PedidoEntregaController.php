@@ -17,9 +17,10 @@ class PedidoEntregaController extends Controller
      */
     public function index()
     {
-        // Obtém todos os documentos e seus relacionamentos
+
         $documentos = Documento::with('linha_documento.tipo_palete')
             ->where('tipo_documento_id', 1)
+            ->where('estado', 'pendente')
             ->whereHas('linha_documento', function ($query) {
                 $query->orderBy('linha_documento.data_entrega', 'asc');
             })
@@ -30,13 +31,11 @@ class PedidoEntregaController extends Controller
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
 
-        // Cria um array para armazenar artigos por cliente
         $artigosPorCliente = [];
 
         foreach ($documentos as $documento) {
             $clienteId = $documento->cliente_id;
 
-            // Obtém artigos relacionados ao cliente específico
             if (!isset($artigosPorCliente[$clienteId])) {
                 $artigosPorCliente[$clienteId] = Artigo::where('cliente_id', $clienteId)->get();
             }

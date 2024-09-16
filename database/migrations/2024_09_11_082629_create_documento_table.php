@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('documento', function (Blueprint $table) {
             $table->id();
+            $table->string('estado')->default('pendente');
             $table->integer('numero');
             $table->dateTime('data');
             $table->string('matricula', 45)->nullable();

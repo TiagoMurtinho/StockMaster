@@ -19,7 +19,6 @@ return new class extends Migration
             $table->dateTime('data_entrega')->nullable();
             $table->dateTime('data_recolha')->nullable();
             $table->float('extra')->nullable();
-            $table->string('estado')->default('pendente');
             $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('artigo_id')->nullable()->constrained('artigo', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();

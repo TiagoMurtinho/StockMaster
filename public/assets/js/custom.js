@@ -56,6 +56,7 @@ $(document).ready(function() {
             $('#dataEntregaField').show();
             $('#quantidadeField').show();
             $('#tipoPaleteField').show();
+            $('#taxaField').show()
         }
 
         if (tipoDocumentoId == 2) {
@@ -125,14 +126,12 @@ $(document).ready(function() {
         });
     });
 
-    // Terceiro botão "Continuar" (terceiro modal)
     $('#criarDocumentoBtn').click(function() {
         var descricao = $('#descricao').val();
         var valor = $('#valor').val();
         var dataEntrega = $('#data_entrega').val();
         var artigoId = $('#artigo_id').val();
 
-        // Coletar os dados das linhas dinâmicas
         var tipoPaleteIds = [];
         var quantidades = [];
 
@@ -144,7 +143,6 @@ $(document).ready(function() {
             quantidades.push($(this).val());
         });
 
-        // Preparar o array de dados para enviar
         var linhasData = tipoPaleteIds.map(function(tipoPaleteId, index) {
             return {
                 tipo_palete_id: tipoPaleteId,
@@ -190,7 +188,6 @@ $(document).ready(function() {
 
             tipoPaleteSelect.html(options);
 
-            // Adicionar nova linha ao clicar no botão
             $('#addPaleteRow').click(function() {
                 var newRow = `
                     <div class="palete-row mb-3">
@@ -231,13 +228,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const armazemOptionsElement = document.getElementById('armazem-options');
     if (armazemOptionsElement) {
         const armazemOptions = JSON.parse(armazemOptionsElement.textContent);
-        console.log('Armazéns:', armazemOptions); // Verifique os dados
+        console.log('Armazéns:', armazemOptions);
 
         document.querySelectorAll('.armazem-select').forEach(select => {
             const tipoPaleteId = select.getAttribute('data-tipo-palete-id');
-            console.log('Tipo Palete ID:', tipoPaleteId); // Verifique o ID do tipo de palete
+            console.log('Tipo Palete ID:', tipoPaleteId);
 
-            // Adiciona uma opção "Selecione um Armazém" como opção padrão
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
             defaultOption.textContent = 'Selecione um Armazém';
@@ -245,13 +241,11 @@ document.addEventListener('DOMContentLoaded', function () {
             defaultOption.selected = true;
             select.appendChild(defaultOption);
 
-            // Adiciona todas as opções de armazém ao select
             armazemOptions.forEach(armazem => {
                 const option = document.createElement('option');
                 option.value = armazem.id;
                 option.textContent = armazem.nome;
 
-                // Se o armazém corresponde ao tipo_palete_id, define como selecionado por padrão
                 if (armazem.tipo_palete_id === parseInt(tipoPaleteId)) {
                     option.selected = true;
                 }

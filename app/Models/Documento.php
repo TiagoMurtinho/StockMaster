@@ -17,6 +17,7 @@ class Documento extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
+        'estado',
         'numero',
         'data',
         'matricula',
