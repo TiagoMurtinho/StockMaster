@@ -227,44 +227,37 @@ $(document).ready(function() {
     });
 });
 
-$(document).ready(function() {
-    $('.rececao-form').on('submit', function(event) {
-        event.preventDefault();
+document.addEventListener('DOMContentLoaded', function () {
+    const armazemOptionsElement = document.getElementById('armazem-options');
+    if (armazemOptionsElement) {
+        const armazemOptions = JSON.parse(armazemOptionsElement.textContent);
+        console.log('Armazéns:', armazemOptions); // Verifique os dados
 
-        var $form = $(this);
-        var formData = new FormData($form[0]);
-        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        document.querySelectorAll('.armazem-select').forEach(select => {
+            const tipoPaleteId = select.getAttribute('data-tipo-palete-id');
+            console.log('Tipo Palete ID:', tipoPaleteId); // Verifique o ID do tipo de palete
 
-        $.ajax({
-            url: $form.attr('action'),
-            type: $form.attr('method') || 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                if (response.success) {
-                    // Fechar o modal atual
-                    $form.closest('.modal').modal('hide');
+            // Adiciona uma opção "Selecione um Armazém" como opção padrão
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Selecione um Armazém';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
 
-                    // Definir o valor fixo para tipo_documento_id e preencher o campo cliente
-                    var tipoDocumentoId = 3; // Valor fixo para o tipo_documento_id
-                    var clienteId = response.cliente_id; // Valor do cliente retornado
+            // Adiciona todas as opções de armazém ao select
+            armazemOptions.forEach(armazem => {
+                const option = document.createElement('option');
+                option.value = armazem.id;
+                option.textContent = armazem.nome;
 
-                    // Preencher e abrir o modal tipoDocumentoModal
-                    $('#tipo_documento').val(tipoDocumentoId);
-                    $('#cliente').val(clienteId);
-
-                    // Mostrar o modal tipoDocumentoModal
-                    $('#tipoDocumentoModal').modal('show').on('shown.bs.modal', function () {
-                        // Garantir que os valores sejam definidos após o modal ser exibido
-                        $('#tipo_documento').val(tipoDocumentoId);
-                        $('#cliente').val(clienteId);
-                    });
+                // Se o armazém corresponde ao tipo_palete_id, define como selecionado por padrão
+                if (armazem.tipo_palete_id === parseInt(tipoPaleteId)) {
+                    option.selected = true;
                 }
-            },
-            error: function(xhr) {
-                console.log('Error:', xhr.responseText);
-            }
+
+                select.appendChild(option);
+            });
         });
-    });
+    }
 });

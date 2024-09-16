@@ -30,4 +30,9 @@ class Armazem extends Model
     {
         return $this->belongsTo(TipoPalete::class, 'tipo_palete_id');
     }
+
+    public function palete(): HasMany
+    {
+        return $this->hasMany(Armazem::class,'armazem_id');
+    }
 }

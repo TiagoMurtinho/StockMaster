@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('descricao', 255);
             $table->float('valor')->nullable();
             $table->string('morada', 255)->nullable();
-            $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_entrega')->nullable();
             $table->dateTime('data_recolha')->nullable();
             $table->float('extra')->nullable();
+            $table->string('estado')->default('pendente');
             $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('artigo_id')->nullable()->constrained('artigo', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();

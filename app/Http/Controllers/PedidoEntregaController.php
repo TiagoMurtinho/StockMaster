@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Armazem;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
@@ -24,7 +25,7 @@ class PedidoEntregaController extends Controller
             })
             ->get();
 
-
+        $armazens = Armazem::all();
         $tiposDocumento = TipoDocumento::all();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
@@ -41,7 +42,7 @@ class PedidoEntregaController extends Controller
             }
         }
 
-        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos', 'artigosPorCliente', 'tiposDocumento', 'clientes', 'tipoPaletes'));
+        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos', 'artigosPorCliente', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens'));
     }
 
     /**

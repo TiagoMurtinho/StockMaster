@@ -36,6 +36,7 @@ Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('artigo', ArtigoController::class);
 Route::resource('palete', PaleteController::class);
+Route::get('/palete/gerar-pdf/{linhaDocumentoId}', [PaleteController::class, 'gerarPDF'])->name('palete.gerarPDF');
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
 Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());
