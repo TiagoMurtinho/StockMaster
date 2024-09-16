@@ -17,7 +17,11 @@ class Palete extends Model
     protected $fillable = [
         'localizacao',
         'data_entrada',
-        'data_saida'
+        'data_saida',
+        'tipo_palete_id',
+        'linha_documento_id',
+        'user_id',
+        'artigo_id'
     ];
 
     public function tipo_palete(): BelongsTo
@@ -28,6 +32,11 @@ class Palete extends Model
     public function linha_documento(): BelongsTo
     {
         return $this->belongsTo(LinhaDocumento::class, 'linha_documento_id');
+    }
+
+    public function artigo(): BelongsTo
+    {
+        return $this->belongsTo(Artigo::class, 'artigo_id');
     }
 
     public function user(): BelongsTo

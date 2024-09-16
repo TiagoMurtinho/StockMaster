@@ -38,7 +38,7 @@
                                         @endforeach
                                     </td>
                                     <td class="align-middle">
-                                        <a href="#" {{--data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}"--}}>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $linha->id }}">
                                             <i class="bi bi-arrow-right-circle"></i>
                                         </a>
                                     </td>
@@ -52,5 +52,9 @@
         </div>
 
     </div>
+    @include('pages.pedido.pedido-entrega.modals.rececao-modal')
+    @include('pages.admin.documento.modals.tipo-documento-modal')
+    @include('pages.admin.documento.modals.documento-modal')
+    @include('pages.admin.documento.modals.linha-documento-modal')
 
 @endsection

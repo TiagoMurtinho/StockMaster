@@ -36,7 +36,7 @@ class LinhaDocumento extends Model
     public function tipo_palete(): BelongsToMany
     {
         return $this->belongsToMany(TipoPalete::class, 'linha_documento_tipo_palete')
-            ->withPivot('quantidade')
+            ->withPivot('quantidade', 'artigo_id')
             ->withTimestamps();
     }
 

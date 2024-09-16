@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Artigo;
+use App\Models\Cliente;
 use App\Models\Documento;
+use App\Models\TipoDocumento;
+use App\Models\TipoPalete;
 use Illuminate\Http\Request;
 
 class PedidoEntregaController extends Controller
@@ -12,6 +16,7 @@ class PedidoEntregaController extends Controller
      */
     public function index()
     {
+        // Obtém todos os documentos e seus relacionamentos
         $documentos = Documento::with('linha_documento.tipo_palete')
             ->where('tipo_documento_id', 1)
             ->whereHas('linha_documento', function ($query) {
@@ -19,7 +24,24 @@ class PedidoEntregaController extends Controller
             })
             ->get();
 
-        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos'));
+
+        $tiposDocumento = TipoDocumento::all();
+        $clientes = Cliente::all();
+        $tipoPaletes = TipoPalete::all();
+
+        // Cria um array para armazenar artigos por cliente
+        $artigosPorCliente = [];
+
+        foreach ($documentos as $documento) {
+            $clienteId = $documento->cliente_id;
+
+            // Obtém artigos relacionados ao cliente específico
+            if (!isset($artigosPorCliente[$clienteId])) {
+                $artigosPorCliente[$clienteId] = Artigo::where('cliente_id', $clienteId)->get();
+            }
+        }
+
+        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos', 'artigosPorCliente', 'tiposDocumento', 'clientes', 'tipoPaletes'));
     }
 
     /**

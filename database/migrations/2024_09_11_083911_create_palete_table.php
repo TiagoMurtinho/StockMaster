@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('localizacao', 45);
             $table->dateTime('data_entrada');
-            $table->dateTime('data_saida');
+            $table->dateTime('data_saida')->nullable();
             $table->foreignId('tipo_palete_id')->constrained('tipo_palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('linha_documento_id')->constrained('linha_documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('artigo_id')->constrained('artigo', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });

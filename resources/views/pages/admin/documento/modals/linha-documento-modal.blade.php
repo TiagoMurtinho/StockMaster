@@ -41,7 +41,7 @@
                         <input type="text" class="form-control" id="descricao" name="descricao">
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-3" id="taxaField">
                         <label for="valor" class="form-label">{{__('documento.taxa')}}</label>
                         <input type="number" step="0.01" min="0" class="form-control" id="valor" name="valor" required>
                     </div>
@@ -49,6 +49,11 @@
                     <div class="mb-3" id="novaMoradaField">
                         <label for="morada" class="form-label">{{__('documento.nova_morada')}}</label>
                         <input type="text" class="form-control" id="morada" name="morada">
+                    </div>
+
+                    <div class="mb-3" id="dataEntradaField">
+                        <label for="data_entrada" class="form-label">{{__('documento.data_entrada')}}</label>
+                        <input type="datetime-local" class="form-control" id="data_entrada" name="data_entrada" required>
                     </div>
 
                     <div class="mb-3" id="dataEntregaField">

@@ -14,6 +14,7 @@ class LinhaDocumentoTipoPalete extends Model
     protected $fillable = [
         'linha_documento_id',
         'tipo_palete_id',
+        'artigo_id',
         'quantidade',
     ];
 
@@ -25,5 +26,10 @@ class LinhaDocumentoTipoPalete extends Model
     public function tipo_palete()
     {
         return $this->belongsTo(TipoPalete::class);
+    }
+
+    public function artigo()
+    {
+        return $this->belongsTo(Artigo::class);
     }
 }

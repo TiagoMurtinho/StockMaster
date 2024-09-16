@@ -47,6 +47,9 @@ $(document).ready(function() {
         $('#extraField').hide();
         $('#tipoPaleteField').hide();
         $('#artigoField').hide()
+        $('#dataEntradaField').hide()
+        $('#taxaField').hide()
+
 
         if (tipoDocumentoId == 1) {
             $('#dataField').show();
@@ -56,7 +59,10 @@ $(document).ready(function() {
         }
 
         if (tipoDocumentoId == 2) {
-            $('#horaCargaField').show();
+            $('#dataField').show();
+            $('#artigoField').show()
+            $('#tipoPaleteField').show();
+            $('#dataEntradaField').show();
         }
 
         if (tipoDocumentoId == 3) {
@@ -218,5 +224,47 @@ $(document).ready(function() {
         error: function(xhr, status, error) {
             console.error('Erro ao carregar os tipos de palete:', error);
         }
+    });
+});
+
+$(document).ready(function() {
+    $('.rececao-form').on('submit', function(event) {
+        event.preventDefault();
+
+        var $form = $(this);
+        var formData = new FormData($form[0]);
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: $form.attr('method') || 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    // Fechar o modal atual
+                    $form.closest('.modal').modal('hide');
+
+                    // Definir o valor fixo para tipo_documento_id e preencher o campo cliente
+                    var tipoDocumentoId = 3; // Valor fixo para o tipo_documento_id
+                    var clienteId = response.cliente_id; // Valor do cliente retornado
+
+                    // Preencher e abrir o modal tipoDocumentoModal
+                    $('#tipo_documento').val(tipoDocumentoId);
+                    $('#cliente').val(clienteId);
+
+                    // Mostrar o modal tipoDocumentoModal
+                    $('#tipoDocumentoModal').modal('show').on('shown.bs.modal', function () {
+                        // Garantir que os valores sejam definidos após o modal ser exibido
+                        $('#tipo_documento').val(tipoDocumentoId);
+                        $('#cliente').val(clienteId);
+                    });
+                }
+            },
+            error: function(xhr) {
+                console.log('Error:', xhr.responseText);
+            }
+        });
     });
 });

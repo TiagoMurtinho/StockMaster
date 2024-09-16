@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('linha_documento', function (Blueprint $table) {
             $table->id();
             $table->string('descricao', 255);
-            $table->float('valor');
+            $table->float('valor')->nullable();
             $table->string('morada', 255)->nullable();
+            $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_entrega')->nullable();
             $table->dateTime('data_recolha')->nullable();
             $table->float('extra')->nullable();

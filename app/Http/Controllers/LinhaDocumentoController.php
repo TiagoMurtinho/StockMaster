@@ -33,8 +33,9 @@ class LinhaDocumentoController extends Controller
         // Validação dos dados do formulário principal
         $validated = $request->validate([
             'descricao' => 'required|string|max:255',
-            'valor' => 'required|numeric',
+            'valor' => 'nullable|numeric',
             'morada' => 'nullable|string|max:255',
+            'data_entrada' => 'nullable|date',
             'data_entrega' => 'nullable|date',
             'data_recolha' => 'nullable|date',
             'extra' => 'nullable|numeric',

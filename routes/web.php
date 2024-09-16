@@ -5,6 +5,7 @@ use App\Http\Controllers\ArtigoController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\LinhaDocumentoController;
+use App\Http\Controllers\PaleteController;
 use App\Http\Controllers\PedidoEntregaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TipoDocumentoController;
@@ -34,6 +35,7 @@ Route::resource('documento', DocumentoController::class);
 Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('artigo', ArtigoController::class);
+Route::resource('palete', PaleteController::class);
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
 Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());

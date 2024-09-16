@@ -34,4 +34,9 @@ class Artigo extends Model
     {
         return $this->hasMany(LinhaDocumento::class, 'artigo_id');
     }
+
+    public function palete(): HasMany
+    {
+        return $this->hasMany(Palete::class, 'artigo_id');
+    }
 }
