@@ -160,7 +160,7 @@ $(document).ready(function() {
                 valor: valor,
                 data_entrega: dataEntrega,
                 artigo_id: artigoId,
-                linhas: linhasData // Enviar o array de linhas
+                linhas: linhasData
             },
             success: function(response) {
                 $('#modalLinhaDocumento').modal('hide');
@@ -213,7 +213,6 @@ $(document).ready(function() {
                 $('#paleteFields').append(newRow);
             });
 
-            // Remover a linha ao clicar no botão de remover
             $(document).on('click', '.remove-palete-row', function() {
                 $(this).closest('.palete-row').remove();
             });
@@ -228,11 +227,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const armazemOptionsElement = document.getElementById('armazem-options');
     if (armazemOptionsElement) {
         const armazemOptions = JSON.parse(armazemOptionsElement.textContent);
-        console.log('Armazéns:', armazemOptions);
 
         document.querySelectorAll('.armazem-select').forEach(select => {
             const tipoPaleteId = select.getAttribute('data-tipo-palete-id');
-            console.log('Tipo Palete ID:', tipoPaleteId);
 
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
