@@ -57,6 +57,7 @@ class PaleteController extends Controller
             $novoDocumento = Documento::create([
                 'numero' => $documentoOriginal->numero,
                 'data' => now(),
+                'estado' => 'terminado',
                 'tipo_documento_id' => 2,
                 'cliente_id' => $documentoOriginal->cliente_id,
                 'user_id' => $userId,
