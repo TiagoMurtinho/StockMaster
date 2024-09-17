@@ -8,7 +8,6 @@ use App\Http\Controllers\LinhaDocumentoController;
 use App\Http\Controllers\PaleteController;
 use App\Http\Controllers\PedidoEntregaController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TipoDocumentoController;
 use App\Http\Controllers\TipoPaleteController;
 use App\Models\TipoPalete;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +29,6 @@ Route::middleware('auth')->group(function () {
 Route::resource('tipo-palete', TipoPaleteController::class);
 Route::resource('cliente', ClienteController::class);
 Route::resource('armazem', ArmazemController::class);
-Route::resource('tipo-documento', TipoDocumentoController::class);
 Route::resource('documento', DocumentoController::class);
 Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
