@@ -46,13 +46,6 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link collapsed" href="users-profile.html">
-            <i class="bi bi-person"></i>
-            <span>Profile</span>
-        </a>
-    </li><!-- End Profile Page Nav -->
-
-    <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#pedidos-nav" data-bs-toggle="collapse" href="#">
             <i class="bi bi-menu-button-wide"></i><span>Pedidos</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
@@ -69,6 +62,14 @@
             </li>
         </ul>
     </li>
+
+
+    {{--<li class="nav-item">
+        <a class="nav-link collapsed" href="users-profile.html">
+            <i class="bi bi-person"></i>
+            <span>Profile</span>
+        </a>
+    </li><!-- End Profile Page Nav -->
 
     <li class="nav-item">
         <a class="nav-link collapsed" href="pages-login.html">
@@ -89,6 +90,6 @@
             <i class="bi bi-file-earmark"></i>
             <span>Blank</span>
         </a>
-    </li><!-- End Blank Page Nav -->
+    </li><!-- End Blank Page Nav -->--}}
 
 </ul>

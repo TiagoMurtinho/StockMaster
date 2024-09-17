@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('artigo.artigo') }}</h5>
-                    <a type="button" class="align-items-center ms-2" data-bs-toggle="modal" data-bs-target="#addArmazemModal">
+                    <a type="button" class="align-items-center ms-2" data-bs-toggle="modal" data-bs-target="#addArtigoModal">
                     <i class="ri-add-circle-line plus"></i>
                     </a>
                 </div>
@@ -30,10 +30,10 @@
                                     <td class="align-middle text-center">{{ $artigo->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $artigo->user->nome }}</td>
                                     <td class="align-middle">
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $artigo->id }}">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editArtigoModal{{ $artigo->id }}">
                                             <i class="bi bi-pencil-square me-2"></i>
                                         </a>
-                                        {{--<a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $artigo->id }}" onclick="confirmDelete('deleteArmazemForm{{ $artigo->id }}', '{{ route('artigo.destroy', $artigo->id) }}')">--}}
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal{{ $artigo->id }}" onclick="confirmDelete('deleteArtigoForm{{ $artigo->id }}', '{{ route('artigo.destroy', $artigo->id) }}')">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </td>
@@ -47,5 +47,9 @@
                 </div>
             </div>
         </div>
+
+    @include('pages.admin.artigo.modals.artigo-edit-modal')
+    @include('pages.admin.artigo.modals.artigo-add-modal')
+    @include('pages.admin.artigo.modals.artigo-delete-modal')
 
 @endsection

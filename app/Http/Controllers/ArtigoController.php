@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Armazem;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ArtigoController extends Controller
 {
@@ -33,7 +35,30 @@ class ArtigoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nome' => 'required|string|max:100',
+            'referencia' => 'required|string|max:45',
+            'cliente_id' => 'required|exists:cliente,id'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->toArray()
+            ], 422);
+        }
+
+        $artigo = new Artigo();
+        $artigo->nome = $request->input('nome');
+        $artigo->referencia = $request->input('referencia');
+        $artigo->cliente_id = $request->input('cliente_id');
+        $artigo->user_id = auth()->id();
+        $artigo->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Artigo criado com sucesso!',
+            'redirect' => route('artigo.index')
+        ]);
     }
 
     /**
@@ -57,7 +82,31 @@ class ArtigoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nome' => 'required|string|max:100',
+            'referencia' => 'required|string|max:45',
+            'cliente_id' => 'required|exists:cliente,id'
+        ]);
+
+        $artigo = Artigo::find($id);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()->toArray()
+            ], 422);
+        }
+
+        $artigo->nome = $request->input('nome');
+        $artigo->referencia = $request->input('referencia');
+        $artigo->cliente_id = $request->input('cliente_id');
+        $artigo->user_id = auth()->id();
+        $artigo->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Artigo criado com sucesso!',
+            'redirect' => route('artigo.index')
+        ]);
     }
 
     /**
@@ -65,6 +114,21 @@ class ArtigoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $artigo = Artigo::find($id);
+
+        if (!$artigo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Artigo não encontrado!'
+            ], 404);
+        }
+
+        $artigo->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Artigo eliminado com sucesso!',
+            'redirect' => route('artigo.index')
+        ]);
     }
 }
