@@ -57,7 +57,7 @@
                         <td>{{ $palete->tipo_palete->tipo ?? 'N/A' }}</td>
                         <td>{{ $palete->localizacao }}</td>
                         <td>{{ $palete->artigo->nome ?? 'N/A' }}</td>
-                        <td>{{ \Carbon\Carbon::parse($palete->data_entrada)->format('d/m/Y H:i') ?? 'N/A' }}</td>
+                        <td>{{ $palete->data_entrada ?? 'N/A' }}</td>
                         <td>{{ $palete->armazem->nome ?? 'N/A' }}</td>
                     </tr>
                 @endforeach
