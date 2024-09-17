@@ -21,6 +21,10 @@
     color: #4d0900;
 }
 
+.home-logo {
+    height: 80vh;
+}
+
 @media (max-width: 1000px) {
     .modal-lg {
         width: 90%;
