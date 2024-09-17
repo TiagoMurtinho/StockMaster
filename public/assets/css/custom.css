@@ -7,7 +7,8 @@
 }
 
 .bi-pencil-square,
-.bi-arrow-right-circle {
+.bi-arrow-right-circle,
+.bi-person-circle {
     font-size: 25px;
 }
 
@@ -18,4 +19,16 @@
 
 .bi-trash:hover {
     color: #4d0900;
+}
+
+@media (max-width: 1000px) {
+    .modal-lg {
+        width: 90%;
+        max-width: 90%;
+    }
+
+    .logo-welcome {
+        max-width: 350px;
+    }
+
 }

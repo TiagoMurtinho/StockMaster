@@ -1,14 +1,14 @@
 @foreach($documentos as $documento)
     @foreach($documento->linha_documento as $linha)
         <div class="modal fade" id="rececaoModal{{ $linha->id }}" tabindex="-1" aria-labelledby="rececaoModalLabel{{ $linha->id }}" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-lg rececao-modal">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="rececaoModalLabel{{ $linha->id }}">{{ __('Verificação de Paletes para o Pedido') }} {{ $documento->numero }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form class="rececao-form" action="{{ route('palete.store') }}" method="POST">
+                        <form id="modalForm" class="rececao-form" action="{{ route('palete.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="linha_documento_id" value="{{ $linha->id }}">
                             <input type="hidden" name="cliente_id" value="{{ $documento->cliente_id }}">
@@ -61,7 +61,7 @@
                                 @endforeach
                                 </tbody>
                             </table>
-                            <div class="justify-content-end">
+                            <div class="text-end">
                                 <button type="submit" class="btn btn-primary">{{ __('Confirmar Verificação') }}</button>
                             </div>
                         </form>

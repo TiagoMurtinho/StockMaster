@@ -44,7 +44,7 @@ class PaleteController extends Controller
                 'tipo_palete_id' => 'required|array',
                 'artigo_id' => 'nullable|array',
                 'data_entrada' => 'nullable|array',
-                'armazem_id' => 'required|array',
+                'armazem_id' => 'nullable|array',
                 'descricao' => 'nullable|string',
             ]);
 
@@ -74,7 +74,7 @@ class PaleteController extends Controller
                 foreach ($localizacoes as $index => $localizacao) {
                     $artigoId = $artigoIds[$index] ?? null;
                     $dataEntrada = $datasEntrada[$index] ?? null;
-                    $armazemId = $armazemIds[$index];
+                    $armazemId = $armazemIds[$index] ?? null;
                     $descricaoFinal = $descricao ?? $linhaDocumento->descricao;
 
                     $palete = Palete::create([
@@ -102,7 +102,10 @@ class PaleteController extends Controller
 
             DB::commit();
 
-            return $this->gerarPDF($novoDocumento->id);
+            return response()->json([
+                'success' => true,
+                'documento_id' => $novoDocumento->id
+            ]);
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -119,30 +122,39 @@ class PaleteController extends Controller
     public function gerarPDF($documentoId)
     {
         try {
+            Log::info('Início da geração do PDF para documento ID: ' . $documentoId);
 
-            $palete = Palete::with([
-                'linha_documento' => function ($query) {
-                    $query->with('documento', 'palete');
-                },
-                'linha_documento.documento',
-                'tipo_palete',
-                'artigo'
-            ])->findOrFail($documentoId);
+            $documento = Documento::findOrFail($documentoId);
+            Log::info('Documento encontrado: ' . $documento->id);
 
             $data = [
-                'documento' => $palete->linha_documento->documento,
-                'cliente' => $palete->linha_documento->documento->cliente,
-                'paletes' => $palete->linha_documento->palete
+                'documento' => $documento,
+                'cliente' => $documento->cliente,
+                'paletes' => $documento->paletes
             ];
 
             $pdf = PDF::loadView('pdf.rececao', $data);
+            Log::info('PDF gerado com sucesso.');
 
-            return $pdf->download('nota_recepcao_' . $palete->linha_documento->documento->numero . '.pdf');
+            return response()->stream(
+                function () use ($pdf) {
+                    echo $pdf->output();
+                },
+                200,
+                [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'attachment; filename="nota_recepcao_' . $documento->numero . '.pdf"'
+                ]
+            );
+
         } catch (\Exception $e) {
-            Log::error('Erro ao gerar PDF: ' . $e->getMessage());
+            Log::error('Erro ao gerar PDF: ' . $e->getMessage(), [
+                'documento_id' => $documentoId,
+                'exception' => $e
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao gerar o PDF: ' . $e->getMessage(),
+                'message' => 'Erro ao gerar o PDF: ' . $e->getMessage()
             ], 500);
         }
     }

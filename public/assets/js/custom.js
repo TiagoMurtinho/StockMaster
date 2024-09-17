@@ -233,9 +233,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const defaultOption = document.createElement('option');
             defaultOption.value = '';
-            defaultOption.textContent = 'Selecione um Armazém';
-            defaultOption.disabled = true;
-            defaultOption.selected = true;
+            defaultOption.textContent = 'Nenhum armazém';
             select.appendChild(defaultOption);
 
             armazemOptions.forEach(armazem => {
@@ -251,4 +249,54 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+});
+
+$('#modalForm').on('submit', function(e) {
+    e.preventDefault();
+
+    var $form = $(this);
+    var formData = $(this).serialize();
+
+    $.ajax({
+        type: 'POST',
+        url: $form.attr('action'),  // URL do método store no controlador
+        data: formData,
+        success: function(response) {
+            if (response.success) {
+                $('#modalForm').modal('hide');
+
+
+                $.ajax({
+                    url: '/gerar-pdf/' + response.documento_id,
+                    method: 'GET',
+                    xhrFields: {
+                        responseType: 'blob' // Espera um objeto Blob como resposta
+                    },
+                    success: function(blob) {
+                        var link = document.createElement('a');
+                        var url = window.URL.createObjectURL(blob);
+                        link.href = url;
+                        link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
+                        document.body.appendChild(link);
+                        link.click();
+                        window.URL.revokeObjectURL(url); // Revogar o objeto URL
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Erro na requisição AJAX:', {
+                            textStatus: textStatus,
+                            errorThrown: errorThrown,
+                            responseText: jqXHR.responseText
+                        });
+                        alert('Erro ao gerar o PDF: ' + jqXHR.responseText);
+                    }
+                });
+            } else {
+                alert('Erro ao criar documento.');
+            }
+        },
+        error: function(xhr) {
+            console.error(xhr.responseText);
+            alert('Erro ao processar o pedido.');
+        }
+    });
 });

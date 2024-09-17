@@ -53,8 +53,5 @@
 
     </div>
     @include('pages.pedido.pedido-entrega.modals.rececao-modal')
-    @include('pages.admin.documento.modals.tipo-documento-modal')
-    @include('pages.admin.documento.modals.documento-modal')
-    @include('pages.admin.documento.modals.linha-documento-modal')
 
 @endsection
