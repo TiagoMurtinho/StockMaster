@@ -298,3 +298,14 @@ $('#modalForm').on('submit', function(e) {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    var alert = document.getElementById('mensagem-dinamica');
+
+    if (alert) {
+        setTimeout(function() {
+            alert.style.display = 'none';
+        }, 3000);
+    }
+});
