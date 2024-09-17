@@ -76,7 +76,12 @@ class PaleteController extends Controller
                 foreach ($localizacoes as $index => $localizacao) {
                     $artigoId = $artigoIds[$index] ?? null;
                     $dataEntrada = $datasEntrada[$index] ?? null;
-                    $armazemId = $armazemIds[$index];
+                    $armazemId = $armazemIds[$index] ?? null;
+
+                    if (!$localizacao || !$armazemId || !$tipoPalete) {
+                        continue;
+                    }
+
                     $descricaoFinal = $descricao ?? $linhaDocumento->descricao;
 
                     $palete = Palete::create([
