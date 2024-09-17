@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('palete', function (Blueprint $table) {
             $table->id();
             $table->string('localizacao', 45)->nullable();
-            $table->string('descricao', 255)->nullable();
+            $table->string('observacao', 255)->nullable();
             $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_saida')->nullable();
             $table->foreignId('tipo_palete_id')->constrained('tipo_palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();

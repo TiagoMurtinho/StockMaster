@@ -17,16 +17,24 @@ class LinhaDocumento extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'descricao',
+        'observacao',
+        'localizacao',
         'valor',
         'morada',
-        'data_entrega',
-        'data_recolha',
+        'previsao',
+        'data_entrada',
+        'data_saida',
         'extra',
+        'armazem_id',
         'documento_id',
         'artigo_id',
         'user_id'
     ];
+
+    public function armazem(): BelongsTo
+    {
+        return $this->belongsTo(Armazem::class, 'armazem_id');
+    }
 
     public function documento(): BelongsTo
     {

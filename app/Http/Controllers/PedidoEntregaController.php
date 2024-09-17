@@ -22,7 +22,7 @@ class PedidoEntregaController extends Controller
             ->where('tipo_documento_id', 1)
             ->where('estado', 'pendente')
             ->whereHas('linha_documento', function ($query) {
-                $query->orderBy('linha_documento.data_entrega', 'asc');
+                $query->orderBy('linha_documento.previsao', 'asc');
             })
             ->get();
 

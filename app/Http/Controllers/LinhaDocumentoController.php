@@ -30,14 +30,12 @@ class LinhaDocumentoController extends Controller
      */
     public function store(Request $request)
     {
-        // Validação dos dados do formulário principal
+
         $validated = $request->validate([
-            'descricao' => 'required|string|max:255',
+            'observacao' => 'required|string|max:255',
             'valor' => 'nullable|numeric',
             'morada' => 'nullable|string|max:255',
-            'data_entrada' => 'nullable|date',
-            'data_entrega' => 'nullable|date',
-            'data_recolha' => 'nullable|date',
+            'previsao' => 'required|date',
             'extra' => 'nullable|numeric',
             'documento_id' => 'required|integer|exists:documento,id',
             'artigo_id' => 'nullable|integer|exists:artigo,id',
@@ -49,7 +47,7 @@ class LinhaDocumentoController extends Controller
         DB::beginTransaction();
 
         try {
-            // Adicionar user_id se necessário
+
             $validated['user_id'] = auth()->id();
 
 

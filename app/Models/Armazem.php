@@ -35,4 +35,9 @@ class Armazem extends Model
     {
         return $this->hasMany(Armazem::class,'armazem_id');
     }
+
+    public function linha_documento(): HasMany
+    {
+        return $this->hasMany(Armazem::class, 'armazem_id');
+    }
 }

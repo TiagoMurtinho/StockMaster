@@ -26,7 +26,7 @@
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">
                                         @foreach($documento->linha_documento as $linha)
-                                            {{ $linha->data_entrega }}
+                                            {{ $linha->previsao }}
                                         @endforeach
                                     </td>
                                     <td class="align-middle text-center">

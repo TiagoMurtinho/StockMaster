@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('estado')->default('pendente');
             $table->integer('numero');
-            $table->dateTime('data');
+            $table->date('data');
             $table->string('matricula', 45)->nullable();
             $table->string('morada', 255)->nullable();
-            $table->time('hora_carga')->nullable();
-            $table->dateTime('descarga')->nullable();
             $table->float('total')->nullable();
             $table->foreignId('tipo_documento_id')->constrained('tipo_documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('cliente_id')->constrained('cliente','id')->cascadeOnDelete()->cascadeOnUpdate();

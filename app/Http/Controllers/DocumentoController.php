@@ -19,7 +19,7 @@ class DocumentoController extends Controller
      */
     public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
-        // Pega os documentos do banco de dados
+
         $documentos = Documento::all();
         $tiposDocumento = TipoDocumento::where('id', 1)->get();
         $clientes = Cliente::all();
@@ -79,15 +79,14 @@ class DocumentoController extends Controller
 
     public function gerarPDF($id): Response
     {
-        // Obter os dados do documento e das linhas do documento
+
         $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);
 
         $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
 
-        // Gerar o PDF
+
         $pdf = Pdf::loadView('pdf.documento', compact('documento'));
 
-        // Fazer o download do PDF
         return $pdf->download($nomeArquivo);
     }
 

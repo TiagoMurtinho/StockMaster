@@ -32,39 +32,9 @@ $(document).ready(function() {
     $('#tipo_documento').change(function() {
         var tipoDocumentoId = $(this).val();
 
-        $('#documentoForm')[0].reset();
         $('#linhaDocumentoForm')[0].reset();
-        $('#quantidadeField').hide();
-        $('#dataField').hide();
-        $('#matriculaField').hide();
-        $('#moradaField').hide();
-        $('#horaCargaField').hide();
-        $('#descargaField').hide();
-        $('#totalField').hide();
-        $('#novaMoradaField').hide();
-        $('#dataEntregaField').hide();
-        $('#dataRecolhaField').hide();
-        $('#extraField').hide();
-        $('#tipoPaleteField').hide();
         $('#artigoField').hide()
-        $('#dataEntradaField').hide()
-        $('#taxaField').hide()
-
-
-        if (tipoDocumentoId == 1) {
-            $('#dataField').show();
-            $('#dataEntregaField').show();
-            $('#quantidadeField').show();
-            $('#tipoPaleteField').show();
-            $('#taxaField').show()
-        }
-
-        if (tipoDocumentoId == 2) {
-            $('#dataField').show();
-            $('#artigoField').show()
-            $('#tipoPaleteField').show();
-            $('#dataEntradaField').show();
-        }
+        $('#camposOcultos').hide()
 
         if (tipoDocumentoId == 3) {
             $('#moradaField').show();
@@ -75,19 +45,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    var documentoId;
-
-    $('#continuarModalDocumentoBtn').click(function() {
-
-        var tipoDocumentoId = $('#tipo_documento').val();
-        var clienteId = $('#cliente').val();
-
-        localStorage.setItem('tipo_documento_id', tipoDocumentoId);
-        localStorage.setItem('cliente_id', clienteId);
-
-        $('#tipoDocumentoModal').modal('hide');
-        $('#modalDocumento').modal('show');
-    });
+    /*var documentoId;*/
 
     $('#continuarModalLinhaDocumentoBtn').click(function() {
         var tipoDocumentoId = $('#tipo_documento').val();
@@ -96,8 +54,6 @@ $(document).ready(function() {
         var data = $('#data').val();
         var matricula = $('#matricula').val();
         var morada = $('#morada').val();
-        var horaCarga = $('#hora_carga').val();
-        var horaDescarga = $('#hora_descarga').val();
         var total = $('#total').val();
 
         $.ajax({
@@ -111,8 +67,6 @@ $(document).ready(function() {
                 data: data,
                 matricula: matricula,
                 morada: morada,
-                hora_carga: horaCarga,
-                hora_descarga: horaDescarga,
                 total: total,
             },
             success: function(response) {
@@ -127,9 +81,9 @@ $(document).ready(function() {
     });
 
     $('#criarDocumentoBtn').click(function() {
-        var descricao = $('#descricao').val();
+        var observacao = $('#observacao').val();
         var valor = $('#valor').val();
-        var dataEntrega = $('#data_entrega').val();
+        var previsao = $('#previsao').val();
         var artigoId = $('#artigo_id').val();
 
         var tipoPaleteIds = [];
@@ -156,9 +110,9 @@ $(document).ready(function() {
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 documento_id: documentoId,
-                descricao: descricao,
+                observacao: observacao,
                 valor: valor,
-                data_entrega: dataEntrega,
+                previsao: previsao,
                 artigo_id: artigoId,
                 linhas: linhasData
             },
@@ -271,7 +225,7 @@ $('#modalForm').on('submit', function(e) {
                     method: 'GET',
                     data: { paletes_criadas: response.paletes_criadas },
                     xhrFields: {
-                        responseType: 'blob' // Espera um objeto Blob como resposta
+                        responseType: 'blob'
                     },
                     success: function(blob) {
                         var link = document.createElement('a');
@@ -280,8 +234,8 @@ $('#modalForm').on('submit', function(e) {
                         link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
                         document.body.appendChild(link);
                         link.click();
-                        window.URL.revokeObjectURL(url); // Revogar o objeto URL
-                        document.body.removeChild(link); // Remover o link
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(link);
                     },
                     error: function(xhr) {
                         console.error(xhr.responseText);

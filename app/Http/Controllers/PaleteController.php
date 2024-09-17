@@ -37,7 +37,7 @@ class PaleteController extends Controller
         DB::beginTransaction();
 
         try {
-            // Validação dos dados recebidos
+
             $validatedData = $request->validate([
                 'linha_documento_id' => 'required|exists:linha_documento,id',
                 'localizacao' => 'nullable|array',
@@ -45,7 +45,7 @@ class PaleteController extends Controller
                 'artigo_id' => 'nullable|array',
                 'data_entrada' => 'nullable|array',
                 'armazem_id' => 'required|array',
-                'descricao' => 'nullable|string',
+                'observacao' => 'nullable|string',
             ]);
 
             $linhaDocumentoId = $validatedData['linha_documento_id'];
@@ -72,7 +72,7 @@ class PaleteController extends Controller
                 $artigoIds = $validatedData['artigo_id'][$tipoPaleteId] ?? [];
                 $datasEntrada = $validatedData['data_entrada'][$tipoPaleteId] ?? [];
                 $armazemIds = $validatedData['armazem_id'][$tipoPaleteId];
-                $descricao = $validatedData['descricao'];
+                $observacao = $validatedData['observacao'];
 
                 foreach ($localizacoes as $index => $localizacao) {
                     $artigoId = $artigoIds[$index] ?? null;
@@ -83,7 +83,7 @@ class PaleteController extends Controller
                         continue;
                     }
 
-                    $descricaoFinal = $descricao ?? $linhaDocumento->descricao;
+                    $observacaoFinal = $observacao ?? $linhaDocumento->observacao;
 
                     $palete = Palete::create([
                         'linha_documento_id' => $linhaDocumentoId,
@@ -97,12 +97,11 @@ class PaleteController extends Controller
 
                     LinhaDocumento::create([
                         'documento_id' => $novoDocumento->id,
-                        'tipo_palete_id' => $tipoPalete,
                         'localizacao' => $localizacao,
                         'data_entrada' => $dataEntrada,
                         'artigo_id' => $artigoId,
                         'armazem_id' => $armazemId,
-                        'descricao' => $descricaoFinal,
+                        'observacao' => $observacaoFinal,
                         'user_id' => $userId,
                     ]);
 
@@ -165,7 +164,6 @@ class PaleteController extends Controller
 
             $pdf = PDF::loadView('pdf.rececao', $data);
 
-            // Retorna o PDF diretamente como download
             return $pdf->download('nota_recepcao_' . $documento->numero . '.pdf');
 
         } catch (\Exception $e) {

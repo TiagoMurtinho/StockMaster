@@ -13,10 +13,9 @@
                             <input type="hidden" name="linha_documento_id" value="{{ $linha->id }}">
                             <input type="hidden" name="cliente_id" value="{{ $documento->cliente_id }}">
 
-                            <!-- Campo opcional para descrição -->
                             <div class="mb-3">
-                                <label for="descricao" class="form-label">{{ __('Descrição (opcional)') }}</label>
-                                <input type="text" name="descricao" id="descricao" class="form-control" placeholder="Descrição">
+                                    <label for="descricao" class="form-label">{{ __('Observação (opcional)') }}</label>
+                                <input type="text" name="observacao" id="observacao" class="form-control" placeholder="Escreva aqui as suas observações">
                             </div>
 
                             <table class="table">

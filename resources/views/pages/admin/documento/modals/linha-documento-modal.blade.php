@@ -37,38 +37,18 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="descricao" class="form-label">{{__('documento.descricao')}}</label>
-                        <input type="text" class="form-control" id="descricao" name="descricao">
+                        <label for="observacao" class="form-label">{{__('documento.observacao')}}</label>
+                        <input type="text" class="form-control" id="observacao" name="observacao">
                     </div>
 
                     <div class="mb-3" id="taxaField">
                         <label for="valor" class="form-label">{{__('documento.taxa')}}</label>
-                        <input type="number" step="0.01" min="0" class="form-control" id="valor" name="valor" required>
+                        <input type="number" step="0.01" min="0" class="form-control" id="valor" name="valor">
                     </div>
 
-                    <div class="mb-3" id="novaMoradaField">
-                        <label for="morada" class="form-label">{{__('documento.nova_morada')}}</label>
-                        <input type="text" class="form-control" id="morada" name="morada">
-                    </div>
-
-                    <div class="mb-3" id="dataEntradaField">
-                        <label for="data_entrada" class="form-label">{{__('documento.data_entrada')}}</label>
-                        <input type="datetime-local" class="form-control" id="data_entrada" name="data_entrada" required>
-                    </div>
-
-                    <div class="mb-3" id="dataEntregaField">
-                        <label for="data_entrega" class="form-label">{{__('documento.data_entrega')}}</label>
-                        <input type="datetime-local" class="form-control" id="data_entrega" name="data_entrega" required>
-                    </div>
-
-                    <div class="mb-3" id="dataRecolhaField">
-                        <label for="data_recolha" class="form-label">{{__('documento.data_recolha')}}</label>
-                        <input type="datetime-local" class="form-control" id="data_recolha" name="data_recolha">
-                    </div>
-
-                    <div class="mb-3" id="extraField">
-                        <label for="extra" class="form-label">{{__('documento.extra')}}</label>
-                        <input type="text" class="form-control" id="extra" name="extra" required>
+                    <div class="mb-3" id="previsaoField">
+                        <label for="previsao" class="form-label">{{__('documento.previsao')}}</label>
+                        <input type="date" class="form-control" id="previsao" name="previsao" required>
                     </div>
 
                     <div class="mb-3" id="artigoField">
