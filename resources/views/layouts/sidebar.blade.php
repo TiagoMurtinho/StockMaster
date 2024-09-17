@@ -51,7 +51,7 @@
                 </a>
             </li>
             <li>
-                <a href="{{--{{route('tipo-documento.index')}}--}}">
+                <a href="#">
                     <i class="bi bi-circle"></i><span>{{__('sidebar.tipo_documentos')}}</span>
                 </a>
             </li>
