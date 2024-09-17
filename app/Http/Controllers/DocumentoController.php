@@ -21,7 +21,7 @@ class DocumentoController extends Controller
     {
         // Pega os documentos do banco de dados
         $documentos = Documento::all();
-        $tiposDocumento = TipoDocumento::all();
+        $tiposDocumento = TipoDocumento::where('id', 1)->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
         return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes'));
