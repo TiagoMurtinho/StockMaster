@@ -8,7 +8,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="modalForm" class="rececao-form" action="{{ route('palete.store') }}" method="POST">
+                        <form id="modalForm" action="{{ route('palete.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="linha_documento_id" value="{{ $linha->id }}">
                             <input type="hidden" name="cliente_id" value="{{ $documento->cliente_id }}">
@@ -51,7 +51,7 @@
                                                 <input type="datetime-local" name="data_entrada[{{ $tipoPalete->id }}][]" class="form-control" value="">
                                             </td>
                                             <td>
-                                                <select name="armazem_id[{{ $tipoPalete->id }}][]" class="form-control armazem-select" data-tipo-palete-id="{{ $tipoPalete->id }}" required>
+                                                <select name="armazem_id[{{ $tipoPalete->id }}][]" class="form-control armazem-select" data-tipo-palete-id="{{ $tipoPalete->id }}">
                                                     <!-- As opções serão preenchidas pelo JavaScript -->
                                                 </select>
                                             </td>

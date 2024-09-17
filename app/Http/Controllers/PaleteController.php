@@ -44,7 +44,7 @@ class PaleteController extends Controller
                 'tipo_palete_id' => 'required|array',
                 'artigo_id' => 'nullable|array',
                 'data_entrada' => 'nullable|array',
-                'armazem_id' => 'nullable|array',
+                'armazem_id' => 'required|array',
                 'descricao' => 'nullable|string',
             ]);
 
@@ -64,6 +64,8 @@ class PaleteController extends Controller
 
             $documentoOriginal->update(['estado' => 'terminado']);
 
+            $paletesCriadas = [];
+
             foreach ($validatedData['localizacao'] as $tipoPaleteId => $localizacoes) {
                 $tipoPalete = $validatedData['tipo_palete_id'][$tipoPaleteId];
                 $artigoIds = $validatedData['artigo_id'][$tipoPaleteId] ?? [];
@@ -74,7 +76,7 @@ class PaleteController extends Controller
                 foreach ($localizacoes as $index => $localizacao) {
                     $artigoId = $artigoIds[$index] ?? null;
                     $dataEntrada = $datasEntrada[$index] ?? null;
-                    $armazemId = $armazemIds[$index] ?? null;
+                    $armazemId = $armazemIds[$index];
                     $descricaoFinal = $descricao ?? $linhaDocumento->descricao;
 
                     $palete = Palete::create([
@@ -97,6 +99,8 @@ class PaleteController extends Controller
                         'descricao' => $descricaoFinal,
                         'user_id' => $userId,
                     ]);
+
+                    $paletesCriadas[] = $palete->id;
                 }
             }
 
@@ -104,7 +108,8 @@ class PaleteController extends Controller
 
             return response()->json([
                 'success' => true,
-                'documento_id' => $novoDocumento->id
+                'documento_id' => $novoDocumento->id,
+                'paletes_criadas' => $paletesCriadas,
             ]);
 
         } catch (\Exception $e) {
@@ -119,42 +124,49 @@ class PaleteController extends Controller
         }
     }
 
-    public function gerarPDF($documentoId)
+    public function gerarPDF($documentoId, Request $request)
     {
         try {
-            Log::info('Início da geração do PDF para documento ID: ' . $documentoId);
+            $paletesIds = $request->input('paletes_criadas', []);
 
-            $documento = Documento::findOrFail($documentoId);
-            Log::info('Documento encontrado: ' . $documento->id);
+            // Filtra apenas as paletes criadas
+            $paletes = Palete::with([
+                'linha_documento' => function ($query) {
+                    $query->with('documento');
+                },
+                'linha_documento.documento',
+                'tipo_palete',
+                'artigo',
+                'armazem',
+            ])->whereIn('id', $paletesIds)->get();
+
+            if ($paletes->isEmpty()) {
+                throw new \Exception('Nenhuma palete encontrada.');
+            }
+
+            $documento = $paletes->first()->linha_documento->documento;
+            $cliente = $documento->cliente;
+
+            if (!$cliente) {
+                throw new \Exception('Cliente não encontrado.');
+            }
 
             $data = [
                 'documento' => $documento,
-                'cliente' => $documento->cliente,
-                'paletes' => $documento->paletes
+                'cliente' => $cliente,
+                'palete' => $paletes,
             ];
 
             $pdf = PDF::loadView('pdf.rececao', $data);
-            Log::info('PDF gerado com sucesso.');
 
-            return response()->stream(
-                function () use ($pdf) {
-                    echo $pdf->output();
-                },
-                200,
-                [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'attachment; filename="nota_recepcao_' . $documento->numero . '.pdf"'
-                ]
-            );
+            // Retorna o PDF diretamente como download
+            return $pdf->download('nota_recepcao_' . $documento->numero . '.pdf');
 
         } catch (\Exception $e) {
-            Log::error('Erro ao gerar PDF: ' . $e->getMessage(), [
-                'documento_id' => $documentoId,
-                'exception' => $e
-            ]);
+            Log::error('Erro ao gerar PDF: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao gerar o PDF: ' . $e->getMessage()
+                'message' => 'Erro ao gerar o PDF: ' . $e->getMessage(),
             ], 500);
         }
     }

@@ -259,16 +259,17 @@ $('#modalForm').on('submit', function(e) {
 
     $.ajax({
         type: 'POST',
-        url: $form.attr('action'),  // URL do método store no controlador
+        url: $form.attr('action'),
         data: formData,
         success: function(response) {
             if (response.success) {
                 $('#modalForm').modal('hide');
 
-
+                // Solicita o PDF
                 $.ajax({
                     url: '/gerar-pdf/' + response.documento_id,
                     method: 'GET',
+                    data: { paletes_criadas: response.paletes_criadas },
                     xhrFields: {
                         responseType: 'blob' // Espera um objeto Blob como resposta
                     },
@@ -280,14 +281,11 @@ $('#modalForm').on('submit', function(e) {
                         document.body.appendChild(link);
                         link.click();
                         window.URL.revokeObjectURL(url); // Revogar o objeto URL
+                        document.body.removeChild(link); // Remover o link
                     },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        console.error('Erro na requisição AJAX:', {
-                            textStatus: textStatus,
-                            errorThrown: errorThrown,
-                            responseText: jqXHR.responseText
-                        });
-                        alert('Erro ao gerar o PDF: ' + jqXHR.responseText);
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        alert('Erro ao gerar o PDF.');
                     }
                 });
             } else {
