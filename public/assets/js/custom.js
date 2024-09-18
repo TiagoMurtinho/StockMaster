@@ -226,56 +226,6 @@ $(document).ready(function() {
     });
 });
 
-/*$(document).ready(function() {
-
-    $.ajax({
-        url: '/tipo-paletes',
-        method: 'GET',
-        success: function(response) {
-            var tipoPaleteSelect = $('#tipoPaleteSelect');
-            var options = '';
-
-            response.forEach(function(tipoPalete) {
-                options += `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`;
-            });
-
-            tipoPaleteSelect.html(options);
-
-            $('#addPaleteRow').click(function() {
-                var newRow = `
-                    <div class="palete-row mb-3">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="tipo_palete_id" class="form-label">Tipo Palete</label>
-                                <select name="tipo_palete_id[]" class="form-select" required>
-                                    ${options}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="quantidade" class="form-label">Quantidade</label>
-                                <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
-                            </div>
-                            <div class="col-md-2 d-flex align-items-end">
-                                <a type="button" class="remove-palete-row">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>`;
-
-                $('#paleteFields').append(newRow);
-            });
-
-            $(document).on('click', '.remove-palete-row', function() {
-                $(this).closest('.palete-row').remove();
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('Erro ao carregar os tipos de palete:', error);
-        }
-    });
-});*/
-
 document.addEventListener('DOMContentLoaded', function () {
     const armazemOptionsElement = document.getElementById('armazem-options');
     if (armazemOptionsElement) {
