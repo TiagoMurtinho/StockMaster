@@ -71,6 +71,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                 documentoId = response.documento_id;
+                $('#modalLinhaDocumento').data('cliente-id', clienteId);
                 $('#modalDocumento').modal('hide');
                 $('#modalLinhaDocumento').modal('show');
             },
@@ -84,10 +85,10 @@ $(document).ready(function() {
         var observacao = $('#observacao').val();
         var valor = $('#valor').val();
         var previsao = $('#previsao').val();
-        var artigoId = $('#artigo_id').val();
 
         var tipoPaleteIds = [];
         var quantidades = [];
+        var artigoIds = [];
 
         $('select[name="tipo_palete_id[]"]').each(function() {
             tipoPaleteIds.push($(this).val());
@@ -96,11 +97,15 @@ $(document).ready(function() {
         $('input[name="quantidade[]"]').each(function() {
             quantidades.push($(this).val());
         });
+        $('select[name="artigo_id[]"]').each(function() {
+            artigoIds.push($(this).val());
+        });
 
         var linhasData = tipoPaleteIds.map(function(tipoPaleteId, index) {
             return {
                 tipo_palete_id: tipoPaleteId,
-                quantidade: quantidades[index]
+                quantidade: quantidades[index],
+                artigo_id: artigoIds[index]
             };
         });
 
@@ -113,7 +118,6 @@ $(document).ready(function() {
                 observacao: observacao,
                 valor: valor,
                 previsao: previsao,
-                artigo_id: artigoId,
                 linhas: linhasData
             },
             success: function(response) {
@@ -128,6 +132,101 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
+    // Função para carregar os artigos com base no cliente_id
+    function loadArtigos(clienteId, selectElement) {
+        $.ajax({
+            url: `/artigos/${clienteId}`, // Endpoint para obter os artigos
+            method: 'GET',
+            success: function(response) {
+                // Verifique se a resposta é um array
+                if (Array.isArray(response)) {
+                    const options = response.map(artigo =>
+                        `<option value="${artigo.id}">${artigo.nome}</option>`
+                    ).join('');
+                    $(selectElement).html(`<option value="">Selecione um Artigo</option>${options}`);
+                } else {
+                    console.error('Resposta inválida para artigos:', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao carregar os artigos:', error);
+            }
+        });
+    }
+
+    // Quando o modalLinhaDocumento for mostrado
+    $('#modalLinhaDocumento').on('show.bs.modal', function() {
+        const clienteId = $(this).data('cliente-id');
+
+        if (clienteId) {
+            // Carregar os tipos de paletes
+            $.ajax({
+                url: '/tipo-paletes',
+                method: 'GET',
+                success: function(response) {
+                    var tipoPaleteSelect = $('#tipoPaleteSelect');
+                    var options = '';
+
+                    response.forEach(function(tipoPalete) {
+                        options += `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`;
+                    });
+
+                    tipoPaleteSelect.html(options);
+
+                    // Carregar artigos para cada linha de palete já existente
+                    $('#paleteFields .palete-row').each(function() {
+                        loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Erro ao carregar os tipos de palete:', error);
+                }
+            });
+
+            // Adicionar nova linha de palete
+            $('#addPaleteRow').off('click').on('click', function() {
+                const newRow = `
+                    <div class="palete-row mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="form-label">Tipo Palete</label>
+                                <select name="tipo_palete_id[]" class="form-select" required>
+                                    ${$('#tipoPaleteSelect').html()}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Quantidade</label>
+                                <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Artigo</label>
+                                <select name="artigo_id[]" class="form-select" required>
+                                    <option value="">Selecione um Artigo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <a type="button" class="remove-palete-row">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>`;
+
+                $('#paleteFields').append(newRow);
+
+                // Carregar artigos para a nova linha adicionada
+                loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
+            });
+
+            // Remover linha de palete
+            $(document).on('click', '.remove-palete-row', function() {
+                $(this).closest('.palete-row').remove();
+            });
+        }
+    });
+});
+
+/*$(document).ready(function() {
 
     $.ajax({
         url: '/tipo-paletes',
@@ -175,7 +274,7 @@ $(document).ready(function() {
             console.error('Erro ao carregar os tipos de palete:', error);
         }
     });
-});
+});*/
 
 document.addEventListener('DOMContentLoaded', function () {
     const armazemOptionsElement = document.getElementById('armazem-options');

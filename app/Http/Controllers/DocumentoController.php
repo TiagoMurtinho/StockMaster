@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
 use App\Models\LinhaDocumento;
@@ -84,8 +85,13 @@ class DocumentoController extends Controller
 
         $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
 
+        $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
+            return $linha->tipo_palete->pluck('pivot.artigo_id');
+        });
 
-        $pdf = Pdf::loadView('pdf.documento', compact('documento'));
+        $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+
+        $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
 
         return $pdf->download($nomeArquivo);
     }

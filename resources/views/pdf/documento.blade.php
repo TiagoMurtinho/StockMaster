@@ -46,22 +46,32 @@
                 <th>Descrição</th>
                 <th>Valor</th>
                 <th>Data de Entrega</th>
-                <th>Quantidades</th>
+                <th>Tipo Palete</th>
+                <th>Quantidade</th>
+                <th>Artigo</th>
             </tr>
             </thead>
             <tbody>
             @foreach($documento->linha_documento as $linha)
-                <tr>
-                    <td>{{ $linha->descricao }}</td>
-                    <td>{{ $linha->valor }}</td>
-                    <td>{{ $linha->data_entrega }}</td>
-                    <td>
-                        @foreach($linha->tipo_palete as $tipoPalete)
-                            {{ $tipoPalete->pivot->quantidade }} {{ $tipoPalete->tipo }}
-                            @if (!$loop->last), @endif
-                        @endforeach
-                    </td>
-                </tr>
+                @foreach($linha->tipo_palete as $tipoPalete)
+                    <tr>
+                        <td>{{ $linha->observacao }}</td>
+                        <td>{{ $linha->valor }}</td>
+                        <td>{{ $linha->previsao }}</td>
+                        <td>{{ $tipoPalete->tipo }}</td>
+                        <td>{{ $tipoPalete->pivot->quantidade }}</td>
+                        <td>
+                            @php
+                                $artigoId = $tipoPalete->pivot->artigo_id;
+                            @endphp
+                            @if($artigoId && isset($artigos[$artigoId]))
+                                {{ $artigos[$artigoId]->nome }}
+                            @else
+                                {{dd($documento->linha_documento, $artigoId, $artigos)}}
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
             @endforeach
             </tbody>
         </table>

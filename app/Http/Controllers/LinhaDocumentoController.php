@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Artigo;
 use App\Models\LinhaDocumento;
 use App\Models\TipoPalete;
 use Illuminate\Http\Request;
@@ -38,10 +39,10 @@ class LinhaDocumentoController extends Controller
             'previsao' => 'required|date',
             'extra' => 'nullable|numeric',
             'documento_id' => 'required|integer|exists:documento,id',
-            'artigo_id' => 'nullable|integer|exists:artigo,id',
             'linhas' => 'required|array',
             'linhas.*.tipo_palete_id' => 'required|integer|exists:tipo_palete,id',
             'linhas.*.quantidade' => 'required|integer|min:1',
+            'linhas.*.artigo_id' => 'required|integer|exists:artigo,id',
         ]);
 
         DB::beginTransaction();
@@ -54,7 +55,13 @@ class LinhaDocumentoController extends Controller
             $linhaDocumento = LinhaDocumento::create($validated);
 
             foreach ($request->input('linhas') as $linha) {
-                $linhaDocumento->tipo_palete()->attach($linha['tipo_palete_id'], ['quantidade' => $linha['quantidade']]);
+                $linhaDocumento->tipo_palete()->attach(
+                    $linha['tipo_palete_id'],
+                    [
+                        'quantidade' => $linha['quantidade'],
+                        'artigo_id' => $linha['artigo_id']
+                    ]
+                );
             }
 
             DB::commit();
@@ -108,5 +115,12 @@ class LinhaDocumentoController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getArtigosPorCliente($clienteId): \Illuminate\Http\JsonResponse
+    {
+        $artigos = Artigo::where('cliente_id', $clienteId)->get();
+
+        return response()->json($artigos);
     }
 }
