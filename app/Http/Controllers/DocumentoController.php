@@ -99,9 +99,36 @@ class DocumentoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        try {
+            // Recupera o documento e suas linhas
+            $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);
+
+            // Prepara os dados das linhas
+            $linhas = $documento->linha_documento->map(function ($linha) {
+                return $linha->tipo_palete->map(function ($tipoPalete) use ($linha) {
+                    $artigo = Artigo::find($tipoPalete->pivot->artigo_id);
+                    return [
+                        'tipo_palete' => $tipoPalete->tipo,
+                        'quantidade' => $tipoPalete->pivot->quantidade,
+                        'artigo' => $artigo->nome
+                    ];
+                });
+            })->flatten(1);
+
+            return response()->json([
+                'success' => true,
+                'documento' => $documento,
+                'linhas' => $linhas
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao carregar os dados: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

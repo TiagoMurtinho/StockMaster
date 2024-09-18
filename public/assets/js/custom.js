@@ -45,7 +45,6 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    /*var documentoId;*/
 
     $('#continuarModalLinhaDocumentoBtn').click(function() {
         var tipoDocumentoId = $('#tipo_documento').val();
@@ -72,7 +71,7 @@ $(document).ready(function() {
             success: function(response) {
                 documentoId = response.documento_id;
                 $('#modalLinhaDocumento').data('cliente-id', clienteId);
-                $('#modalDocumento').modal('hide');
+                $('#modalAddDocumento').modal('hide');
                 $('#modalLinhaDocumento').modal('show');
             },
             error: function(xhr, status, error) {
@@ -312,3 +311,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Adiciona um listener de clique a todas as linhas com a classe "clickable-row"
+    document.querySelectorAll('.clickable-row').forEach(row => {
+        row.addEventListener('click', function () {
+            const documentoId = this.getAttribute('data-id');
+
+            // Faz uma requisição AJAX para obter os dados do documento
+            $.ajax({
+                url: '/documento/' + documentoId, // Verifique se o URL está correto
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        populateModal(data);
+                        $('#documentoModal').modal('show');
+                    } else {
+                        console.error('Erro ao carregar dados:', data.message);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.error('Erro ao carregar dados:', textStatus, errorThrown);
+                }
+            });
+        });
+    });
+});
+
+function populateModal(data) {
+        // Preenche os campos do modal com os dados do documento
+    document.getElementById('modal-documento-numero').innerText = data.documento.numero;
+    document.getElementById('modal-documento-data').innerText = data.documento.data;
+        // Preencha outros campos conforme necessário
+        // ...
+        // Limpe e adicione as linhas ao modal
+    const linhaContainer = document.getElementById('modal-linhas');
+    linhaContainer.innerHTML = ''; // Limpa as linhas existentes
+    data.linhas.forEach(linha => {
+        const linhaElement = document.createElement('tr');
+        linhaElement.innerHTML = `
+            <td>${linha.tipo_palete}</td>
+            <td>${linha.quantidade}</td>
+            <td>${linha.artigo}</td>
+            `;
+        linhaContainer.appendChild(linhaElement);
+    });
+
+}

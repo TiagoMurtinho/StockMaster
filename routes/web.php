@@ -29,7 +29,7 @@ Route::middleware('auth')->group(function () {
 Route::resource('tipo-palete', TipoPaleteController::class);
 Route::resource('cliente', ClienteController::class);
 Route::resource('armazem', ArmazemController::class);
-Route::resource('documento', DocumentoController::class);
+Route::resource('documento', DocumentoController::class)->except('show');
 Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('artigo', ArtigoController::class);
@@ -40,5 +40,6 @@ Route::get('/artigos/{clienteId}', [LinhaDocumentoController::class, 'getArtigos
 Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());
 });
+Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
 
 require __DIR__.'/auth.php';

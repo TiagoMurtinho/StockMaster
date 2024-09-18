@@ -26,14 +26,15 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
-                                <tr>
+                                <tr class="clickable-row" data-id="{{ $documento->id }}">
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">{{ $documento->data }}</td>
                                     <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->user->nome }}</td>
                                     <td class="text-center"> <!-- Célula para o botão -->
-                                        <a href="{{ route('documento.pdf', $documento->id) }}" class="btn btn-secondary btn-sm">
+                                        <a href="{{ route('documento.pdf', $documento->id) }}"
+                                           class="btn btn-secondary btn-sm">
                                             Gerar PDF
                                         </a>
                                     </td>
@@ -49,7 +50,8 @@
 
     </div>
 
-    @include('pages.admin.documento.modals.documento-modal')
+    @include('pages.admin.documento.modals.add-documento-modal')
     @include('pages.admin.documento.modals.linha-documento-modal')
+    @include('pages.admin.documento.modals.documento-modal')
 @endsection
 
