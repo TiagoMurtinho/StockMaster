@@ -42,7 +42,6 @@ class PaleteController extends Controller
                 'linha_documento_id' => 'required|exists:linha_documento,id',
                 'localizacao' => 'nullable|array',
                 'tipo_palete_id' => 'required|array',
-                'artigo_id' => 'nullable|array',
                 'data_entrada' => 'nullable|array',
                 'armazem_id' => 'required|array',
                 'observacao' => 'nullable|string',
@@ -69,14 +68,11 @@ class PaleteController extends Controller
 
             foreach ($validatedData['localizacao'] as $tipoPaleteId => $localizacoes) {
                 $tipoPalete = $validatedData['tipo_palete_id'][$tipoPaleteId];
-                $artigoIds = $validatedData['artigo_id'][$tipoPaleteId] ?? [];
-                $datasEntrada = $validatedData['data_entrada'][$tipoPaleteId] ?? [];
                 $armazemIds = $validatedData['armazem_id'][$tipoPaleteId];
                 $observacao = $validatedData['observacao'];
+                $artigoId = $linhaDocumento->tipo_palete->pluck('pivot.artigo_id')->first();
 
                 foreach ($localizacoes as $index => $localizacao) {
-                    $artigoId = $artigoIds[$index] ?? null;
-                    $dataEntrada = $datasEntrada[$index] ?? null;
                     $armazemId = $armazemIds[$index] ?? null;
 
                     if (!$localizacao || !$armazemId || !$tipoPalete) {
@@ -88,7 +84,7 @@ class PaleteController extends Controller
                     $palete = Palete::create([
                         'linha_documento_id' => $linhaDocumentoId,
                         'localizacao' => $localizacao,
-                        'data_entrada' => $dataEntrada,
+                        'data_entrada' => now(),
                         'tipo_palete_id' => $tipoPalete,
                         'artigo_id' => $artigoId,
                         'armazem_id' => $armazemId,
@@ -98,7 +94,7 @@ class PaleteController extends Controller
                     LinhaDocumento::create([
                         'documento_id' => $novoDocumento->id,
                         'localizacao' => $localizacao,
-                        'data_entrada' => $dataEntrada,
+                        'data_entrada' => now(),
                         'artigo_id' => $artigoId,
                         'armazem_id' => $armazemId,
                         'observacao' => $observacaoFinal,

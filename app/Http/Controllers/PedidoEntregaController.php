@@ -31,17 +31,7 @@ class PedidoEntregaController extends Controller
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
 
-        $artigosPorCliente = [];
-
-        foreach ($documentos as $documento) {
-            $clienteId = $documento->cliente_id;
-
-            if (!isset($artigosPorCliente[$clienteId])) {
-                $artigosPorCliente[$clienteId] = Artigo::where('cliente_id', $clienteId)->get();
-            }
-        }
-
-        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos', 'artigosPorCliente', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens'));
+        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos','tiposDocumento', 'clientes', 'tipoPaletes', 'armazens'));
     }
 
     /**

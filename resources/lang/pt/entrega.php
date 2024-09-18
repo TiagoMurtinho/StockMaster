@@ -5,5 +5,6 @@ return [
     'cliente' => 'Cliente:',
     'numero' => 'Número:',
     'data_entrega' => 'Data de Entrega:',
-    'quantidade' => 'Quantidades'
+    'quantidade' => 'Quantidades',
+    'paletes' => 'Paletes'
 ];

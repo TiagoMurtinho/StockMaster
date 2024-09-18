@@ -24,8 +24,6 @@
                                     <th scope="col">{{ __('Tipo de Palete') }}</th>
                                     <th scope="col">{{ __('Palete #') }}</th>
                                     <th scope="col">{{ __('Localização') }}</th>
-                                    <th scope="col">{{ __('Artigo') }}</th>
-                                    <th scope="col">{{ __('Data de Entrada') }}</th>
                                     <th scope="col">{{ __('Armazém') }}</th>
                                 </tr>
                                 </thead>
@@ -37,17 +35,6 @@
                                             <td>{{ $i }}</td>
                                             <td>
                                                 <input type="text" name="localizacao[{{ $tipoPalete->id }}][]" class="form-control" placeholder="Localização" value="">
-                                            </td>
-                                            <td>
-                                                <select name="artigo_id[{{ $tipoPalete->id }}][]" class="form-control">
-                                                    <option value="">{{ __('Selecione um Artigo') }}</option>
-                                                    @foreach($artigosPorCliente[$documento->cliente_id] ?? [] as $artigo)
-                                                        <option value="{{ $artigo->id }}">{{ $artigo->nome }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <input type="datetime-local" name="data_entrada[{{ $tipoPalete->id }}][]" class="form-control" value="">
                                             </td>
                                             <td>
                                                 <select name="armazem_id[{{ $tipoPalete->id }}][]" class="form-control armazem-select" data-tipo-palete-id="{{ $tipoPalete->id }}">

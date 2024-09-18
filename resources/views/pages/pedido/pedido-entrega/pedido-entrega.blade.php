@@ -30,12 +30,15 @@
                                         @endforeach
                                     </td>
                                     <td class="align-middle text-center">
-                                        @foreach($documento->linha_documento as $linha)
-                                            @foreach($linha->tipo_palete as $tipoPalete)
-                                                {{ $tipoPalete->pivot->quantidade }} {{ $tipoPalete->tipo }}
-                                                @if (!$loop->last), @endif
-                                            @endforeach
-                                        @endforeach
+                                        @php
+                                            $totalQuantidade = 0;
+                                            foreach ($documento->linha_documento as $linha) {
+                                                foreach ($linha->tipo_palete as $tipoPalete) {
+                                                    $totalQuantidade += $tipoPalete->pivot->quantidade;
+                                                }
+                                            }
+                                        @endphp
+                                        {{ $totalQuantidade }} {{__('entrega.paletes')}}
                                     </td>
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $linha->id }}">
