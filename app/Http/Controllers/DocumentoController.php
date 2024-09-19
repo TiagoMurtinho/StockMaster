@@ -13,6 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class DocumentoController extends Controller
@@ -84,7 +85,7 @@ class DocumentoController extends Controller
     {
 
         $validated = $request->validate([
-            'observacao' => 'required|string|max:255',
+            'observacao' => 'nullable|string|max:255',
             'valor' => 'nullable|numeric',
             'morada' => 'nullable|string|max:255',
             'previsao' => 'required|date',
@@ -225,47 +226,76 @@ class DocumentoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id): JsonResponse
     {
-        //
-    }
+        $userId = Auth::id();
 
-    public function updateLinhaDocumento(Request $request, $documentoId)
-    {
-        // Valida os dados de entrada
-        $request->validate([
-            'linhas.*.tipo_palete_id' => 'required|exists:tipo_paletes,id',
-            'linhas.*.quantidade' => 'required|integer|min:1',
-            'linhas.*.artigo_id' => 'required|exists:artigos,id',
+        // Validação dos dados recebidos
+        $data = $request->validate([
+            'documento' => 'required|array',
+            'documento.numero' => 'required|string',
+            'documento.data' => 'required|date',
+            'linhas' => 'required|array',
+            'linhas.*.id' => 'nullable|integer',
+            'linhas.*.tipo_palete' => 'required|integer',
+            'linhas.*.quantidade' => 'required|integer',
+            'linhas.*.artigo' => 'required|integer',
+            'linhas.*.observacao' => 'nullable|string'
         ]);
 
-        // Encontre as linhas relacionadas ao documento
-        $documento = Documento::findOrFail($documentoId);
-        $linhasExistentes = $documento->linha_documento;
+        $documento = Documento::find($id);
 
-        // Percorre as linhas recebidas da requisição
-        foreach ($request->linhas as $linhaData) {
-            // Encontra a linha correspondente no banco de dados
-            $linha = $linhasExistentes->where('tipo_palete_id', $linhaData['tipo_palete_id'])->first();
+        if (!$documento) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Documento não encontrado para atualização'
+            ]);
+        }
 
-            if ($linha) {
-                // Atualiza os campos da linha existente
-                $linha->update([
-                    'quantidade' => $linhaData['quantidade'],
-                    'artigo_id' => $linhaData['artigo_id'],
-                ]);
+        $documento->numero = $data['documento']['numero'];
+        $documento->data = $data['documento']['data'];
+        $documento->user_id = $userId;
+        $documento->save();
+
+        $linhasData = collect($data['linhas']);
+        $linhasIds = $linhasData->whereNotNull('id')->pluck('id')->toArray();
+
+        $documento->linha_documento()->whereNotIn('id', $linhasIds)->delete();
+
+        foreach ($data['linhas'] as $linhaData) {
+            if (isset($linhaData['id'])) {
+
+                $linha = LinhaDocumento::find($linhaData['id']);
+                if ($linha) {
+                    $linha->update([
+                        'observacao' => $linhaData['observacao'] ?? null,
+                        'user_id' => $userId
+                    ]);
+
+                    $linha->tipo_palete()->sync([
+                        $linhaData['tipo_palete'] => [
+                            'quantidade' => $linhaData['quantidade'],
+                            'artigo_id' => $linhaData['artigo']
+                        ]
+                    ]);
+                }
             } else {
-                // Se não encontrar a linha, cria uma nova (opcional)
-                $documento->linha_documento()->create([
-                    'tipo_palete_id' => $linhaData['tipo_palete_id'],
+
+                $novaLinha = $documento->linha_documento()->create([
+                    'observacao' => $linhaData['observacao'] ?? null,
+                    'user_id' => $userId
+                ]);
+
+                $novaLinha->tipo_palete()->attach($linhaData['tipo_palete'], [
                     'quantidade' => $linhaData['quantidade'],
-                    'artigo_id' => $linhaData['artigo_id'],
+                    'artigo_id' => $linhaData['artigo']
                 ]);
             }
         }
 
-        // Retorna uma resposta JSON para o frontend
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**

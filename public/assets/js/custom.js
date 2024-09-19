@@ -210,11 +210,9 @@ $(document).ready(function() {
 
                 $('#paleteFields').append(newRow);
 
-                // Carregar artigos para a nova linha adicionada
                 loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
             });
 
-            // Remover linha de palete
             $(document).on('click', '.remove-palete-row', function() {
                 $(this).closest('.palete-row').remove();
             });
@@ -311,14 +309,13 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Adiciona um listener de clique a todas as linhas com a classe "clickable-row"
+
     document.querySelectorAll('.clickable-row').forEach(row => {
         row.addEventListener('click', function () {
             const documentoId = this.getAttribute('data-id');
 
-            // Faz uma requisição AJAX para obter os dados do documento
             $.ajax({
-                url: '/documento/' + documentoId, // Verifique se o URL está correto
+                url: '/documento/' + documentoId,
                 method: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -344,21 +341,110 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function populateModal(data) {
-        // Preenche os campos do modal com os dados do documento
-    document.getElementById('modal-documento-numero').innerText = data.documento.numero;
-    document.getElementById('modal-documento-data').innerText = data.documento.data;
-        // Preencha outros campos conforme necessário
-        // ...
-        // Limpe e adicione as linhas ao modal
+    const clienteId = data.documento.cliente_id;
+
+    document.getElementById('modal-documento-numero').value = data.documento.numero;
+    document.getElementById('modal-documento-data').value = data.documento.data;
+    document.getElementById('modal-documento-id').value = data.documento.id;
+
+    $.ajax({
+        url: '/tipo-paletes',
+        method: 'GET',
+        success: function (tiposPalete) {
+
+            $.ajax({
+                url: `/artigos/${clienteId}`,
+                method: 'GET',
+                success: function (artigos) {
+                    preencherLinhasModal(data.linhas, tiposPalete, artigos);
+                },
+                error: function (error) {
+                    console.error('Erro ao buscar artigos:', error);
+                }
+            });
+        },
+        error: function (error) {
+            console.error('Erro ao buscar tipos de palete:', error);
+        }
+    });
+}
+
+function preencherLinhasModal(linhas, tiposPalete, artigos) {
     const linhaContainer = document.getElementById('modal-linhas');
-    linhaContainer.innerHTML = ''; // Limpa as linhas existentes
-    data.linhas.forEach(linha => {
+    linhaContainer.innerHTML = '';
+
+    linhas.forEach(linha => {
         const linhaElement = document.createElement('tr');
+
+        let tipoPaleteOptions = '';
+        tiposPalete.forEach(tipo => {
+            const selected = tipo.tipo === linha.tipo_palete ? 'selected' : '';
+            tipoPaleteOptions += `<option value="${tipo.id}" ${selected}>${tipo.tipo}</option>`;
+        });
+
+        let artigoOptions = '';
+        artigos.forEach(artigo => {
+            const selected = artigo.nome === linha.artigo ? 'selected' : '';
+            artigoOptions += `<option value="${artigo.id}" ${selected}>${artigo.nome}</option>`;
+        });
+
         linhaElement.innerHTML = `
-            <td>${linha.tipo_palete}</td>
-            <td>${linha.quantidade}</td>
-            <td>${linha.artigo}</td>
-            `;
+            <td>
+                <select>
+                    ${tipoPaleteOptions}
+                </select>
+            </td>
+            <td><input type="number" value="${linha.quantidade}" /></td>
+            <td>
+                <select>
+                    ${artigoOptions}
+                </select>
+            </td>
+        `;
+
         linhaContainer.appendChild(linhaElement);
+    });
+}
+
+function saveChanges() {
+    const documentoId = document.getElementById('modal-documento-id').value;
+
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    const documento = {
+        numero: document.getElementById('modal-documento-numero').value,
+        data: document.getElementById('modal-documento-data').value
+    };
+
+    const linhas = [];
+    document.querySelectorAll('#modal-linhas tr').forEach(row => {
+        const inputs = row.querySelectorAll('input, select');
+        linhas.push({
+            tipo_palete: inputs[0].value,
+            quantidade: inputs[1].value,
+            artigo: inputs[2].value
+        });
+    });
+
+    $.ajax({
+        url: `/documento/${documentoId}`,
+        method: 'PUT',
+        data: JSON.stringify({ documento, linhas }),
+        contentType: 'application/json',
+        success: function (response) {
+            if (response.success) {
+                alert('Dados salvos com sucesso!');
+                $('#documentoModal').modal('hide');
+            } else {
+                console.error('Erro ao salvar dados:', response.message);
+            }
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+            console.error('Erro ao salvar dados:', textStatus, errorThrown);
+        }
     });
 }

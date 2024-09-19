@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('linha_documento', function (Blueprint $table) {
             $table->id();
-            $table->string('observacao', 255);
+            $table->string('observacao', 255)->nullable();
             $table->float('valor')->nullable();
             $table->string('morada', 255)->nullable();
             $table->date('previsao')->nullable();

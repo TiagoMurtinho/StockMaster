@@ -6,12 +6,17 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Informações do Documento -->
-                <h6>{{ __('documento.numero') }} <span id="modal-documento-numero"></span></h6>
-                <h6>{{ __('documento.data') }} <span id="modal-documento-data"></span></h6>
-                <!-- Outros campos do documento -->
+                <input type="hidden" id="modal-documento-id" />
 
-                <!-- Tabela com linhas do documento -->
+                <div class="form-group">
+                    <label for="modal-documento-numero">Número</label>
+                    <input type="text" id="modal-documento-numero" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="modal-documento-data">Data</label>
+                    <input type="date" id="modal-documento-data" class="form-control" />
+                </div>
+
                 <table class="table">
                     <thead>
                     <tr>
@@ -21,15 +26,14 @@
                     </tr>
                     </thead>
                     <tbody id="modal-linhas">
-                    <!-- As linhas serão preenchidas via JavaScript -->
+
                     </tbody>
                 </table>
 
-                <!-- Adicionar campos editáveis se necessário -->
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.fechar') }}</button>
-                <button type="button" class="btn btn-primary">{{ __('documento.salvar_alteracoes') }}</button>
+                <button type="button" class="btn btn-primary" onclick="saveChanges()">{{ __('documento.salvar_alteracoes') }}</button>
             </div>
         </div>
     </div>

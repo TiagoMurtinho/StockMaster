@@ -40,6 +40,7 @@ Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());
 });
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
+Route::put('/documento/{id}', [DocumentoController::class, 'update']);
 
 
 require __DIR__.'/auth.php';
