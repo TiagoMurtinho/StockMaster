@@ -7,8 +7,8 @@
             </div>
             <div class="modal-body">
                 <!-- Informações do Documento -->
-                <h6>{{ __('documento.numero') }}: <span id="modal-documento-numero"></span></h6>
-                <h6>{{ __('documento.data') }}: <span id="modal-documento-data"></span></h6>
+                <h6>{{ __('documento.numero') }} <span id="modal-documento-numero"></span></h6>
+                <h6>{{ __('documento.data') }} <span id="modal-documento-data"></span></h6>
                 <!-- Outros campos do documento -->
 
                 <!-- Tabela com linhas do documento -->

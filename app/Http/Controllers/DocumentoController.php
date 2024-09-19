@@ -6,12 +6,14 @@ use App\Models\Armazem;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
+use App\Models\LinhaDocumento;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class DocumentoController extends Controller
 {
@@ -74,6 +76,62 @@ class DocumentoController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function storeLinhaDocumento(Request $request): JsonResponse
+    {
+
+        $validated = $request->validate([
+            'observacao' => 'required|string|max:255',
+            'valor' => 'nullable|numeric',
+            'morada' => 'nullable|string|max:255',
+            'previsao' => 'required|date',
+            'extra' => 'nullable|numeric',
+            'documento_id' => 'required|integer|exists:documento,id',
+            'linhas' => 'required|array',
+            'linhas.*.tipo_palete_id' => 'required|integer|exists:tipo_palete,id',
+            'linhas.*.quantidade' => 'required|integer|min:1',
+            'linhas.*.artigo_id' => 'required|integer|exists:artigo,id',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $validated['user_id'] = auth()->id();
+
+
+            $linhaDocumento = LinhaDocumento::create($validated);
+
+            foreach ($request->input('linhas') as $linha) {
+                $linhaDocumento->tipo_palete()->attach(
+                    $linha['tipo_palete_id'],
+                    [
+                        'quantidade' => $linha['quantidade'],
+                        'artigo_id' => $linha['artigo_id']
+                    ]
+                );
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Linha do documento criada com sucesso.',
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao criar a linha do documento: ' . $e->getMessage(),
+            ], 500);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro inesperado: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -172,6 +230,44 @@ class DocumentoController extends Controller
         //
     }
 
+    public function updateLinhaDocumento(Request $request, $documentoId)
+    {
+        // Valida os dados de entrada
+        $request->validate([
+            'linhas.*.tipo_palete_id' => 'required|exists:tipo_paletes,id',
+            'linhas.*.quantidade' => 'required|integer|min:1',
+            'linhas.*.artigo_id' => 'required|exists:artigos,id',
+        ]);
+
+        // Encontre as linhas relacionadas ao documento
+        $documento = Documento::findOrFail($documentoId);
+        $linhasExistentes = $documento->linha_documento;
+
+        // Percorre as linhas recebidas da requisição
+        foreach ($request->linhas as $linhaData) {
+            // Encontra a linha correspondente no banco de dados
+            $linha = $linhasExistentes->where('tipo_palete_id', $linhaData['tipo_palete_id'])->first();
+
+            if ($linha) {
+                // Atualiza os campos da linha existente
+                $linha->update([
+                    'quantidade' => $linhaData['quantidade'],
+                    'artigo_id' => $linhaData['artigo_id'],
+                ]);
+            } else {
+                // Se não encontrar a linha, cria uma nova (opcional)
+                $documento->linha_documento()->create([
+                    'tipo_palete_id' => $linhaData['tipo_palete_id'],
+                    'quantidade' => $linhaData['quantidade'],
+                    'artigo_id' => $linhaData['artigo_id'],
+                ]);
+            }
+        }
+
+        // Retorna uma resposta JSON para o frontend
+        return response()->json(['success' => true]);
+    }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -179,4 +275,12 @@ class DocumentoController extends Controller
     {
         //
     }
+
+    public function getArtigosPorCliente($clienteId): \Illuminate\Http\JsonResponse
+    {
+        $artigos = Artigo::where('cliente_id', $clienteId)->get();
+
+        return response()->json($artigos);
+    }
+
 }

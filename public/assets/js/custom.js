@@ -131,13 +131,13 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    // Função para carregar os artigos com base no cliente_id
+
     function loadArtigos(clienteId, selectElement) {
         $.ajax({
-            url: `/artigos/${clienteId}`, // Endpoint para obter os artigos
+            url: `/artigos/${clienteId}`,
             method: 'GET',
             success: function(response) {
-                // Verifique se a resposta é um array
+
                 if (Array.isArray(response)) {
                     const options = response.map(artigo =>
                         `<option value="${artigo.id}">${artigo.nome}</option>`
@@ -153,12 +153,11 @@ $(document).ready(function() {
         });
     }
 
-    // Quando o modalLinhaDocumento for mostrado
     $('#modalLinhaDocumento').on('show.bs.modal', function() {
         const clienteId = $(this).data('cliente-id');
 
         if (clienteId) {
-            // Carregar os tipos de paletes
+
             $.ajax({
                 url: '/tipo-paletes',
                 method: 'GET',
@@ -172,7 +171,6 @@ $(document).ready(function() {
 
                     tipoPaleteSelect.html(options);
 
-                    // Carregar artigos para cada linha de palete já existente
                     $('#paleteFields .palete-row').each(function() {
                         loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
                     });
@@ -182,7 +180,6 @@ $(document).ready(function() {
                 }
             });
 
-            // Adicionar nova linha de palete
             $('#addPaleteRow').off('click').on('click', function() {
                 const newRow = `
                     <div class="palete-row mb-3">
@@ -265,7 +262,7 @@ $('#modalForm').on('submit', function(e) {
         data: formData,
         success: function(response) {
             if (response.success) {
-                $('#rececaoModal' + response.documento_id).modal('hide');
+                $('#rececaoModal' + response.linha_id).modal('hide');
 
                 // Solicita o PDF
                 $.ajax({
@@ -364,5 +361,4 @@ function populateModal(data) {
             `;
         linhaContainer.appendChild(linhaElement);
     });
-
 }

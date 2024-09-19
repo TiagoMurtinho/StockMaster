@@ -30,15 +30,16 @@ Route::resource('tipo-palete', TipoPaleteController::class);
 Route::resource('cliente', ClienteController::class);
 Route::resource('armazem', ArmazemController::class);
 Route::resource('documento', DocumentoController::class)->except('show');
-Route::resource('linha-documento', LinhaDocumentoController::class);
+Route::post('linha-documento', [DocumentoController::class, 'storeLinhaDocumento']);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('artigo', ArtigoController::class);
 Route::resource('palete', PaleteController::class);
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
-Route::get('/artigos/{clienteId}', [LinhaDocumentoController::class, 'getArtigosPorCliente']);
+Route::get('/artigos/{clienteId}', [DocumentoController::class, 'getArtigosPorCliente']);
 Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());
 });
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
+
 
 require __DIR__.'/auth.php';
