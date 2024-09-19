@@ -339,6 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+    document.querySelectorAll('.no-click-propagation').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    });
 });
 
 function populateModal(data) {

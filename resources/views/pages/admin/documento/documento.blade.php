@@ -34,12 +34,11 @@
                                     <td class="align-middle text-center">{{ $documento->user->nome }}</td>
                                     <td class="text-center"> <!-- Célula para o botão -->
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
-                                           class="btn btn-secondary btn-sm">
+                                           class="btn btn-secondary btn-sm no-click-propagation">
                                             Gerar PDF
                                         </a>
                                     </td>
                                 </tr>
-
                             @endforeach
                             </tbody>
                         </table>
