@@ -262,9 +262,9 @@ $('#modalForm').on('submit', function(e) {
             if (response.success) {
                 $('#rececaoModal' + response.linha_id).modal('hide');
 
-                // Solicita o PDF
+                // Solicita o PDF usando a rota nomeada
                 $.ajax({
-                    url: '/gerar-pdf/' + response.documento_id,
+                    url: '/documento/' + response.documento_id + '/pdf',  // Usando a rota correta para o PDF
                     method: 'GET',
                     data: { paletes_criadas: response.paletes_criadas },
                     xhrFields: {
@@ -274,7 +274,7 @@ $('#modalForm').on('submit', function(e) {
                         var link = document.createElement('a');
                         var url = window.URL.createObjectURL(blob);
                         link.href = url;
-                        link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
+                        link.download = 'nota_recepcao_' + response.documento_id + '.pdf';  // Nome do arquivo PDF
                         document.body.appendChild(link);
                         link.click();
                         window.URL.revokeObjectURL(url);
