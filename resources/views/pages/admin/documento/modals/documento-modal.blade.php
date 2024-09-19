@@ -6,33 +6,52 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <input type="hidden" id="modal-documento-id" />
+                <!-- Campo oculto para o ID do Documento -->
+                <input type="hidden" class="modal-documento-id" />
 
-                <!-- Container para alinhar Número e Data lado a lado -->
+
+                <!-- Campo Observação como textarea -->
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="modal-documento-observacao">Observação</label>
+                        <textarea class="form-control modal-documento-observacao" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Campos Número e Data lado a lado -->
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="modal-documento-numero">Número</label>
-                            <input type="text" id="modal-documento-numero" class="form-control" />
+                            <input type="text" class="form-control modal-documento-numero" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="modal-documento-data">Data</label>
-                            <input type="date" id="modal-documento-data" class="form-control" />
+                            <input type="date" class="form-control modal-documento-data" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Campo de Observação -->
-                <div class="mb-3">
-                    <div class="form-group">
-                        <label for="modal-documento-observacao">Observação</label>
-                        <textarea id="modal-documento-observacao" class="form-control" rows="3"></textarea>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="modal-documento-previsao">Previsão</label>
+                            <input type="date" class="form-control modal-documento-previsao" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="modal-documento-valor">Taxa</label>
+                            <input type="number" step="0.01" min="0" class="form-control modal-documento-valor" />
+                        </div>
                     </div>
                 </div>
 
-                <!-- Tabela de Linhas -->
+
+
+                <!-- Tabela para Linhas -->
                 <table class="table">
                     <thead>
                     <tr>
@@ -41,9 +60,17 @@
                         <th>{{ __('documento.artigo') }}</th>
                     </tr>
                     </thead>
-                    <tbody id="modal-linhas">
+                    <tbody class="modal-linhas">
+                    <!-- As linhas serão preenchidas via JavaScript -->
                     </tbody>
                 </table>
+
+                <!-- Botão para adicionar nova linha de palete -->
+                <div class="mb-3">
+                    <button type="button" class="btn btn-success add-palete-row">
+                        Adicionar Tipo de Palete
+                    </button>
+                </div>
 
             </div>
             <div class="modal-footer">

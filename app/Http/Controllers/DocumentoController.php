@@ -236,11 +236,13 @@ class DocumentoController extends Controller
             'documento.numero' => 'required|string',
             'documento.data' => 'required|date',
             'linhas' => 'required|array',
-            'linhas.*.id' => 'nullable|integer',
-            'linhas.*.tipo_palete' => 'required|integer',
-            'linhas.*.quantidade' => 'required|integer',
-            'linhas.*.artigo' => 'required|integer',
-            'linhas.*.observacao' => 'nullable|string'
+            'linhas.*.id' => 'nullable|integer',  // ID da linha_documento
+            'linhas.*.observacao' => 'nullable|string|max:255',  // Observação da linha_documento
+            'linhas.*.previsao' => 'nullable|date',              // Previsão da linha_documento
+            'linhas.*.valor' => 'nullable|numeric',              // Valor da linha_documento
+            'linhas.*.tipo_palete' => 'required|integer',        // Dados da pivot
+            'linhas.*.quantidade' => 'required|integer',         // Dados da pivot
+            'linhas.*.artigo' => 'required|integer'              // Dados da pivot
         ]);
 
         $documento = Documento::find($id);
@@ -252,6 +254,7 @@ class DocumentoController extends Controller
             ]);
         }
 
+        // Atualizar os campos principais do documento
         $documento->numero = $data['documento']['numero'];
         $documento->data = $data['documento']['data'];
         $documento->user_id = $userId;
@@ -260,18 +263,22 @@ class DocumentoController extends Controller
         $linhasData = collect($data['linhas']);
         $linhasIds = $linhasData->whereNotNull('id')->pluck('id')->toArray();
 
+        // Excluir linhas que não estão mais no formulário
         $documento->linha_documento()->whereNotIn('id', $linhasIds)->delete();
 
         foreach ($data['linhas'] as $linhaData) {
             if (isset($linhaData['id'])) {
-
+                // Atualizar uma linha existente
                 $linha = LinhaDocumento::find($linhaData['id']);
                 if ($linha) {
-                    $linha->update([
-                        'observacao' => $linhaData['observacao'] ?? null,
-                        'user_id' => $userId
-                    ]);
+                    // Atualizar os campos da linha diretamente
+                    $linha->observacao = $linhaData['observacao'] ?? $linha->observacao;
+                    $linha->previsao = $linhaData['previsao'] ?? $linha->previsao;
+                    $linha->valor = $linhaData['valor'] ?? $linha->valor;
+                    $linha->user_id = $userId;
+                    $linha->save();  // Salvar a linha atualizada
 
+                    // Atualizar a relação tipo_palete na tabela pivot
                     $linha->tipo_palete()->sync([
                         $linhaData['tipo_palete'] => [
                             'quantidade' => $linhaData['quantidade'],
@@ -280,12 +287,15 @@ class DocumentoController extends Controller
                     ]);
                 }
             } else {
-
+                // Criar uma nova linha
                 $novaLinha = $documento->linha_documento()->create([
                     'observacao' => $linhaData['observacao'] ?? null,
+                    'previsao' => $linhaData['previsao'] ?? null,
+                    'valor' => $linhaData['valor'] ?? null,
                     'user_id' => $userId
                 ]);
 
+                // Sincronizar a nova linha com tipo_palete na tabela pivot
                 $novaLinha->tipo_palete()->attach($linhaData['tipo_palete'], [
                     'quantidade' => $linhaData['quantidade'],
                     'artigo_id' => $linhaData['artigo']

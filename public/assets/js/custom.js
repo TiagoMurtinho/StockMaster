@@ -341,11 +341,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function populateModal(data) {
+
     const clienteId = data.documento.cliente_id;
 
-    document.getElementById('modal-documento-numero').value = data.documento.numero;
-    document.getElementById('modal-documento-data').value = data.documento.data;
-    document.getElementById('modal-documento-id').value = data.documento.id;
+    document.querySelector('.modal-documento-numero').value = data.documento.numero || '';
+    document.querySelector('.modal-documento-data').value = data.documento.data || '';
+    document.querySelector('.modal-documento-id').value = data.documento.id || '';
+    document.querySelector('.modal-documento-observacao').value = data.documento.linha_documento[0].observacao
+    document.querySelector('.modal-documento-previsao').value = data.documento.linha_documento[0].previsao
+    document.querySelector('.modal-documento-valor').value = data.documento.linha_documento[0].valor
 
     $.ajax({
         url: '/tipo-paletes',
@@ -370,7 +374,7 @@ function populateModal(data) {
 }
 
 function preencherLinhasModal(linhas, tiposPalete, artigos) {
-    const linhaContainer = document.getElementById('modal-linhas');
+    const linhaContainer = document.querySelector('.modal-linhas');
     linhaContainer.innerHTML = '';
 
     linhas.forEach(linha => {
@@ -379,13 +383,13 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
 
         let tipoPaleteOptions = '';
         tiposPalete.forEach(tipo => {
-            const selected = tipo.tipo === linha.tipo_palete ? 'selected' : '';
+            const selected = tipo.id === linha.tipo_palete_id ? 'selected' : '';
             tipoPaleteOptions += `<option value="${tipo.id}" ${selected}>${tipo.tipo}</option>`;
         });
 
         let artigoOptions = '';
         artigos.forEach(artigo => {
-            const selected = artigo.nome === linha.artigo ? 'selected' : '';
+            const selected = artigo.id === linha.artigo_id ? 'selected' : '';
             artigoOptions += `<option value="${artigo.id}" ${selected}>${artigo.nome}</option>`;
         });
 
@@ -415,34 +419,75 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
 }
 
 function configurarRemocao() {
-
-    $(document).off('click', '.remove-palete-row').on('click', '.remove-palete-row', function() {
-        $(this).closest('.palete-row').remove();
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.classList.contains('remove-palete-row')) {
+            event.target.closest('.palete-row').remove();
+        }
     });
 }
 
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.classList.contains('add-palete-row')) {
+        adicionarNovaLinha();
+    }
+});
+
+function adicionarNovaLinha() {
+    // Lógica para adicionar uma nova linha de palete
+    const linhaContainer = document.querySelector('.modal-linhas');
+    const novaLinha = `
+        <tr class="palete-row">
+            <td>
+                <select class="form-select">
+                    <!-- Options serão preenchidas via JavaScript -->
+                </select>
+            </td>
+            <td><input class="form-control" type="number" /></td>
+            <td>
+                <select class="form-select">
+                    <!-- Options serão preenchidas via JavaScript -->
+                </select>
+            </td>
+            <td class="col-md-1 d-flex align-items-end">
+                <a type="button" class="remove-palete-row">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </td>
+        </tr>
+    `;
+    linhaContainer.insertAdjacentHTML('beforeend', novaLinha);
+}
+
 function saveChanges() {
-    const documentoId = document.getElementById('modal-documento-id').value;
+    const documentoId = document.querySelector('.modal-documento-id').value;
 
     $.ajaxSetup({
         headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         }
     });
 
+    // Obter os valores dos campos principais
     const documento = {
-        numero: document.getElementById('modal-documento-numero').value,
-        data: document.getElementById('modal-documento-data').value
+        numero: document.querySelector('.modal-documento-numero').value,
+        data: document.querySelector('.modal-documento-data').value,
     };
 
+    // Obter os valores das linhas
     const linhas = [];
-    document.querySelectorAll('#modal-linhas tr').forEach(row => {
-        const inputs = row.querySelectorAll('input, select');
-        linhas.push({
+    document.querySelectorAll('.modal-linhas tr').forEach(row => {
+        const inputs = row.querySelectorAll('input, select, textarea');
+
+        const linhaData = {
+            observacao: document.querySelector('.modal-documento-observacao').value,
+            previsao: document.querySelector('.modal-documento-previsao').value,
+            valor: document.querySelector('.modal-documento-valor').value,
             tipo_palete: inputs[0].value,
             quantidade: inputs[1].value,
             artigo: inputs[2].value
-        });
+        };
+
+        linhas.push(linhaData);
     });
 
     $.ajax({
@@ -452,7 +497,6 @@ function saveChanges() {
         contentType: 'application/json',
         success: function (response) {
             if (response.success) {
-                alert('Dados salvos com sucesso!');
                 $('#documentoModal').modal('hide');
             } else {
                 console.error('Erro ao salvar dados:', response.message);
