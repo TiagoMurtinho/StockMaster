@@ -340,39 +340,44 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function populateModal(data) {
+window.tiposPalete = [];
+window.artigos = [];
 
+function populateModal(data) {
     const clienteId = data.documento.cliente_id;
 
     document.querySelector('.modal-documento-numero').value = data.documento.numero || '';
     document.querySelector('.modal-documento-data').value = data.documento.data || '';
     document.querySelector('.modal-documento-id').value = data.documento.id || '';
-    document.querySelector('.modal-documento-observacao').value = data.documento.linha_documento[0].observacao
-    document.querySelector('.modal-documento-previsao').value = data.documento.linha_documento[0].previsao
-    document.querySelector('.modal-documento-valor').value = data.documento.linha_documento[0].valor
+    document.querySelector('.modal-documento-observacao').value = data.documento.linha_documento[0].observacao || '';
+    document.querySelector('.modal-documento-previsao').value = data.documento.linha_documento[0].previsao || '';
+    document.querySelector('.modal-documento-valor').value = data.documento.linha_documento[0].valor || '';
 
+    // Carregar tipos de palete
     $.ajax({
         url: '/tipo-paletes',
         method: 'GET',
-        success: function (tiposPalete) {
+        success: function(tiposPaleteResponse) {
+            window.tiposPalete = tiposPaleteResponse; // Armazenar tipos de palete globalmente
 
+            // Carregar artigos
             $.ajax({
                 url: `/artigos/${clienteId}`,
                 method: 'GET',
-                success: function (artigos) {
-                    preencherLinhasModal(data.linhas, tiposPalete, artigos);
+                success: function(artigosResponse) {
+                    window.artigos = artigosResponse; // Armazenar artigos globalmente
+                    preencherLinhasModal(data.linhas, window.tiposPalete, window.artigos);
                 },
-                error: function (error) {
+                error: function(error) {
                     console.error('Erro ao buscar artigos:', error);
                 }
             });
         },
-        error: function (error) {
+        error: function(error) {
             console.error('Erro ao buscar tipos de palete:', error);
         }
     });
 }
-
 function preencherLinhasModal(linhas, tiposPalete, artigos) {
     const linhaContainer = document.querySelector('.modal-linhas');
     linhaContainer.innerHTML = '';
@@ -415,16 +420,13 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
         linhaContainer.appendChild(linhaElement);
     });
 
-    configurarRemocao();
 }
 
-function configurarRemocao() {
-    document.addEventListener('click', function(event) {
-        if (event.target && event.target.classList.contains('remove-palete-row')) {
-            event.target.closest('.palete-row').remove();
-        }
-    });
-}
+document.querySelector('.modal-linhas').addEventListener('click', function(event) {
+    if (event.target && event.target.closest('.remove-palete-row')) {
+        event.target.closest('.palete-row').remove();
+    }
+});
 
 document.addEventListener('click', function(event) {
     if (event.target && event.target.classList.contains('add-palete-row')) {
@@ -433,19 +435,30 @@ document.addEventListener('click', function(event) {
 });
 
 function adicionarNovaLinha() {
-    // Lógica para adicionar uma nova linha de palete
+    // Crie as opções para os selects
+    let tipoPaleteOptions = '';
+    window.tiposPalete.forEach(tipo => {
+        tipoPaleteOptions += `<option value="${tipo.id}">${tipo.tipo}</option>`;
+    });
+
+    let artigoOptions = '';
+    window.artigos.forEach(artigo => {
+        artigoOptions += `<option value="${artigo.id}">${artigo.nome}</option>`;
+    });
+
+    // Crie uma nova linha com as opções preenchidas
     const linhaContainer = document.querySelector('.modal-linhas');
     const novaLinha = `
         <tr class="palete-row">
             <td>
                 <select class="form-select">
-                    <!-- Options serão preenchidas via JavaScript -->
+                    ${tipoPaleteOptions}
                 </select>
             </td>
             <td><input class="form-control" type="number" /></td>
             <td>
                 <select class="form-select">
-                    <!-- Options serão preenchidas via JavaScript -->
+                    ${artigoOptions}
                 </select>
             </td>
             <td class="col-md-1 d-flex align-items-end">
@@ -456,6 +469,7 @@ function adicionarNovaLinha() {
         </tr>
     `;
     linhaContainer.insertAdjacentHTML('beforeend', novaLinha);
+
 }
 
 function saveChanges() {
