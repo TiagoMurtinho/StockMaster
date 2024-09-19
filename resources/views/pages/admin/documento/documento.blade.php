@@ -7,7 +7,7 @@
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('documento.documentos') }}</h5>
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
-                            data-bs-target="#modalDocumento">
+                            data-bs-target="#modalAddDocumento">
                         Novo Documento
                     </button>
                 </div>

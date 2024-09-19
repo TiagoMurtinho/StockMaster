@@ -265,7 +265,7 @@ $('#modalForm').on('submit', function(e) {
         data: formData,
         success: function(response) {
             if (response.success) {
-                $('#modalForm').modal('hide');
+                $('#rececaoModal' + response.documento_id).modal('hide');
 
                 // Solicita o PDF
                 $.ajax({
@@ -286,6 +286,7 @@ $('#modalForm').on('submit', function(e) {
                         document.body.removeChild(link);
                     },
                     error: function(xhr) {
+                        console.log(xhr);
                         console.error(xhr.responseText);
                         alert('Erro ao gerar o PDF.');
                     }
@@ -325,6 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataType: 'json',
                 success: function (data) {
                     if (data.success) {
+                        console.log(data)
                         populateModal(data);
                         $('#documentoModal').modal('show');
                     } else {

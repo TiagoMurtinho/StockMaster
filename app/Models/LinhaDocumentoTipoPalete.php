@@ -15,7 +15,9 @@ class LinhaDocumentoTipoPalete extends Model
         'linha_documento_id',
         'tipo_palete_id',
         'artigo_id',
+        'armazem_id',
         'quantidade',
+        'localizacao'
     ];
 
     public function linha_documento()
@@ -31,5 +33,10 @@ class LinhaDocumentoTipoPalete extends Model
     public function artigo()
     {
         return $this->belongsTo(Artigo::class);
+    }
+
+    public function armazem()
+    {
+        return $this->belongsTo(Armazem::class);
     }
 }

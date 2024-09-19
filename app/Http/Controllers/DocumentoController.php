@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
-use App\Models\LinhaDocumento;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
 use Barryvdh\DomPDF\Facade\Pdf;
