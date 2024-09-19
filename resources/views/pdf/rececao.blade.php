@@ -32,10 +32,10 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>Nota de Recepção</h1>
-        <p><strong>Número do Documento:</strong> {{ $documento->numero }}</p>
-        <p><strong>Cliente:</strong> {{ $cliente->nome }}</p>
-        <p><strong>Data:</strong> {{ \Carbon\Carbon::parse($documento->data)->format('d/m/Y') }}</p>
+        <h1>Documento: {{ $documento->tipo_documento->nome }}</h1>
+        <p>Numero Documento: {{$documento->numero}}</p>
+        <p>Cliente: {{$documento->cliente->nome}}</p>
+        <p>Data: {{ $documento->data }}</p>
     </div>
 
     <div class="details">
@@ -52,13 +52,27 @@
             </thead>
             <tbody>
             @foreach($documento->linha_documento as $linha)
-                @foreach($linha->palete as $palete)
+                @foreach($linha->tipo_palete as $tipoPalete)
                     <tr>
-                        <td>{{ $palete->tipo_palete->tipo ?? 'N/A' }}</td>
-                        <td>{{ $palete->localizacao }}</td>
-                        <td>{{ $palete->artigo->nome ?? 'N/A' }}</td>
-                        <td>{{ $palete->data_entrada ?? 'N/A' }}</td>
-                        <td>{{ $palete->armazem->nome ?? 'N/A' }}</td>
+                        <td>{{ $tipoPalete->tipo }}</td>
+                        <td>{{ $tipoPalete->pivot->localizacao }}</td>
+                        <td>
+                            @php
+                                $artigoId = $tipoPalete->pivot->artigo_id;
+                            @endphp
+                            @if($artigoId && isset($artigos[$artigoId]))
+                                {{ $artigos[$artigoId]->nome }}
+                            @endif
+                        </td>
+                        <td>{{ $linha->data_entrada}}</td>
+                        <td>
+                            @php
+                                $armazemId = $tipoPalete->pivot->armazem_id;
+                            @endphp
+                            @if($armazemId && isset($armazens[$armazemId]))
+                                {{ $armazens[$armazemId]->nome }}
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
             @endforeach

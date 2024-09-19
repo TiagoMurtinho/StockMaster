@@ -34,7 +34,6 @@ Route::resource('linha-documento', LinhaDocumentoController::class);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('artigo', ArtigoController::class);
 Route::resource('palete', PaleteController::class);
-Route::get('/gerar-pdf/{documentoId}', [PaleteController::class, 'gerarPDF']);
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
 Route::get('/artigos/{clienteId}', [LinhaDocumentoController::class, 'getArtigosPorCliente']);
 Route::get('tipo-paletes', function() {

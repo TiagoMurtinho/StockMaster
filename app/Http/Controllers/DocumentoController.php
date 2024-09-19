@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Armazem;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
@@ -79,19 +80,44 @@ class DocumentoController extends Controller
 
     public function gerarPDF($id): Response
     {
-
+        // Carrega o documento com suas relações
         $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);
 
+        // Definir o nome do arquivo PDF
         $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
 
-        $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
-            return $linha->tipo_palete->pluck('pivot.artigo_id');
-        });
+        // Condicional baseado no tipo_documento_id
+        if ($documento->tipo_documento_id == 1) {
 
-        $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.artigo_id');
+            });
 
-        $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
+            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
 
+            // Gera o PDF para o tipo_documento_id = 1
+            $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
+        } elseif ($documento->tipo_documento_id == 2) {
+
+            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.artigo_id');
+            });
+
+            $armazemIds = $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.armazem_id');
+            });
+
+            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+            $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
+
+            $pdf = Pdf::loadView('pdf.rececao', compact('documento', 'artigos', 'armazens'));
+
+        } else {
+            // Caso queira tratar outros tipos de documentos ou exibir um erro
+            abort(404, 'Tipo de documento não suportado');
+        }
+
+        // Retorna o download do PDF gerado
         return $pdf->download($nomeArquivo);
     }
 

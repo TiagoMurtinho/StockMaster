@@ -66,8 +66,6 @@
                             @endphp
                             @if($artigoId && isset($artigos[$artigoId]))
                                 {{ $artigos[$artigoId]->nome }}
-                            @else
-                                {{dd($documento->linha_documento, $artigoId, $artigos)}}
                             @endif
                         </td>
                     </tr>

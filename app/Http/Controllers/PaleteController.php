@@ -133,52 +133,6 @@ class PaleteController extends Controller
         }
     }
 
-    public function gerarPDF($documentoId, Request $request)
-    {
-        try {
-            $paletesIds = $request->input('paletes_criadas', []);
-
-            // Filtra apenas as paletes criadas
-            $paletes = Palete::with([
-                'linha_documento' => function ($query) {
-                    $query->with('documento');
-                },
-                'linha_documento.documento',
-                'tipo_palete',
-                'artigo',
-                'armazem',
-            ])->whereIn('id', $paletesIds)->get();
-
-            if ($paletes->isEmpty()) {
-                throw new \Exception('Nenhuma palete encontrada.');
-            }
-
-            $documento = $paletes->first()->linha_documento->documento;
-            $cliente = $documento->cliente;
-
-            if (!$cliente) {
-                throw new \Exception('Cliente não encontrado.');
-            }
-
-            $data = [
-                'documento' => $documento,
-                'cliente' => $cliente,
-                'palete' => $paletes,
-            ];
-
-            $pdf = PDF::loadView('pdf.rececao', $data);
-
-            return $pdf->download('nota_recepcao_' . $documento->numero . '.pdf');
-
-        } catch (\Exception $e) {
-            Log::error('Erro ao gerar PDF: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao gerar o PDF: ' . $e->getMessage(),
-            ], 500);
-        }
-    }
-
     /**
      * Display the specified resource.
      */
