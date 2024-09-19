@@ -8,15 +8,31 @@
             <div class="modal-body">
                 <input type="hidden" id="modal-documento-id" />
 
-                <div class="form-group">
-                    <label for="modal-documento-numero">Número</label>
-                    <input type="text" id="modal-documento-numero" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label for="modal-documento-data">Data</label>
-                    <input type="date" id="modal-documento-data" class="form-control" />
+                <!-- Container para alinhar Número e Data lado a lado -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="modal-documento-numero">Número</label>
+                            <input type="text" id="modal-documento-numero" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="modal-documento-data">Data</label>
+                            <input type="date" id="modal-documento-data" class="form-control" />
+                        </div>
+                    </div>
                 </div>
 
+                <!-- Campo de Observação -->
+                <div class="mb-3">
+                    <div class="form-group">
+                        <label for="modal-documento-observacao">Observação</label>
+                        <textarea id="modal-documento-observacao" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!-- Tabela de Linhas -->
                 <table class="table">
                     <thead>
                     <tr>
@@ -26,7 +42,6 @@
                     </tr>
                     </thead>
                     <tbody id="modal-linhas">
-
                     </tbody>
                 </table>
 

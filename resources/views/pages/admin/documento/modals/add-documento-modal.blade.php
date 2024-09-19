@@ -31,7 +31,7 @@
 
                     <div class="mb-3">
                         <label for="numero" class="form-label">{{__('documento.add_numero')}}</label>
-                        <input type="text" class="form-control" id="numero" name="numero" required>
+                        <input type="number" class="form-control" id="numero" name="numero" required>
                     </div>
 
                     <div class="mb-3" id="dataField">

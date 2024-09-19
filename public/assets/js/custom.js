@@ -375,6 +375,7 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
 
     linhas.forEach(linha => {
         const linhaElement = document.createElement('tr');
+        linhaElement.classList.add('palete-row');
 
         let tipoPaleteOptions = '';
         tiposPalete.forEach(tipo => {
@@ -390,19 +391,33 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
 
         linhaElement.innerHTML = `
             <td>
-                <select>
+                <select class="form-select">
                     ${tipoPaleteOptions}
                 </select>
             </td>
-            <td><input type="number" value="${linha.quantidade}" /></td>
+            <td><input class="form-control" type="number" value="${linha.quantidade}" /></td>
             <td>
-                <select>
+                <select class="form-select">
                     ${artigoOptions}
                 </select>
+            </td>
+            <td class="col-md-1 d-flex align-items-end">
+                <a type="button" class="remove-palete-row">
+                    <i class="bi bi-trash"></i>
+                </a>
             </td>
         `;
 
         linhaContainer.appendChild(linhaElement);
+    });
+
+    configurarRemocao();
+}
+
+function configurarRemocao() {
+
+    $(document).off('click', '.remove-palete-row').on('click', '.remove-palete-row', function() {
+        $(this).closest('.palete-row').remove();
     });
 }
 
