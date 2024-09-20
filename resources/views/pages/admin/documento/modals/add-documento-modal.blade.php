@@ -34,11 +34,6 @@
                         <input type="number" class="form-control" id="numero" name="numero" required>
                     </div>
 
-                    <div class="mb-3" id="dataField">
-                        <label for="data" class="form-label">{{__('documento.add_data')}}</label>
-                        <input type="date" class="form-control" id="data" name="data" required>
-                    </div>
-
                     <div id="camposOcultos">
                         <div class="mb-3">
                             <label for="matricula" class="form-label">{{__('documento.add_matricula')}}</label>

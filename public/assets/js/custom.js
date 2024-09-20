@@ -50,7 +50,6 @@ $(document).ready(function() {
         var tipoDocumentoId = $('#tipo_documento').val();
         var clienteId = $('#cliente').val();
         var numero = $('#numero').val();
-        var data = $('#data').val();
         var matricula = $('#matricula').val();
         var morada = $('#morada').val();
         var total = $('#total').val();
@@ -63,7 +62,6 @@ $(document).ready(function() {
                 tipo_documento_id: tipoDocumentoId,
                 cliente_id: clienteId,
                 numero: numero,
-                data: data,
                 matricula: matricula,
                 morada: morada,
                 total: total,
@@ -82,7 +80,7 @@ $(document).ready(function() {
 
     $('#criarDocumentoBtn').click(function() {
         var observacao = $('#observacao').val();
-        var valor = $('#valor').val();
+        var taxaId = $('#taxa_id').val();
         var previsao = $('#previsao').val();
 
         var tipoPaleteIds = [];
@@ -115,7 +113,7 @@ $(document).ready(function() {
                 _token: $('meta[name="csrf-token"]').attr('content'),
                 documento_id: documentoId,
                 observacao: observacao,
-                valor: valor,
+                taxa_id: taxaId,
                 previsao: previsao,
                 linhas: linhasData
             },

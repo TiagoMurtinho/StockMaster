@@ -7,6 +7,7 @@ use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
 use App\Models\LinhaDocumento;
+use App\Models\Taxa;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -28,7 +29,8 @@ class DocumentoController extends Controller
         $tiposDocumento = TipoDocumento::where('id', 1)->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
-        return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes'));
+        $taxas = Taxa::all();
+        return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'taxas'));
     }
 
     /**
@@ -38,8 +40,9 @@ class DocumentoController extends Controller
     {
         $tiposDocumentos = TipoDocumento::all();
         $clientes = Cliente::all();
+        $taxas = Taxa::all();
 
-        return view('pages.documento.documento', compact('tiposDocumentos', 'clientes'));
+        return view('pages.documento.documento', compact('tiposDocumentos', 'clientes', 'taxas'));
     }
 
     /**
@@ -50,7 +53,6 @@ class DocumentoController extends Controller
         try {
             $validated = $request->validate([
                 'numero' => 'required|numeric',
-                'data' => 'required|date',
                 'matricula' => 'nullable|string|max:45',
                 'morada' => 'nullable|string|max:255',
                 'hora_carga' => 'nullable|date_format:H:i',
@@ -61,6 +63,7 @@ class DocumentoController extends Controller
             ]);
 
             $validated['user_id'] = auth()->id();
+            $validated['data'] = now();
 
             $documento = Documento::create($validated);
 
@@ -86,10 +89,10 @@ class DocumentoController extends Controller
 
         $validated = $request->validate([
             'observacao' => 'nullable|string|max:255',
-            'valor' => 'nullable|numeric',
             'morada' => 'nullable|string|max:255',
             'previsao' => 'required|date',
             'extra' => 'nullable|numeric',
+            'taxa_id' => 'required|integer|exists:taxa,id',
             'documento_id' => 'required|integer|exists:documento,id',
             'linhas' => 'required|array',
             'linhas.*.tipo_palete_id' => 'required|integer|exists:tipo_palete,id',

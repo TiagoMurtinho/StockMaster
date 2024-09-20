@@ -21,44 +21,48 @@
                             <input type="date" class="form-control" id="previsao" name="previsao" required>
                         </div>
                         <div class="col-md-6 mb-3" id="taxaField">
-                            <label for="valor" class="form-label">{{__('documento.taxa')}}</label>
-                            <input type="number" step="0.01" min="0" class="form-control" id="valor" name="valor">
+                            <label for="taxa_id" class="form-label">{{__('documento.taxa')}}</label>
+                            <select class="form-select" id="taxa_id" name="taxa_id">
+                                <option value="">{{ __('Selecione uma taxa') }}</option>
+                                @foreach($taxas as $taxa)
+                                    <option value="{{ $taxa->id }}">{{ $taxa->nome }} - {{ $taxa->valor }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
-                    <!-- Linha de Palete (com Tipo Palete, Quantidade e Artigo em uma linha) -->
-                    <div id="paleteFields">
-                        <div class="palete-row mb-3">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <label for="tipo_palete_id" class="form-label">{{__('documento.tipo_palete')}}</label>
-                                    <select name="tipo_palete_id[]" class="form-select" required>
-                                        @foreach($tipoPaletes as $tipoPalete)
-                                            <option value="{{ $tipoPalete->id }}">{{ $tipoPalete->tipo }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="quantidade" class="form-label">{{__('documento.quantidade')}}</label>
-                                    <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="artigo_id" class="form-label">{{ __('documento.artigo') }}</label>
-                                    <select name="artigo_id[]" class="form-select" required>
-                                        <option value="">{{ __('Selecione um Artigo') }}</option>
-                                        <!-- As opções dos artigos serão carregadas via JavaScript -->
-                                    </select>
-                                </div>
-                                <div class="col-md-1 d-flex align-items-end">
-                                    <a type="button" class="remove-palete-row">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                    <div class="scrollable-palete-area">
+                        <div id="paleteFields">
+                            <div class="palete-row mb-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="tipo_palete_id" class="form-label">{{__('documento.tipo_palete')}}</label>
+                                        <select name="tipo_palete_id[]" class="form-select" required>
+                                            @foreach($tipoPaletes as $tipoPalete)
+                                                <option value="{{ $tipoPalete->id }}">{{ $tipoPalete->tipo }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="quantidade" class="form-label">{{__('documento.quantidade')}}</label>
+                                        <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="artigo_id" class="form-label">{{ __('documento.artigo') }}</label>
+                                        <select name="artigo_id[]" class="form-select" required>
+                                            <option value="">{{ __('Selecione um Artigo') }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1 d-flex align-items-end">
+                                        <a type="button" class="remove-palete-row">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Botão para adicionar nova linha de palete -->
                     <div class="mb-3">
                         <button type="button" id="addPaleteRow" class="btn btn-success">{{__('documento.adicionar_tipo_palete')}}</button>
                     </div>
@@ -72,6 +76,3 @@
         </div>
     </div>
 </div>
-
-<!-- Select para tipo de palete escondido -->
-<select id="tipoPaleteSelect" class="form-select d-none"></select>

@@ -19,12 +19,12 @@ class LinhaDocumento extends Model
     protected $fillable = [
         'observacao',
         'localizacao',
-        'valor',
         'morada',
         'previsao',
         'data_entrada',
         'data_saida',
         'extra',
+        'taxa_id',
         'armazem_id',
         'documento_id',
         'artigo_id',

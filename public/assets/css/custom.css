@@ -32,6 +32,13 @@
     margin-right: auto;
 }
 
+.scrollable-palete-area {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 10px;
+}
+
 @media (max-width: 1000px) {
     .modal-lg {
         width: 90%;
