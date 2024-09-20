@@ -33,6 +33,11 @@
                 </a>
             </li>
             <li>
+                <a href="{{route('taxa.index')}}">
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.taxas')}}</span>
+                </a>
+            </li>
+            <li>
                 <a href="{{ route('documento.index') }}">
                     <i class="bi bi-circle"></i><span>{{ __('sidebar.documentos') }}</span>
                 </a>

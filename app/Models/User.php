@@ -92,4 +92,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(TipoPalete::class, 'user_id');
     }
+
+    public function taxa(): HasMany
+    {
+        return $this->hasMany(Taxa::class, 'user_id');
+    }
 }

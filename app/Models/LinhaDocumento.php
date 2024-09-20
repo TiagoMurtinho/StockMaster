@@ -53,6 +53,11 @@ class LinhaDocumento extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function taxa(): BelongsTo
+    {
+        return $this->belongsTo(Taxa::class, 'taxa_id');
+    }
+
     public function palete(): HasMany
     {
         return $this->hasMany(Palete::class, 'linha_documento_id');

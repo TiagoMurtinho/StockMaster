@@ -8,6 +8,7 @@ use App\Http\Controllers\LinhaDocumentoController;
 use App\Http\Controllers\PaleteController;
 use App\Http\Controllers\PedidoEntregaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TaxaController;
 use App\Http\Controllers\TipoPaleteController;
 use App\Models\TipoPalete;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,7 @@ Route::post('linha-documento', [DocumentoController::class, 'storeLinhaDocumento
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('artigo', ArtigoController::class);
 Route::resource('palete', PaleteController::class);
+Route::resource('taxa', TaxaController::class);
 Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
 Route::get('/artigos/{clienteId}', [DocumentoController::class, 'getArtigosPorCliente']);
 Route::get('tipo-paletes', function() {

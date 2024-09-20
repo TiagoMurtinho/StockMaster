@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('linha_documento', function (Blueprint $table) {
             $table->id();
             $table->string('observacao', 255)->nullable();
-            $table->float('valor')->nullable();
             $table->string('morada', 255)->nullable();
             $table->date('previsao')->nullable();
             $table->dateTime('data_entrada')->nullable();
@@ -22,6 +21,7 @@ return new class extends Migration
             $table->float('extra')->nullable();
             $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('taxa_id')->constrained('taxa', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
