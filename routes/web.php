@@ -10,6 +10,7 @@ use App\Http\Controllers\PedidoEntregaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaxaController;
 use App\Http\Controllers\TipoPaleteController;
+use App\Models\Taxa;
 use App\Models\TipoPalete;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,9 @@ Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->nam
 Route::get('/artigos/{clienteId}', [DocumentoController::class, 'getArtigosPorCliente']);
 Route::get('tipo-paletes', function() {
     return response()->json(TipoPalete::all());
+});
+Route::get('taxas', function() {
+    return response()->json(Taxa::all());
 });
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
 Route::put('/documento/{id}', [DocumentoController::class, 'update']);

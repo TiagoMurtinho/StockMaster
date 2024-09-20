@@ -9,6 +9,8 @@
                 <!-- Campo oculto para o ID do Documento -->
                 <input type="hidden" class="modal-documento-id" />
 
+                <input type="hidden" class="modal-linha-id" />
+
 
                 <!-- Campo Observação como textarea -->
                 <div class="mb-3">
@@ -44,7 +46,9 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="modal-documento-valor">Taxa</label>
-                            <input type="number" step="0.01" min="0" class="form-control modal-documento-valor" />
+                            <select class="form-select modal-documento-valor" id="taxaSelect">
+                                <option value="">Selecione uma taxa</option>
+                            </select>
                         </div>
                     </div>
                 </div>

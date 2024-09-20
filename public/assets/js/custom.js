@@ -347,23 +347,51 @@ function populateModal(data) {
     document.querySelector('.modal-documento-numero').value = data.documento.numero || '';
     document.querySelector('.modal-documento-data').value = data.documento.data || '';
     document.querySelector('.modal-documento-id').value = data.documento.id || '';
-    document.querySelector('.modal-documento-observacao').value = data.documento.linha_documento[0].observacao || '';
-    document.querySelector('.modal-documento-previsao').value = data.documento.linha_documento[0].previsao || '';
-    document.querySelector('.modal-documento-valor').value = data.documento.linha_documento[0].valor || '';
+
+    const primeiraLinha = data.documento.linha_documento[0] || {};
+    document.querySelector('.modal-documento-observacao').value = primeiraLinha.observacao || '';
+    document.querySelector('.modal-documento-previsao').value = primeiraLinha.previsao || '';
+    document.querySelector('.modal-documento-valor').value = primeiraLinha.taxa_id || '';
+
+    document.querySelector('.modal-linha-id').value = primeiraLinha.id || '';
+
+    // Carregar taxas
+    $.ajax({
+        url: '/taxas',
+        method: 'GET',
+        success: function(taxas) {
+            const taxaSelect = document.querySelector('#taxaSelect');
+            taxaSelect.innerHTML = '<option value="">Selecione uma taxa</option>';
+
+            taxas.forEach(taxa => {
+                const option = document.createElement('option');
+                option.value = taxa.id;
+                option.textContent = `${taxa.nome} - ${taxa.valor}`;
+                taxaSelect.appendChild(option);
+            });
+
+            if (primeiraLinha.taxa_id) {
+                taxaSelect.value = primeiraLinha.taxa_id;
+            }
+        },
+        error: function(error) {
+            console.error('Erro ao buscar as taxas:', error);
+        }
+    });
 
     // Carregar tipos de palete
     $.ajax({
         url: '/tipo-paletes',
         method: 'GET',
         success: function(tiposPaleteResponse) {
-            window.tiposPalete = tiposPaleteResponse; // Armazenar tipos de palete globalmente
+            window.tiposPalete = tiposPaleteResponse;
 
             // Carregar artigos
             $.ajax({
                 url: `/artigos/${clienteId}`,
                 method: 'GET',
                 success: function(artigosResponse) {
-                    window.artigos = artigosResponse; // Armazenar artigos globalmente
+                    window.artigos = artigosResponse;
                     preencherLinhasModal(data.linhas, window.tiposPalete, window.artigos);
                 },
                 error: function(error) {
@@ -479,21 +507,20 @@ function saveChanges() {
         }
     });
 
-    // Obter os valores dos campos principais
     const documento = {
         numero: document.querySelector('.modal-documento-numero').value,
         data: document.querySelector('.modal-documento-data').value,
     };
-
-    // Obter os valores das linhas
+    const linhaId = document.querySelector('.modal-linha-id');
     const linhas = [];
     document.querySelectorAll('.modal-linhas tr').forEach(row => {
-        const inputs = row.querySelectorAll('input, select, textarea');
+        const inputs = row.querySelectorAll('input, select, textarea')
 
         const linhaData = {
+            id: linhaId.value, // ID da linha
             observacao: document.querySelector('.modal-documento-observacao').value,
             previsao: document.querySelector('.modal-documento-previsao').value,
-            valor: document.querySelector('.modal-documento-valor').value,
+            taxa_id: document.querySelector('.modal-documento-valor').value,
             tipo_palete: inputs[0].value,
             quantidade: inputs[1].value,
             artigo: inputs[2].value
@@ -501,6 +528,8 @@ function saveChanges() {
 
         linhas.push(linhaData);
     });
+
+    console.log(JSON.stringify({ documento, linhas }));
 
     $.ajax({
         url: `/documento/${documentoId}`,

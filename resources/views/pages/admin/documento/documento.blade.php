@@ -32,6 +32,9 @@
                                     <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->user->nome }}</td>
+                                    @foreach($documento->linha_documento as $linha)
+                                        <input type="hidden" class="modal-linha-id" value="{{ $linha->id }}" />
+                                    @endforeach
                                     <td class="text-center"> <!-- Célula para o botão -->
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
                                            class="btn btn-secondary btn-sm no-click-propagation">

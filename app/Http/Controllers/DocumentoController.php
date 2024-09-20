@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DocumentoController extends Controller
 {
@@ -233,20 +234,23 @@ class DocumentoController extends Controller
     {
         $userId = Auth::id();
 
-        // Validação dos dados recebidos
-        $data = $request->validate([
-            'documento' => 'required|array',
-            'documento.numero' => 'required|string',
-            'documento.data' => 'required|date',
-            'linhas' => 'required|array',
-            'linhas.*.id' => 'nullable|integer',  // ID da linha_documento
-            'linhas.*.observacao' => 'nullable|string|max:255',  // Observação da linha_documento
-            'linhas.*.previsao' => 'nullable|date',              // Previsão da linha_documento
-            'linhas.*.valor' => 'nullable|numeric',              // Valor da linha_documento
-            'linhas.*.tipo_palete' => 'required|integer',        // Dados da pivot
-            'linhas.*.quantidade' => 'required|integer',         // Dados da pivot
-            'linhas.*.artigo' => 'required|integer'              // Dados da pivot
-        ]);
+        try {
+            $data = $request->validate([
+                'documento' => 'required|array',
+                'documento.numero' => 'required|string',
+                'documento.data' => 'required|date',
+                'linhas' => 'required|array',
+                'linhas.*.id' => 'nullable|integer',
+                'linhas.*.observacao' => 'nullable|string|max:255',
+                'linhas.*.previsao' => 'nullable|date',
+                'linhas.*.taxa_id' => 'nullable|integer',
+                'linhas.*.tipo_palete' => 'required|integer',
+                'linhas.*.quantidade' => 'required|integer',
+                'linhas.*.artigo' => 'required|integer'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Dados inválidos.'], 400);
+        }
 
         $documento = Documento::find($id);
 
@@ -266,22 +270,18 @@ class DocumentoController extends Controller
         $linhasData = collect($data['linhas']);
         $linhasIds = $linhasData->whereNotNull('id')->pluck('id')->toArray();
 
-        // Excluir linhas que não estão mais no formulário
         $documento->linha_documento()->whereNotIn('id', $linhasIds)->delete();
 
         foreach ($data['linhas'] as $linhaData) {
             if (isset($linhaData['id'])) {
-                // Atualizar uma linha existente
                 $linha = LinhaDocumento::find($linhaData['id']);
                 if ($linha) {
-                    // Atualizar os campos da linha diretamente
                     $linha->observacao = $linhaData['observacao'] ?? $linha->observacao;
                     $linha->previsao = $linhaData['previsao'] ?? $linha->previsao;
-                    $linha->valor = $linhaData['valor'] ?? $linha->valor;
+                    $linha->taxa_id = $linhaData['taxa_id'] ?? $linha->taxa_id;
                     $linha->user_id = $userId;
-                    $linha->save();  // Salvar a linha atualizada
+                    $linha->save();
 
-                    // Atualizar a relação tipo_palete na tabela pivot
                     $linha->tipo_palete()->sync([
                         $linhaData['tipo_palete'] => [
                             'quantidade' => $linhaData['quantidade'],
@@ -290,11 +290,11 @@ class DocumentoController extends Controller
                     ]);
                 }
             } else {
-                // Criar uma nova linha
+
                 $novaLinha = $documento->linha_documento()->create([
                     'observacao' => $linhaData['observacao'] ?? null,
                     'previsao' => $linhaData['previsao'] ?? null,
-                    'valor' => $linhaData['valor'] ?? null,
+                    'taxa_id' => $linhaData['taxa_id'] ?? null,  // Corrigido para taxa_id
                     'user_id' => $userId
                 ]);
 
@@ -303,12 +303,12 @@ class DocumentoController extends Controller
                     'quantidade' => $linhaData['quantidade'],
                     'artigo_id' => $linhaData['artigo']
                 ]);
+
+                Log::info('Nova linha criada com sucesso.', ['nova_linha_id' => $novaLinha->id]);
             }
         }
 
-        return response()->json([
-            'success' => true
-        ]);
+        return response()->json(['success' => true]);
     }
 
     /**
