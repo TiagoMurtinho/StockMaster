@@ -6,14 +6,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Campo oculto para o ID do Documento -->
+                @foreach($documentos as $documento)
+
                 <input type="hidden" class="modal-documento-id" />
 
                 @foreach($documento->linha_documento as $linha)
                     <input type="hidden" class="modal-linha-id" value="{{ $linha->id }}" />
                 @endforeach
 
-                <!-- Campo Observação como textarea -->
                 <div class="mb-3">
                     <div class="form-group">
                         <label for="modal-documento-observacao">Observação</label>
@@ -21,7 +21,6 @@
                     </div>
                 </div>
 
-                <!-- Campos Número e Data lado a lado -->
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -54,9 +53,6 @@
                     </div>
                 </div>
 
-
-
-                <!-- Tabela para Linhas -->
                 <table class="table">
                     <thead>
                     <tr>
@@ -66,12 +62,11 @@
                     </tr>
                     </thead>
                     <tbody class="modal-linhas">
-                    <!-- As linhas serão preenchidas via JavaScript -->
-                    @foreach($documentos as $documento)
+
                         <tr class="modal-linha" data-id="{{ $documento->id }}">
                             <td>
                                 <select class="form-select modal-linha-tipo-palete">
-                                    <!-- Opções de tipo de palete -->
+
                                 </select>
                             </td>
                             <td>
@@ -96,7 +91,6 @@
                     </tbody>
                 </table>
 
-                <!-- Botão para adicionar nova linha de palete -->
                 <div class="mb-3">
                     <button type="button" class="btn btn-success add-palete-row">
                         Adicionar Tipo de Palete

@@ -35,6 +35,11 @@ class DocumentoController extends Controller
         return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'taxas'));
     }
 
+    public function indexJson()
+    {
+        return response()->json(Documento::with('tipo_documento', 'cliente', 'user')->get());
+    }
+
     /**
      * Show the form for creating a new resource.
      */

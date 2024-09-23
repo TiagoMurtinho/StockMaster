@@ -118,6 +118,9 @@ $(document).ready(function() {
                 linhas: linhasData
             },
             success: function(response) {
+
+                atualizarTabelaDocumentos();
+
                 $('#modalLinhaDocumento').modal('hide');
                 window.location.href = '/documento/' + documentoId + '/pdf';
             },
@@ -127,6 +130,38 @@ $(document).ready(function() {
         });
     });
 });
+
+function atualizarTabelaDocumentos() {
+    $.ajax({
+        url: '/documento/json',
+        method: 'GET',
+        success: function(response) {
+            var tbody = $('tbody');
+            tbody.empty();
+
+            response.forEach(function(documento) {
+                var linhaHtml = `
+                    <tr class="clickable-row" data-id="${documento.id}">
+                        <td class="align-middle text-center">${documento.numero}</td>
+                        <td class="align-middle text-center">${documento.data}</td>
+                        <td class="align-middle text-center">${documento.tipo_documento.nome}</td>
+                        <td class="align-middle text-center">${documento.cliente.nome}</td>
+                        <td class="align-middle text-center">${documento.user.nome}</td>
+                        <td class="text-center">
+                            <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
+                                Gerar PDF
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(linhaHtml);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.log('Erro ao atualizar a tabela de documentos: ' + xhr.responseText);
+        }
+    });
+}
 
 $(document).ready(function() {
 
@@ -162,7 +197,7 @@ $(document).ready(function() {
                 success: function(response) {
                     if (Array.isArray(response)) {
                         var tipoPaleteSelect = $('#paleteFields .palete-row select[name="tipo_palete_id[]"]');
-                        tipoPaleteSelect.empty(); // Limpa as opções existentes
+                        tipoPaleteSelect.empty();
                         var options = response.map(tipoPalete =>
                             `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`
                         ).join('');

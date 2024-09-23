@@ -45,6 +45,7 @@ Route::get('tipo-paletes', function() {
 Route::get('taxas', function() {
     return response()->json(Taxa::all());
 });
+Route::get('/documento/json', [DocumentoController::class, 'indexJson']);
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
 Route::put('/documento/{id}', [DocumentoController::class, 'update']);
 

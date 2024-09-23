@@ -42,6 +42,7 @@
                                         </a>
                                     </td>
                                 </tr>
+
                             @endforeach
                             </tbody>
                         </table>
@@ -51,9 +52,9 @@
         </div>
 
     </div>
-
+    @include('pages.admin.documento.modals.documento-modal')
     @include('pages.admin.documento.modals.add-documento-modal')
     @include('pages.admin.documento.modals.linha-documento-modal')
-    @include('pages.admin.documento.modals.documento-modal')
+
 @endsection
 
