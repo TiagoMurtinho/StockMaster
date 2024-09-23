@@ -6,9 +6,10 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('tipo-palete.tipo-palete') }}</h5>
-                    <a type="button" class="align-items-center ms-2" data-bs-toggle="modal" data-bs-target="#addTipoPaleteModal">
-                        <i class="ri-add-circle-line plus"></i>
-                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
+                            data-bs-target="#addTipoPaleteModal">
+                        Novo Tipo de Palete
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -23,16 +24,15 @@
                             </thead>
                             <tbody>
                             @foreach($tipoPaletes as $tipoPalete)
-                                <tr>
+                                <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}">
                                     <td class="align-middle text-center">{{ $tipoPalete->tipo }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->valor }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}">
-                                            <i class="bi bi-pencil-square me-2"></i>
-                                        </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal{{ $tipoPalete->id }}" onclick="confirmDelete('deleteTipoPaleteForm{{ $tipoPalete->id }}', '{{ route('tipo-palete.destroy', $tipoPalete->id) }}')">
-                                            <i class="bi bi-trash"></i>
+                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                                Eliminar
+                                            </button>
                                         </a>
                                     </td>
                                 </tr>
