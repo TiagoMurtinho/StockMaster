@@ -16,7 +16,7 @@
 
                 <div class="mb-3">
                     <div class="form-group">
-                        <label for="modal-documento-observacao">Observação</label>
+                        <label for="modal-documento-observacao">{{__('documento.observacao')}}</label>
                         <textarea class="form-control modal-documento-observacao" rows="3"></textarea>
                     </div>
                 </div>
@@ -24,13 +24,13 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="modal-documento-numero">Número</label>
+                            <label for="modal-documento-numero">{{__('documento.numero')}}</label>
                             <input type="text" class="form-control modal-documento-numero" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="modal-documento-data">Data</label>
+                            <label for="modal-documento-data">{{__('documento.data')}}</label>
                             <input type="date" class="form-control modal-documento-data" />
                         </div>
                     </div>
@@ -39,15 +39,15 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="modal-documento-previsao">Previsão</label>
+                            <label for="modal-documento-previsao">{{__('documento.previsao')}}</label>
                             <input type="date" class="form-control modal-documento-previsao" />
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <label for="modal-documento-valor">Taxa</label>
+                            <label for="modal-documento-valor">{{__('documento.taxa')}}</label>
                             <select class="form-select modal-documento-valor" id="taxaSelect">
-                                <option value="">Selecione uma taxa</option>
+                                <option value="">{{__('documento.taxa_select')}}</option>
                             </select>
                         </div>
                     </div>
@@ -93,13 +93,13 @@
 
                 <div class="mb-3">
                     <button type="button" class="btn btn-success add-palete-row">
-                        Adicionar Tipo de Palete
+                        {{__('documento.add_linha')}}
                     </button>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.fechar') }}</button>
-                <button type="button" class="btn btn-primary" onclick="saveChanges()">{{ __('documento.salvar_alteracoes') }}</button>
+                <button type="button" class="btn btn-primary" onclick="saveChanges()">{{ __('documento.salvar') }}</button>
             </div>
         </div>
     </div>

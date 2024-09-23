@@ -147,6 +147,7 @@ function atualizarTabelaDocumentos() {
                         <td class="align-middle text-center">${documento.tipo_documento.nome}</td>
                         <td class="align-middle text-center">${documento.cliente.nome}</td>
                         <td class="align-middle text-center">${documento.user.nome}</td>
+                        <td class="align-middle text-center">${documento.estado}</td>
                         <td class="text-center">
                             <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
                                 Gerar PDF

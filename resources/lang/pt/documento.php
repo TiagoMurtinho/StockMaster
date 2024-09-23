@@ -34,5 +34,12 @@ return [
     'data_entrega' => 'Data de Entrega',
     'data_recolha' => 'Data de Recolha',
     'extra' => 'Extra',
-    'artigo' => 'Artigo'
+    'artigo' => 'Artigo',
+    'estado' => 'Estado:',
+    'detalhes_documento' => 'Detalhes do Documento',
+    'observacao' => 'Observação',
+    'previsao' => 'Previsão',
+    'add_linha' => 'Adicionar Linha',
+    'fechar' => 'Fechar',
+    'salvar' => 'Editar'
 ];

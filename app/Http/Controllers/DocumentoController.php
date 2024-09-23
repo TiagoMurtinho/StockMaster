@@ -289,6 +289,19 @@ class DocumentoController extends Controller
 
         \Log::info('Documento atualizado', ['documento_id' => $documento->id]);
 
+        $linhaDocumento = LinhaDocumento::find($data['linha_documento']['id']);
+
+        if ($linhaDocumento) {
+            $linhaDocumento->observacao = $data['linha_documento']['observacao'] ?? $linhaDocumento->observacao;
+            $linhaDocumento->previsao = $data['linha_documento']['previsao'] ?? $linhaDocumento->previsao;
+            $linhaDocumento->taxa_id = $data['linha_documento']['taxa_id'] ?? $linhaDocumento->taxa_id;
+            $linhaDocumento->save();
+
+            \Log::info('Linha documento atualizada', ['linha_documento_id' => $linhaDocumento->id]);
+        } else {
+            \Log::error('Linha documento não encontrada', ['linha_documento_id' => $data['linha_documento']['id']]);
+        }
+
         foreach ($data['linha_documento_tipo_palete'] as $linhaData) {
             // Verifica se o ID está presente
             if (isset($linhaData['id'])) {
@@ -331,9 +344,43 @@ class DocumentoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id): JsonResponse
     {
-        //
+        $userId = Auth::id();
+
+        try {
+            // Localiza o documento
+            $documento = Documento::find($id);
+
+            if (!$documento) {
+                \Log::error('Documento não encontrado', ['documento_id' => $id]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Documento não encontrado para remoção'
+                ], 404);
+            }
+
+            // Remove as linhas relacionadas
+            LinhaDocumento::where('documento_id', $id)->delete();
+            LinhaDocumentoTipoPalete::where('linha_documento_id', $documento->linha_documento_id)->delete();
+
+            // Remove o documento
+            $documento->delete();
+
+            \Log::info('Documento removido com sucesso', ['documento_id' => $id]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento removido com sucesso!',
+                'redirect' => route('documento.index')
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Erro ao remover documento', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao remover documento'
+            ], 500);
+        }
     }
 
     public function getArtigosPorCliente($clienteId): \Illuminate\Http\JsonResponse

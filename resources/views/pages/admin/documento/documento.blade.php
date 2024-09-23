@@ -21,6 +21,7 @@
                                 <th scope="col" class="text-center">{{ __('documento.tipo_documento') }}</th>
                                 <th scope="col" class="text-center">{{ __('documento.cliente') }}</th>
                                 <th scope="col" class="text-center">{{ __('documento.user') }}</th>
+                                <th scope="col" class="text-center">{{ __('documento.estado') }}</th>
                                 <th></th>
                             </tr>
                             </thead>
@@ -32,17 +33,22 @@
                                     <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->user->nome }}</td>
-                                    @foreach($documento->linha_documento as $linha)
-                                        <input type="hidden" class="modal-linha-id" value="{{ $linha->id }}" />
-                                    @endforeach
-                                    <td class="text-center"> <!-- Célula para o botão -->
+                                    <td class="align-middle text-center">{{ $documento->estado }}</td>
+                                        <input type="hidden" class="modal-linha-id" value="{{ $documento->linha_documento_id }}" />
+                                    <td class="text-center">
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
                                            class="btn btn-secondary btn-sm no-click-propagation">
                                             Gerar PDF
                                         </a>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal{{ $documento->id }}">
+                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                                Eliminar
+                                            </button>
+                                        </a>
                                     </td>
                                 </tr>
 
+                                @include('pages.admin.documento.modals.documento-delete-modal')
                             @endforeach
                             </tbody>
                         </table>
