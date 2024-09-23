@@ -152,6 +152,11 @@ function atualizarTabelaDocumentos() {
                             <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
                                 Gerar PDF
                             </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal{{ $documento->id }}">
+                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                                Eliminar
+                                            </button>
+                                        </a>
                         </td>
                     </tr>
                 `;
