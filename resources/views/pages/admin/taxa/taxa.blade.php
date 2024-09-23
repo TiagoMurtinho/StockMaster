@@ -6,9 +6,10 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('taxa.taxa') }}</h5>
-                    <a type="button" class="align-items-center ms-2" data-bs-toggle="modal" data-bs-target="#addTaxaModal">
-                        <i class="ri-add-circle-line plus"></i>
-                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
+                            data-bs-target="#addTaxaModal">
+                        {{__('taxa.nova_taxa')}}
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -23,16 +24,15 @@
                             </thead>
                             <tbody>
                             @foreach($taxas as $taxa)
-                                <tr>
+                                <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal{{ $taxa->id }}">
                                     <td class="align-middle text-center">{{ $taxa->nome }}</td>
                                     <td class="align-middle text-center">{{ $taxa->valor }}</td>
                                     <td class="align-middle text-center">{{ $taxa->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editTaxaModal{{ $taxa->id }}">
-                                            <i class="bi bi-pencil-square me-2"></i>
-                                        </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal{{ $taxa->id }}" onclick="confirmDelete('deleteTaxaForm{{ $taxa->id }}', '{{ route('taxa.destroy', $taxa->id) }}')">
-                                            <i class="bi bi-trash"></i>
+                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                                {{__('taxa.delete')}}
+                                            </button>
                                         </a>
                                     </td>
                                 </tr>

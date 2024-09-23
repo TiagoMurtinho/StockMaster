@@ -23,7 +23,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="editArtigoModalReferencia{{ $artigo->id }}" class="form-label">{{ __('artigo.referencia') }}</label>
+                            <label for="editArtigoModalReferencia{{ $artigo->id }}" class="form-label">{{ __('artigo.add_referencia') }}</label>
                             <input id="editArtigoModalReferencia{{ $artigo->id }}" class="form-control" type="text" name="referencia" value="{{ $artigo->referencia }}">
                         </div>
 

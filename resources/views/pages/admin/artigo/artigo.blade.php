@@ -6,9 +6,10 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('artigo.artigo') }}</h5>
-                    <a type="button" class="align-items-center ms-2" data-bs-toggle="modal" data-bs-target="#addArtigoModal">
-                    <i class="ri-add-circle-line plus"></i>
-                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
+                            data-bs-target="#addArtigoModal">
+                        {{__('artigo.novo_artigo')}}
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -24,21 +25,20 @@
                             </thead>
                             <tbody>
                             @foreach($artigos as $artigo)
-                                <tr>
+                                <tr data-bs-toggle="modal" data-bs-target="#editArtigoModal{{ $artigo->id }}">
                                     <td class="align-middle text-center">{{ $artigo->nome }}</td>
                                     <td class="align-middle text-center">{{ $artigo->referencia }}</td>
                                     <td class="align-middle text-center">{{ $artigo->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $artigo->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editArtigoModal{{ $artigo->id }}">
-                                            <i class="bi bi-pencil-square me-2"></i>
-                                        </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal{{ $artigo->id }}" onclick="confirmDelete('deleteArtigoForm{{ $artigo->id }}', '{{ route('artigo.destroy', $artigo->id) }}')">
-                                            <i class="bi bi-trash"></i>
+                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                                {{__('artigo.delete')}}
+                                            </button>
                                         </a>
                                     </td>
                                 </tr>
-
+                                @include('pages.admin.artigo.modals.artigo-delete-modal')
                             @endforeach
                             </tbody>
                         </table>
@@ -50,6 +50,6 @@
 
     @include('pages.admin.artigo.modals.artigo-edit-modal')
     @include('pages.admin.artigo.modals.artigo-add-modal')
-    @include('pages.admin.artigo.modals.artigo-delete-modal')
+
 
 @endsection

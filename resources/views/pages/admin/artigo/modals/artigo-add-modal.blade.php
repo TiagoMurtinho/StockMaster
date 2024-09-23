@@ -20,12 +20,12 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="addArtigoModalReferencia" class="form-label">{{ __('armazem.add_referencia') }}</label>
+                        <label for="addArtigoModalReferencia" class="form-label">{{ __('artigo.add_referencia') }}</label>
                         <input id="addArtigoModalReferencia" class="form-control" type="text" name="referencia">
                     </div>
 
                     <div class="mb-3">
-                        <label for="addArtigoModalCliente" class="form-label">{{ __('armazem.add_cliente') }}</label>
+                        <label for="addArtigoModalCliente" class="form-label">{{ __('artigo.add_cliente') }}</label>
                         <select name="cliente_id" id="addArtigoModalCliente" class="form-select form-select-sm">
                             @foreach($clientes as $cliente)
                                 <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>

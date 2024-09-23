@@ -13,5 +13,6 @@ return [
     'cancel' => 'Cancelar',
     'edit_taxa' => 'Editar Taxa',
     'save' => 'Editar',
-    'delete' => 'Eliminar'
+    'delete' => 'Eliminar',
+    'nova_taxa' => 'Adicionar Taxa'
 ];

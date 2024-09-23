@@ -6,9 +6,10 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('armazem.armazem') }}</h5>
-                    <a type="button" class="align-items-center ms-2" data-bs-toggle="modal" data-bs-target="#addArmazemModal">
-                        <i class="ri-add-circle-line plus"></i>
-                    </a>
+                    <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
+                            data-bs-target="#addArmazemModal">
+                        {{__('armazem.novo_armazem')}}
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -24,17 +25,16 @@
                             </thead>
                             <tbody>
                             @foreach($armazens as $armazem)
-                                <tr>
+                                <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}">
                                     <td class="align-middle text-center">{{ $armazem->nome }}</td>
                                     <td class="align-middle text-center">{{ $armazem->capacidade }}</td>
                                     <td class="align-middle text-center">{{ $armazem->tipo_palete->tipo }}</td>
                                     <td class="align-middle text-center">{{ $armazem->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}">
-                                            <i class="bi bi-pencil-square me-2"></i>
-                                        </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $armazem->id }}" onclick="confirmDelete('deleteArmazemForm{{ $armazem->id }}', '{{ route('armazem.destroy', $armazem->id) }}')">
-                                            <i class="bi bi-trash"></i>
+                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                                {{__('armazem.delete')}}
+                                            </button>
                                         </a>
                                     </td>
                                 </tr>

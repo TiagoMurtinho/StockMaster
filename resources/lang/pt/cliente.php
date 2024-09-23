@@ -19,5 +19,6 @@ return [
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
     'delete' => 'Eliminar',
     'save' => 'Guardar',
-    'edit_cliente' => 'Editar Cliente'
+    'edit_cliente' => 'Editar Cliente',
+    'novo_cliente' => 'Adicionar Cliente'
 ];

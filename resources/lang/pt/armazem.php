@@ -17,5 +17,6 @@ return [
     'save' => 'Guardar',
     'delete_armazem' => 'Eliminar Armazém',
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
-    'delete' => 'Eliminar'
+    'delete' => 'Eliminar',
+    'novo_armazem' => 'Adicionar Armazém'
 ];

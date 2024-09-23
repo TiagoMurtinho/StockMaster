@@ -8,7 +8,7 @@
                     <h5 class="mb-0 ms-2">{{ __('tipo-palete.tipo-palete') }}</h5>
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#addTipoPaleteModal">
-                        Novo Tipo de Palete
+                        {{__('tipo-palete.adicionar_tipo_palete')}}
                     </button>
                 </div>
                 <div class="card-body">
@@ -31,7 +31,7 @@
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal{{ $tipoPalete->id }}" onclick="confirmDelete('deleteTipoPaleteForm{{ $tipoPalete->id }}', '{{ route('tipo-palete.destroy', $tipoPalete->id) }}')">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                                Eliminar
+                                                {{__('tipo-palete.delete')}}
                                             </button>
                                         </a>
                                     </td>
