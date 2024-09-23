@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                @foreach($documentos as $documento)
+               {{-- @foreach($documentos as $documento)--}}
 
                 <input type="hidden" class="modal-documento-id" />
 
@@ -80,12 +80,12 @@
                                             <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="{{ $tipoPalete->pivot->id ?? '' }}" />
                                         @endforeach
                                     @endforeach
-                                    <a type="button" class="remove-palete-row">
+                                    {{--<a type="button" class="remove-palete-row">
                                         <i class="bi bi-trash"></i>
-                                    </a>
+                                    </a>--}}
                                 </td>
                             </tr>
-                            @endforeach
+                            {{--@endforeach--}}
                             </tbody>
                         </table>
                     </div>

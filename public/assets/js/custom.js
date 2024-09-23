@@ -518,7 +518,7 @@ document.addEventListener('click', function(event) {
 document.addEventListener('click', function(event) {
     if (event.target && event.target.closest('.remove-palete-row')) {
         const row = event.target.closest('tr.palete-row');
-        row.remove();
+        row.hide();
     }
 });
 

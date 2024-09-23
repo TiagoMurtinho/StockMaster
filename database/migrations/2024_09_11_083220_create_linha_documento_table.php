@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('observacao', 255)->nullable();
             $table->string('morada', 255)->nullable();
-            $table->date('previsao')->nullable();
+            $table->date('previsao');
             $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_saida')->nullable();
             $table->float('extra')->nullable();
