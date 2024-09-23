@@ -53,43 +53,42 @@
                     </div>
                 </div>
 
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>{{ __('documento.tipo_palete') }}</th>
-                        <th>{{ __('documento.quantidade') }}</th>
-                        <th>{{ __('documento.artigo') }}</th>
-                    </tr>
-                    </thead>
-                    <tbody class="modal-linhas">
-
-                        <tr class="modal-linha" data-id="{{ $documento->id }}">
-                            <td>
-                                <select class="form-select modal-linha-tipo-palete">
-
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" class="form-control modal-linha-quantidade" />
-                            </td>
-                            <td>
-                                <input type="number" class="form-control modal-linha-artigo" />
-                            </td>
-                            <td>
-                                <input type="hidden" name="deleted[]" value="0" />
-                                @foreach($documento->linha_documento as $linha)
-                                    @foreach($linha->tipo_palete as $tipoPalete)
-                                        <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="{{ $tipoPalete->pivot->id ?? '' }}" />
+                    <div class="scrollable-palete-area">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>{{ __('documento.tipo_palete') }}</th>
+                                <th>{{ __('documento.quantidade') }}</th>
+                                <th>{{ __('documento.artigo') }}</th>
+                            </tr>
+                            </thead>
+                            <tbody class="modal-linhas">
+                            <tr class="modal-linha" data-id="{{ $documento->id }}">
+                                <td>
+                                    <select class="form-select modal-linha-tipo-palete"></select>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control modal-linha-quantidade" />
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control modal-linha-artigo" />
+                                </td>
+                                <td>
+                                    <input type="hidden" name="deleted[]" value="0" />
+                                    @foreach($documento->linha_documento as $linha)
+                                        @foreach($linha->tipo_palete as $tipoPalete)
+                                            <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="{{ $tipoPalete->pivot->id ?? '' }}" />
+                                        @endforeach
                                     @endforeach
-                                @endforeach
-                                <a type="button" class="remove-palete-row">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
+                                    <a type="button" class="remove-palete-row">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
                 <div class="mb-3">
                     <button type="button" class="btn btn-success add-palete-row">
