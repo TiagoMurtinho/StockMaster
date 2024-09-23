@@ -39,6 +39,12 @@
     padding-right: 10px;
 }
 
+.modal-documento {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 @media (max-width: 1000px) {
     .modal-lg {
         width: 90%;

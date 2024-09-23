@@ -1,5 +1,5 @@
 <div class="modal fade" id="modalAddDocumento" tabindex="-1" aria-labelledby="modalAddDocumentoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalAddDocumentoModalLabel">{{__('documento.novo_documento')}}</h5>
@@ -7,7 +7,7 @@
             </div>
             <form id="documentoForm" action="{{ route('documento.store') }}" method="POST">
                 @csrf
-                <div class="modal-body">
+                <div class="modal-body modal-documento">
 
                     <div class="mb-3">
                         <label for="tipo_documento" class="form-label">{{__('documento.tipo')}}</label>
