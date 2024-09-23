@@ -15,7 +15,7 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="addTaxaModalTipo" class="form-label">{{ __('tipo-palete.add_nome') }}</label>
+                        <label for="addTaxaModalTipo" class="form-label">{{ __('taxa.add_nome') }}</label>
                         <input id="addTaxaModalTipo" class="form-control" type="text" name="nome">
                     </div>
 
