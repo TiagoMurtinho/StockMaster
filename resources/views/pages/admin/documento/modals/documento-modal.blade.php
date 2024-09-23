@@ -9,8 +9,9 @@
                 <!-- Campo oculto para o ID do Documento -->
                 <input type="hidden" class="modal-documento-id" />
 
-                <input type="hidden" class="modal-linha-id" />
-
+                @foreach($documento->linha_documento as $linha)
+                    <input type="hidden" class="modal-linha-id" value="{{ $linha->id }}" />
+                @endforeach
 
                 <!-- Campo Observação como textarea -->
                 <div class="mb-3">
@@ -66,6 +67,32 @@
                     </thead>
                     <tbody class="modal-linhas">
                     <!-- As linhas serão preenchidas via JavaScript -->
+                    @foreach($documentos as $documento)
+                        <tr class="modal-linha" data-id="{{ $documento->id }}">
+                            <td>
+                                <select class="form-select modal-linha-tipo-palete">
+                                    <!-- Opções de tipo de palete -->
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" class="form-control modal-linha-quantidade" />
+                            </td>
+                            <td>
+                                <input type="number" class="form-control modal-linha-artigo" />
+                            </td>
+                            <td>
+                                <input type="hidden" name="deleted[]" value="0" />
+                                @foreach($documento->linha_documento as $linha)
+                                    @foreach($linha->tipo_palete as $tipoPalete)
+                                        <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="{{ $tipoPalete->pivot->id ?? '' }}" />
+                                    @endforeach
+                                @endforeach
+                                <a type="button" class="remove-palete-row">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
                     </tbody>
                 </table>
 
@@ -75,7 +102,6 @@
                         Adicionar Tipo de Palete
                     </button>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.fechar') }}</button>

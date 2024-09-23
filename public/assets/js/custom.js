@@ -135,7 +135,6 @@ $(document).ready(function() {
             url: `/artigos/${clienteId}`,
             method: 'GET',
             success: function(response) {
-
                 if (Array.isArray(response)) {
                     const options = response.map(artigo =>
                         `<option value="${artigo.id}">${artigo.nome}</option>`
@@ -153,6 +152,7 @@ $(document).ready(function() {
 
     $('#modalLinhaDocumento').on('show.bs.modal', function() {
         const clienteId = $(this).data('cliente-id');
+        console.log('Cliente ID:', clienteId);
 
         if (clienteId) {
 
@@ -160,18 +160,20 @@ $(document).ready(function() {
                 url: '/tipo-paletes',
                 method: 'GET',
                 success: function(response) {
-                    var tipoPaleteSelect = $('#tipoPaleteSelect');
-                    var options = '';
+                    if (Array.isArray(response)) {
+                        var tipoPaleteSelect = $('#paleteFields .palete-row select[name="tipo_palete_id[]"]');
+                        tipoPaleteSelect.empty(); // Limpa as opções existentes
+                        var options = response.map(tipoPalete =>
+                            `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`
+                        ).join('');
+                        tipoPaleteSelect.append(`<option value="">Selecione um Tipo de Palete</option>${options}`);
 
-                    response.forEach(function(tipoPalete) {
-                        options += `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`;
-                    });
-
-                    tipoPaleteSelect.html(options);
-
-                    $('#paleteFields .palete-row').each(function() {
-                        loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
-                    });
+                        $('#paleteFields .palete-row').each(function() {
+                            loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
+                        });
+                    } else {
+                        console.error('Resposta inválida para tipos de palete:', response);
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error('Erro ao carregar os tipos de palete:', error);
@@ -183,17 +185,17 @@ $(document).ready(function() {
                     <div class="palete-row mb-3">
                         <div class="row">
                             <div class="col-md-4">
-                                <label class="form-label">Tipo Palete</label>
-                                <select name="tipo_palete_id[]" class="form-select" required>
-                                    ${$('#tipoPaleteSelect').html()}
-                                </select>
+                                <label for="tipo_palete_id" class="form-label">Tipo de Palete</label>
+                                    <select name="tipo_palete_id[]" class="form-select" required>
+                                        ${$('#paleteFields .palete-row select[name="tipo_palete_id[]"]').html()}
+                                    </select>
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label">Quantidade</label>
+                                <label for="quantidade" class="form-label">Quantidade</label>
                                 <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Artigo</label>
+                                <label for="artigo_id" class="form-label">Artigo</label>
                                 <select name="artigo_id[]" class="form-select" required>
                                     <option value="">Selecione um Artigo</option>
                                 </select>
@@ -260,9 +262,8 @@ $('#modalForm').on('submit', function(e) {
             if (response.success) {
                 $('#rececaoModal' + response.linha_id).modal('hide');
 
-                // Solicita o PDF usando a rota nomeada
                 $.ajax({
-                    url: '/documento/' + response.documento_id + '/pdf',  // Usando a rota correta para o PDF
+                    url: '/documento/' + response.documento_id + '/pdf',
                     method: 'GET',
                     data: { paletes_criadas: response.paletes_criadas },
                     xhrFields: {
@@ -272,7 +273,7 @@ $('#modalForm').on('submit', function(e) {
                         var link = document.createElement('a');
                         var url = window.URL.createObjectURL(blob);
                         link.href = url;
-                        link.download = 'nota_recepcao_' + response.documento_id + '.pdf';  // Nome do arquivo PDF
+                        link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
                         document.body.appendChild(link);
                         link.click();
                         window.URL.revokeObjectURL(url);
@@ -355,7 +356,6 @@ function populateModal(data) {
 
     document.querySelector('.modal-linha-id').value = primeiraLinha.id || '';
 
-    // Carregar taxas
     $.ajax({
         url: '/taxas',
         method: 'GET',
@@ -379,14 +379,12 @@ function populateModal(data) {
         }
     });
 
-    // Carregar tipos de palete
     $.ajax({
         url: '/tipo-paletes',
         method: 'GET',
         success: function(tiposPaleteResponse) {
             window.tiposPalete = tiposPaleteResponse;
 
-            // Carregar artigos
             $.ajax({
                 url: `/artigos/${clienteId}`,
                 method: 'GET',
@@ -404,35 +402,56 @@ function populateModal(data) {
         }
     });
 }
+
+$(document).on('click', '.remove-palete-row', function() {
+
+    const row = $(this).closest('tr');
+    const deletedInput = row.find('input[name="deleted[]"]');
+
+    if (deletedInput.length) {
+        if (deletedInput.val() === '0') {
+            deletedInput.val(1);
+
+            row.hide();
+        } else {
+            console.log('A linha já está marcada como deletada.');
+        }
+    } else {
+        console.error('Input "deleted[]" não encontrado na linha.');
+    }
+});
+
 function preencherLinhasModal(linhas, tiposPalete, artigos) {
     const linhaContainer = document.querySelector('.modal-linhas');
     linhaContainer.innerHTML = '';
 
-    linhas.forEach(linha => {
+    linhas.forEach((linha, index) => {
         const linhaElement = document.createElement('tr');
         linhaElement.classList.add('palete-row');
 
-        let tipoPaleteOptions = '';
-        tiposPalete.forEach(tipo => {
-            const selected = tipo.id === linha.tipo_palete_id ? 'selected' : '';
-            tipoPaleteOptions += `<option value="${tipo.id}" ${selected}>${tipo.tipo}</option>`;
-        });
+        let tipoPaleteOptions = tiposPalete.map(tipo => {
 
-        let artigoOptions = '';
-        artigos.forEach(artigo => {
-            const selected = artigo.id === linha.artigo_id ? 'selected' : '';
-            artigoOptions += `<option value="${artigo.id}" ${selected}>${artigo.nome}</option>`;
-        });
+            const selected = tipo.tipo === linha.tipo_palete ? 'selected' : '';
+            return `<option value="${tipo.id}" ${selected}>${tipo.tipo}</option>`;
+        }).join('');
+
+        let artigoOptions = artigos.map(artigo => {
+
+            const selected = artigo.nome === linha.artigo ? 'selected' : '';
+            return `<option value="${artigo.id}" ${selected}>${artigo.nome}</option>`;
+        }).join('');
 
         linhaElement.innerHTML = `
             <td>
-                <select class="form-select">
+                <select class="form-select modal-linha-tipo-palete">
                     ${tipoPaleteOptions}
                 </select>
             </td>
-            <td><input class="form-control" type="number" value="${linha.quantidade}" /></td>
             <td>
-                <select class="form-select">
+                <input class="form-control modal-linha-quantidade" type="number" value="${linha.quantidade || ''}" />
+            </td>
+            <td>
+                <select class="form-select modal-linha-artigo">
                     ${artigoOptions}
                 </select>
             </td>
@@ -440,19 +459,14 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
                 <a type="button" class="remove-palete-row">
                     <i class="bi bi-trash"></i>
                 </a>
+                <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="${linha.pivot_id || ''}" />
+                <input type="hidden" name="deleted[]" value="0" />
             </td>
         `;
 
         linhaContainer.appendChild(linhaElement);
     });
-
 }
-
-document.querySelector('.modal-linhas').addEventListener('click', function(event) {
-    if (event.target && event.target.closest('.remove-palete-row')) {
-        event.target.closest('.palete-row').remove();
-    }
-});
 
 document.addEventListener('click', function(event) {
     if (event.target && event.target.classList.contains('add-palete-row')) {
@@ -460,8 +474,15 @@ document.addEventListener('click', function(event) {
     }
 });
 
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.closest('.remove-palete-row')) {
+        const row = event.target.closest('tr.palete-row');
+        row.remove();
+    }
+});
+
 function adicionarNovaLinha() {
-    // Crie as opções para os selects
+
     let tipoPaleteOptions = '';
     window.tiposPalete.forEach(tipo => {
         tipoPaleteOptions += `<option value="${tipo.id}">${tipo.tipo}</option>`;
@@ -472,7 +493,6 @@ function adicionarNovaLinha() {
         artigoOptions += `<option value="${artigo.id}">${artigo.nome}</option>`;
     });
 
-    // Crie uma nova linha com as opções preenchidas
     const linhaContainer = document.querySelector('.modal-linhas');
     const novaLinha = `
         <tr class="palete-row">
@@ -511,30 +531,44 @@ function saveChanges() {
         numero: document.querySelector('.modal-documento-numero').value,
         data: document.querySelector('.modal-documento-data').value,
     };
+
     const linhaId = document.querySelector('.modal-linha-id');
-    const linhas = [];
+    const linha_documento = {
+        id: linhaId.value, // ID da linha
+        observacao: document.querySelector('.modal-documento-observacao').value,
+        previsao: document.querySelector('.modal-documento-previsao').value,
+        taxa_id: document.querySelector('.modal-documento-valor').value,
+    };
+
+    const linha_documento_tipo_palete = [];
     document.querySelectorAll('.modal-linhas tr').forEach(row => {
-        const inputs = row.querySelectorAll('input, select, textarea')
+        const inputs = row.querySelectorAll('input, select, textarea');
+
+        const pivotIdField = row.querySelector('.modal-linha-pivot-id');
+        const pivotId = pivotIdField ? pivotIdField.value : null;
+
+        const deletedInput = row.querySelector('input[name="deleted[]"]');
+        const deleted = deletedInput ? deletedInput.value === '1' : false;
 
         const linhaData = {
-            id: linhaId.value, // ID da linha
-            observacao: document.querySelector('.modal-documento-observacao').value,
-            previsao: document.querySelector('.modal-documento-previsao').value,
-            taxa_id: document.querySelector('.modal-documento-valor').value,
+            linha_documento_id: linhaId.value,
             tipo_palete: inputs[0].value,
             quantidade: inputs[1].value,
-            artigo: inputs[2].value
+            artigo: inputs[2].value,
+            deleted: deleted
         };
 
-        linhas.push(linhaData);
-    });
+        if (pivotId) {
+            linhaData.id = pivotId;
+        }
 
-    console.log(JSON.stringify({ documento, linhas }));
+        linha_documento_tipo_palete.push(linhaData);
+    });
 
     $.ajax({
         url: `/documento/${documentoId}`,
         method: 'PUT',
-        data: JSON.stringify({ documento, linhas }),
+        data: JSON.stringify({ documento, linha_documento, linha_documento_tipo_palete }),
         contentType: 'application/json',
         success: function (response) {
             if (response.success) {
@@ -545,6 +579,7 @@ function saveChanges() {
         },
         error: function (jqXHR, textStatus, errorThrown) {
             console.error('Erro ao salvar dados:', textStatus, errorThrown);
+            console.log('Response:', jqXHR.responseText);
         }
     });
 }

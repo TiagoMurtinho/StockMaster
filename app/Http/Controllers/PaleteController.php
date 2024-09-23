@@ -70,6 +70,7 @@ class PaleteController extends Controller
                 'documento_id' => $novoDocumento->id,
                 'data_entrada' => now(),
                 'observacao' => $observacaoFinal,
+                'taxa_id' => $linhaDocumento->taxa->id,
                 'user_id' => $userId,
             ]);
 

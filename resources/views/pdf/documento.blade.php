@@ -56,7 +56,7 @@
                 @foreach($linha->tipo_palete as $tipoPalete)
                     <tr>
                         <td>{{ $linha->observacao }}</td>
-                        <td>{{ $linha->valor }}</td>
+                        <td>{{ $linha->taxa->valor }}</td>
                         <td>{{ $linha->previsao }}</td>
                         <td>{{ $tipoPalete->tipo }}</td>
                         <td>{{ $tipoPalete->pivot->quantidade }}</td>
