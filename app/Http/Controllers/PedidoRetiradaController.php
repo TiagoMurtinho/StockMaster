@@ -19,8 +19,7 @@ class PedidoRetiradaController extends Controller
      */
     public function index()
     {
-
-        // Obtém todos os documentos pendentes
+        // Obtenha os documentos
         $documentos = Documento::with(['linha_documento.tipo_palete'])
             ->where('tipo_documento_id', 3)
             ->where('estado', 'pendente')
@@ -29,92 +28,75 @@ class PedidoRetiradaController extends Controller
             })
             ->get();
 
+        // Extraia os IDs dos artigos e tipos de palete
         $artigoIds = $documentos->flatMap(function ($documento) {
             return $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.artigo_id'); // Acessando artigo_id da tabela pivot
+                return $linha->tipo_palete->pluck('pivot.artigo_id');
             });
-        });
+        })->unique()->values()->all();
+
+        $tipoPaleteIds = $documentos->flatMap(function ($documento) {
+            return $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.tipo_palete_id');
+            });
+        })->unique()->values()->all();
 
         $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
-        $paletes = [];
-        $quantidadesPaletes = [];
+
+        $tipoPaletes = TipoPalete::whereIn('id', $tipoPaleteIds)->get()->keyBy('id');
+
+        $paletes = Palete::whereNull('data_saida')
+            ->whereIn('artigo_id', $artigoIds)
+            ->whereIn('tipo_palete_id', $tipoPaleteIds)
+            ->orderBy('data_entrada')
+            ->get();
+
+        $paletesPorLinha = [];
 
         foreach ($documentos as $documento) {
-            $documentoId = $documento->id;
+            foreach ($documento->linha_documento as $linha) {
 
-            $paletes[$documentoId] = DB::select("
-    SELECT p.*
-    FROM palete p
-    WHERE p.linha_documento_id IN (
-        SELECT ldtp.linha_documento_id
-        FROM linha_documento_tipo_palete ldtp
-        WHERE ldtp.artigo_id IN (
-            SELECT ldtp2.artigo_id
-            FROM linha_documento_tipo_palete ldtp2
-            WHERE ldtp2.linha_documento_id IN (
-                SELECT ld.id
-                FROM linha_documento ld
-                JOIN documento d ON ld.documento_id = d.id
-                WHERE d.tipo_documento_id = 3 AND d.estado = 'pendente'
-            )
-        )
-        AND ldtp.tipo_palete_id IN (
-            SELECT ldtp3.tipo_palete_id
-            FROM linha_documento_tipo_palete ldtp3
-            WHERE ldtp3.linha_documento_id IN (
-                SELECT ld.id
-                FROM linha_documento ld
-                JOIN documento d ON ld.documento_id = d.id
-                WHERE d.tipo_documento_id = 3 AND d.estado = 'pendente'
-            )
-        )
-    )
-    AND EXISTS (
-        SELECT 1
-        FROM linha_documento ld
-        JOIN documento d ON ld.documento_id = d.id
-        WHERE ld.id = p.linha_documento_id
-        AND d.cliente_id = (SELECT d2.cliente_id FROM documento d2 WHERE d2.id = ? LIMIT 1)
-    )
-    AND p.tipo_palete_id IN (
-        SELECT ldtp4.tipo_palete_id
-        FROM linha_documento_tipo_palete ldtp4
-        WHERE ldtp4.linha_documento_id IN (
-            SELECT ld5.id
-            FROM linha_documento ld5
-            WHERE ld5.documento_id = ?
-        )
-    );
-", [$documentoId, $documentoId]);
+                $paletesPorLinha[$documento->id][$linha->id] = [];
 
-            // Converte o resultado em uma coleção para facilitar o uso
-            $paletes[$documentoId] = collect($paletes[$documentoId]);
+                foreach ($linha->tipo_palete as $tipoPalete) {
+                    $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
 
-            $quantidadesPaletes[$documentoId] = DB::select("
-            SELECT ldtp.artigo_id, COUNT(p.id) AS numero_paletes
-            FROM linha_documento_tipo_palete ldtp
-            JOIN palete p ON p.linha_documento_id = ldtp.linha_documento_id
-            WHERE ldtp.linha_documento_id IN (
-                SELECT ld.id
-                FROM linha_documento ld
-                WHERE ld.documento_id = ?
-            )
-            GROUP BY ldtp.artigo_id
-        ", [$documentoId]);
 
-            $documento->min_data_entrada = $paletes[$documentoId]->min('data_entrada');
+                    // Filtramos os paletes disponíveis para este tipo de palete e artigo
+                    $paletesDisponiveis = $paletes
+                        ->where('artigo_id', $tipoPalete->pivot->artigo_id)
+                        ->where('tipo_palete_id', $tipoPalete->id)
+                        ->sortBy('data_entrada');
 
-            $paletes[$documentoId] = Palete::with(['artigo', 'tipo_palete'])->get();
+                    // Se houver paletes disponíveis, acumule até atingir a quantidade necessária
+                    $paletesSelecionados = collect();
+                    foreach ($paletesDisponiveis as $palete) {
+                        if ($paletesSelecionados->count() < $quantidadeNecessaria) {
+                            $paletesSelecionados->push($palete);
+                        }
+                    }
+
+                    // Armazene os paletes selecionados para este tipo de palete
+                    if ($paletesSelecionados->isNotEmpty()) {
+                        // Se já existem paletes para este tipo de palete, combine as coleções
+                        if (!isset($paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id])) {
+                            $paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id] = collect();
+                        }
+
+                        $paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id] = $paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id]->merge($paletesSelecionados);
+                    }
+                }
+            }
         }
 
-        $documentos = $documentos->sortBy('min_data_entrada');
-
+        // Obtenha os armazéns, tipos de documentos e clientes
         $armazens = Armazem::all();
         $tiposDocumento = TipoDocumento::all();
         $clientes = Cliente::all();
-        $tipoPaletes = TipoPalete::all();
+        /*$tipoPaletes = TipoPalete::all();*/
 
-        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens', 'paletes', 'quantidadesPaletes', 'artigos'));
+        // Retorne os dados para a view
+        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens', 'paletes', 'paletesPorLinha', 'artigos'));
     }
     /**
      * Show the form for creating a new resource.
@@ -137,51 +119,7 @@ class PedidoRetiradaController extends Controller
      */
     public function show($id)
     {
-/*
-        $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);
 
-        if (!$documento) {
-            return response()->json(['error' => 'Documento não encontrado.'], 404);
-        }
-
-        $paletes = DB::select("
-        SELECT p.*
-        FROM palete p
-        WHERE p.linha_documento_id IN (
-            SELECT ldtp.linha_documento_id
-            FROM linha_documento_tipo_palete ldtp
-            WHERE ldtp.artigo_id IN (
-                SELECT ldtp2.artigo_id
-                FROM linha_documento_tipo_palete ldtp2
-                WHERE ldtp2.linha_documento_id IN (
-                    SELECT ld.id
-                    FROM linha_documento ld
-                    JOIN documento d ON ld.documento_id = d.id
-                    WHERE d.tipo_documento_id = 3 AND d.estado = 'pendente'
-                )
-            )
-            AND ldtp.tipo_palete_id IN (
-                SELECT ldtp3.tipo_palete_id
-                FROM linha_documento_tipo_palete ldtp3
-                WHERE ldtp3.linha_documento_id IN (
-                    SELECT ld.id
-                    FROM linha_documento ld
-                    JOIN documento d ON ld.documento_id = d.id
-                    WHERE d.tipo_documento_id = 3 AND d.estado = 'pendente'
-                )
-            )
-        )
-        AND (SELECT d.cliente_id
-             FROM documento d
-             WHERE d.id = ? LIMIT 1) =
-        (SELECT d.cliente_id
-         FROM documento d
-         WHERE d.id = (SELECT ld.documento_id FROM linha_documento ld WHERE ld.id = p.linha_documento_id LIMIT 1));
-    ", [$id]);
-
-        $paletes = collect($paletes);
-
-        return view('pages.pedido.pedido-retirada.modals.retirada-modal', compact('documento', 'paletes'));*/
     }
 
     /**

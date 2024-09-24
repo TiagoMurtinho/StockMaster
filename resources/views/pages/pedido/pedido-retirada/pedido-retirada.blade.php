@@ -21,7 +21,7 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
-                                <tr>
+                                <tr  data-bs-toggle="modal" data-bs-target="#retiradaModal{{$documento->id}}">
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">
@@ -39,11 +39,6 @@
                                             }
                                         @endphp
                                         {{ $totalQuantidade }} {{ __('retirada.paletes') }}
-                                    </td>
-                                    <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#retiradaModal{{$documento->id}}">
-                                            <i class="bi bi-arrow-right-circle"></i>
-                                        </a>
                                     </td>
                                 </tr>
 
