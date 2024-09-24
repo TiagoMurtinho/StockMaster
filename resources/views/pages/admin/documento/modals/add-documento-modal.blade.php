@@ -35,25 +35,12 @@
                     </div>
 
                     <div id="camposOcultos">
-                        <div class="mb-3">
-                            <label for="matricula" class="form-label">{{__('documento.add_matricula')}}</label>
-                            <input type="text" class="form-control" id="matricula" name="matricula" required>
-                        </div>
 
                         <div class="mb-3">
                             <label for="morada" class="form-label">{{__('documento.add_morada')}}</label>
                             <input type="text" class="form-control" id="morada" name="morada">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="hora_carga" class="form-label">{{__('documento.add_hora_carga')}}</label>
-                            <input type="datetime-local" class="form-control" id="hora_carga" name="hora_carga" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="descarga" class="form-label">{{__('documento.add_descarga')}}</label>
-                            <input type="datetime-local" class="form-control" id="descarga" name="descarga">
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -33,14 +33,11 @@ $(document).ready(function() {
         var tipoDocumentoId = $(this).val();
 
         $('#linhaDocumentoForm')[0].reset();
-        $('#artigoField').hide()
         $('#camposOcultos').hide()
 
         if (tipoDocumentoId == 3) {
-            $('#moradaField').show();
-            $('#descargaField').show();
+            $('#camposOcultos').show()
         }
-
     });
 });
 

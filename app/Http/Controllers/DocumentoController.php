@@ -164,7 +164,6 @@ class DocumentoController extends Controller
 
             $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
 
-            // Gera o PDF para o tipo_documento_id = 1
             $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
         } elseif ($documento->tipo_documento_id == 2) {
 
@@ -182,11 +181,10 @@ class DocumentoController extends Controller
             $pdf = Pdf::loadView('pdf.rececao', compact('documento', 'artigos', 'armazens'));
 
         } else {
-            // Caso queira tratar outros tipos de documentos ou exibir um erro
+
             abort(404, 'Tipo de documento não suportado');
         }
 
-        // Retorna o download do PDF gerado
         return $pdf->download($nomeArquivo);
     }
 
