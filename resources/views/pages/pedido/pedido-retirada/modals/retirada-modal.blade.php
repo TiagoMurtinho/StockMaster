@@ -54,6 +54,7 @@
                                     $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
                                      $paletesDisponiveis = $paletes[$documento->id]
                                         ->where('artigo_id', $tipoPalete->pivot->artigo_id)
+                                         ->whereNull('data_saida')
                                         ->sortBy('data_entrada')
                                         ->take($quantidadeNecessaria);
                                 @endphp
