@@ -28,7 +28,7 @@ class DocumentoController extends Controller
     {
 
         $documentos = Documento::all();
-        $tiposDocumento = TipoDocumento::where('id', 1)->get();
+        $tiposDocumento = TipoDocumento::whereIn('id', [1, 3])->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
         $taxas = Taxa::all();

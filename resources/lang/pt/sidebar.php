@@ -8,5 +8,6 @@ return [
     'documentos' => 'Documentos',
     'artigos' => 'Artigos',
     'pedidos_de_entrega' => 'Pedidos de Entrega',
-    'taxas' => 'Taxas'
+    'taxas' => 'Taxas',
+    'pedidos_de_retirada' => 'Pedidos de Retirada'
 ];

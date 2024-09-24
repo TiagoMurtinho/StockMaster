@@ -23,6 +23,7 @@ class Palete extends Model
         'user_id',
         'artigo_id',
         'armazem_id',
+        'cliente_id'
     ];
 
     public function tipo_palete(): BelongsTo
@@ -43,6 +44,11 @@ class Palete extends Model
     public function armazem(): BelongsTo
     {
         return $this->belongsTo(Armazem::class, 'armazem_id');
+    }
+
+    public function cliente(): BelongsTo
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
     public function user(): BelongsTo

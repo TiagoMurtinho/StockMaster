@@ -35,4 +35,9 @@ class Cliente extends Model
     {
         return $this->hasMany(Artigo::class, 'cliente_id');
     }
+
+    public function palete(): HasMany
+    {
+        return $this->hasMany(Palete::class, 'cliente_id');
+    }
 }

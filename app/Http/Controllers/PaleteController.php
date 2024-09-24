@@ -45,6 +45,7 @@ class PaleteController extends Controller
                 'tipo_palete_id' => 'required|array',
                 'data_entrada' => 'nullable|array',
                 'armazem_id' => 'required|array',
+                'cliente_id' => 'required|integer|exists:cliente,id',
                 'observacao' => 'nullable|string',
             ]);
 
@@ -68,7 +69,8 @@ class PaleteController extends Controller
 
             $novaLinhaDocumento = LinhaDocumento::create([
                 'documento_id' => $novoDocumento->id,
-                'data_entrada' => now(),
+                'previsao' => $linhaDocumento->previsao,
+                'data_entrada' =>  now(),
                 'observacao' => $observacaoFinal,
                 'taxa_id' => $linhaDocumento->taxa->id,
                 'user_id' => $userId,
@@ -91,12 +93,13 @@ class PaleteController extends Controller
                     }
 
                     $palete = Palete::create([
-                        'linha_documento_id' => $linhaDocumentoId,
+                        'linha_documento_id' => $novaLinhaDocumento->id,
                         'localizacao' => $localizacao,
-                        'data_entrada' => now(),
+                        'data_entrada' => '2024-09-05',
                         'tipo_palete_id' => $tipoPalete,
                         'artigo_id' => $artigoId,
                         'armazem_id' => $armazemId,
+                        'cliente_id' => $documentoOriginal->cliente_id,
                         'user_id' => $userId,
                     ]);
 

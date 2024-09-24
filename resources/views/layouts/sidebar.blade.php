@@ -56,8 +56,8 @@
                 </a>
             </li>
             <li>
-                <a href="#">
-                    <i class="bi bi-circle"></i><span>{{__('sidebar.tipo_documentos')}}</span>
+                <a href="{{route('pedido-retirada.index')}}">
+                    <i class="bi bi-circle"></i><span>{{__('sidebar.pedidos_de_retirada')}}</span>
                 </a>
             </li>
         </ul>

@@ -7,6 +7,7 @@ use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\LinhaDocumentoController;
 use App\Http\Controllers\PaleteController;
 use App\Http\Controllers\PedidoEntregaController;
+use App\Http\Controllers\PedidoRetiradaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaxaController;
 use App\Http\Controllers\TipoPaleteController;
@@ -34,6 +35,7 @@ Route::resource('armazem', ArmazemController::class);
 Route::resource('documento', DocumentoController::class)->except('show');
 Route::post('linha-documento', [DocumentoController::class, 'storeLinhaDocumento']);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
+Route::resource('pedido-retirada', PedidoRetiradaController::class)->except('show');
 Route::resource('artigo', ArtigoController::class);
 Route::resource('palete', PaleteController::class);
 Route::resource('taxa', TaxaController::class);
@@ -48,6 +50,7 @@ Route::get('taxas', function() {
 Route::get('/documento/json', [DocumentoController::class, 'indexJson']);
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
 Route::put('/documento/{id}', [DocumentoController::class, 'update']);
+Route::get('/pedido-retirada/{id}', [PedidoRetiradaController::class, 'show'])->name('pedido-retirada.show');
 
 
 require __DIR__.'/auth.php';
