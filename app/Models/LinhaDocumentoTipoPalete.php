@@ -32,7 +32,7 @@ class LinhaDocumentoTipoPalete extends Model
 
     public function artigo()
     {
-        return $this->belongsTo(Artigo::class);
+        return $this->belongsTo(Artigo::class, 'artigo_id');
     }
 
     public function armazem()

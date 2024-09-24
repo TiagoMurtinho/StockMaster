@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Armazem;
+use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
 use App\Models\Palete;
@@ -18,6 +19,7 @@ class PedidoRetiradaController extends Controller
      */
     public function index()
     {
+
         // Obtém todos os documentos pendentes
         $documentos = Documento::with(['linha_documento.tipo_palete'])
             ->where('tipo_documento_id', 3)
@@ -27,14 +29,19 @@ class PedidoRetiradaController extends Controller
             })
             ->get();
 
-        // Agora vamos buscar as paletes associadas a cada documento
+        $artigoIds = $documentos->flatMap(function ($documento) {
+            return $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.artigo_id'); // Acessando artigo_id da tabela pivot
+            });
+        });
+
+        $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
         $paletes = [];
-        $quantidadesPaletes = []; // Adiciona um array para armazenar a contagem de paletes
+        $quantidadesPaletes = [];
 
         foreach ($documentos as $documento) {
             $documentoId = $documento->id;
 
-            // Busca as paletes associadas ao documento atual
             $paletes[$documentoId] = DB::select("
     SELECT p.*
     FROM palete p
@@ -97,6 +104,7 @@ class PedidoRetiradaController extends Controller
 
             $documento->min_data_entrada = $paletes[$documentoId]->min('data_entrada');
 
+            $paletes[$documentoId] = Palete::with(['artigo', 'tipo_palete'])->get();
         }
 
         $documentos = $documentos->sortBy('min_data_entrada');
@@ -106,7 +114,7 @@ class PedidoRetiradaController extends Controller
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
 
-        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens', 'paletes', 'quantidadesPaletes'));
+        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens', 'paletes', 'quantidadesPaletes', 'artigos'));
     }
     /**
      * Show the form for creating a new resource.

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -26,10 +27,10 @@ class TipoPalete extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function linha_documento(): HasMany
+    public function linha_documento(): BelongsToMany
     {
         return $this->belongsToMany(LinhaDocumento::class, 'linha_documento_tipo_palete')
-            ->withPivot('quantidade', 'artigo_id', 'id')
+            ->withPivot('quantidade', 'artigo_id'/*, 'id'*/)
             ->withTimestamps();
     }
 

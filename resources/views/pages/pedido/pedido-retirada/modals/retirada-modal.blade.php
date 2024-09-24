@@ -7,23 +7,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                @foreach($documento->linha_documento as $linha)
                 <!-- Informação do documento -->
-                <h5>{{ __('retirada.documento') }}: {{ $documento->numero }}</h5>
-                <p>{{ __('retirada.cliente') }}: {{ $documento->cliente->nome }}</p>
+                <h5>{{ __('retirada.documento') }} {{ $documento->numero }}</h5>
+                <p>{{ __('retirada.cliente') }} {{ $documento->cliente->nome }}</p>
+                <p>{{ __('retirada.previsao_saida') }} {{ $linha->previsao }}</p>
 
                 <table class="table">
                     <thead>
                     <tr>
                         <th>{{ __('retirada.artigo') }}</th>
                         <th>{{ __('retirada.quantidade') }}</th>
-                        <th>{{ __('retirada.data_entrada') }}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    @foreach($documento->linha_documento as $linha)
+
                         @foreach($linha->tipo_palete as $tipoPalete)
                             <tr>
-                                <td>{{ $tipoPalete->pivot->artigo_id }}</td>
+                                <td>{{ $artigos[$tipoPalete->pivot->artigo_id]->nome ?? 'Artigo não disponível' }}</td>
                                 <td>{{ $tipoPalete->pivot->quantidade }}</td>
                             </tr>
                         @endforeach
@@ -41,8 +42,8 @@
                         <tr>
                             <th>{{ __('retirada.selecionar') }}</th>
                             <th>{{ __('retirada.artigo') }}</th>
-                            <th>{{ __('retirada.quantidade') }}</th>
                             <th>{{ __('retirada.data_entrada') }}</th>
+                            <th>{{ __('retirada.tipo_palete') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -50,7 +51,7 @@
                             @foreach($linha->tipo_palete as $tipoPalete)
                                 @php
                                     $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
-                                    $paletesDisponiveis = $paletes[$documento->id]
+                                     $paletesDisponiveis = $paletes[$documento->id]
                                         ->where('artigo_id', $tipoPalete->pivot->artigo_id)
                                         ->sortBy('data_entrada')
                                         ->take($quantidadeNecessaria);
@@ -61,8 +62,9 @@
                                         <td>
                                             <input type="checkbox" name="paletes_selecionadas[]" value="{{ $palete->id }}">
                                         </td>
-                                        <td>{{ $palete->artigo_id }}</td>
+                                        <td>{{ $palete->artigo->nome ?? 'Desconhecido' }}</td> <!-- Nome do artigo -->
                                         <td>{{ $palete->data_entrada }}</td>
+                                        <td>{{ $palete->tipo_palete->tipo ?? 'Desconhecido' }}</td> <!-- Nome do tipo de palete -->
                                     </tr>
                                 @endforeach
                             @endforeach
