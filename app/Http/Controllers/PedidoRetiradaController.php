@@ -19,7 +19,7 @@ class PedidoRetiradaController extends Controller
      */
     public function index()
     {
-        // Obtenha os documentos
+
         $documentos = Documento::with(['linha_documento.tipo_palete'])
             ->where('tipo_documento_id', 3)
             ->where('estado', 'pendente')
@@ -28,7 +28,6 @@ class PedidoRetiradaController extends Controller
             })
             ->get();
 
-        // Extraia os IDs dos artigos e tipos de palete
         $artigoIds = $documentos->flatMap(function ($documento) {
             return $documento->linha_documento->flatMap(function ($linha) {
                 return $linha->tipo_palete->pluck('pivot.artigo_id');
@@ -61,14 +60,11 @@ class PedidoRetiradaController extends Controller
                 foreach ($linha->tipo_palete as $tipoPalete) {
                     $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
 
-
-                    // Filtramos os paletes disponíveis para este tipo de palete e artigo
                     $paletesDisponiveis = $paletes
                         ->where('artigo_id', $tipoPalete->pivot->artigo_id)
                         ->where('tipo_palete_id', $tipoPalete->id)
                         ->sortBy('data_entrada');
 
-                    // Se houver paletes disponíveis, acumule até atingir a quantidade necessária
                     $paletesSelecionados = collect();
                     foreach ($paletesDisponiveis as $palete) {
                         if ($paletesSelecionados->count() < $quantidadeNecessaria) {
@@ -76,9 +72,8 @@ class PedidoRetiradaController extends Controller
                         }
                     }
 
-                    // Armazene os paletes selecionados para este tipo de palete
                     if ($paletesSelecionados->isNotEmpty()) {
-                        // Se já existem paletes para este tipo de palete, combine as coleções
+
                         if (!isset($paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id])) {
                             $paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id] = collect();
                         }
@@ -89,13 +84,10 @@ class PedidoRetiradaController extends Controller
             }
         }
 
-        // Obtenha os armazéns, tipos de documentos e clientes
         $armazens = Armazem::all();
         $tiposDocumento = TipoDocumento::all();
         $clientes = Cliente::all();
-        /*$tipoPaletes = TipoPalete::all();*/
 
-        // Retorne os dados para a view
         return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens', 'paletes', 'paletesPorLinha', 'artigos'));
     }
     /**
