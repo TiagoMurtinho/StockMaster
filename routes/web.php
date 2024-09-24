@@ -50,7 +50,7 @@ Route::get('taxas', function() {
 Route::get('/documento/json', [DocumentoController::class, 'indexJson']);
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
 Route::put('/documento/{id}', [DocumentoController::class, 'update']);
-Route::get('/pedido-retirada/{id}', [PedidoRetiradaController::class, 'show'])->name('pedido-retirada.show');
+Route::post('/paletes/retirar', [PaleteController::class, 'retirar'])->name('paletes.retirar');
 
 
 require __DIR__.'/auth.php';

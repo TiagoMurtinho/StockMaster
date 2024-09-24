@@ -137,6 +137,35 @@ class PaleteController extends Controller
         }
     }
 
+    public function retirar(Request $request)
+    {
+        // Validar os dados de entrada
+        $request->validate([
+            'paletes_selecionadas' => 'required|array',
+            'linha_documento_id' => 'required|exists:linha_documento,id',
+        ]);
+
+        // Verificar o que foi enviado no request
+        \Log::info('Dados recebidos:', $request->all());
+
+        // Atualizar cada palete selecionada
+        foreach ($request->paletes_selecionadas as $paleteId) {
+            $palete = Palete::where('id', $paleteId)
+                ->first();
+
+            // Adicione um log para verificar se a palete foi encontrada
+            if ($palete) {
+                $palete->data_saida = now();
+                $palete->save();
+                \Log::info('Palete atualizada:', ['id' => $palete->id]);
+            } else {
+                \Log::warning('Palete não encontrada:', ['paleteId' => $paleteId, 'linha_documento_id' => $request->linha_documento_id]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Paletes atualizadas com sucesso.');
+    }
+
     /**
      * Display the specified resource.
      */

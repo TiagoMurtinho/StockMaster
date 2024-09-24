@@ -32,9 +32,10 @@
                     </tbody>
                 </table>
 
-                <form action="{{--{{ route('paletes.retirar') }}--}}" method="POST">
+                <form action="{{ route('paletes.retirar') }}" method="POST">
                     @csrf
                     <input type="hidden" name="documento_id" value="{{ $documento->id }}">
+                    <input type="hidden" name="linha_documento_id" value="{{ $linha->id }}">
 
                     <h5>{{ __('retirada.paletes_associadas') }}</h5>
                     <table class="table">
@@ -60,11 +61,14 @@
                                 @foreach($paletesDisponiveis as $palete)
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="paletes_selecionadas[]" value="{{ $palete->id }}">
+                                            <label class="custom-checkbox">
+                                                <input type="checkbox" name="paletes_selecionadas[]" value="{{ $palete->id }}">
+                                                <span class="checkbox-box"></span>
+                                            </label>
                                         </td>
                                         <td>{{ $palete->artigo->nome ?? 'Desconhecido' }}</td> <!-- Nome do artigo -->
                                         <td>{{ $palete->data_entrada }}</td>
-                                        <td>{{ $palete->tipo_palete->tipo ?? 'Desconhecido' }}</td> <!-- Nome do tipo de palete -->
+                                        <td>{{ $palete->tipo_palete->tipo ?? 'Desconhecido' }}</td>
                                     </tr>
                                 @endforeach
                             @endforeach
