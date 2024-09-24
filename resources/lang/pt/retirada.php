@@ -15,5 +15,6 @@ return [
     'selecionar' => 'Selecionar:',
     'data_entrada' => 'Data de Entrada:',
     'tipo_palete' => 'Tipo de Palete:',
-    'confirmar_selecao' => 'Confirmar'
+    'confirmar_selecao' => 'Confirmar',
+    'localizacao' => 'Localização'
 ];
