@@ -24,7 +24,8 @@ class PedidoRetiradaController extends Controller
             ->where('tipo_documento_id', 3)
             ->where('estado', 'pendente')
             ->whereHas('linha_documento', function ($query) {
-                $query->orderBy('data_entrada', 'asc');
+                $query->whereDate('previsao', today())
+                ->orderBy('data_entrada', 'asc');
             })
             ->get();
 
