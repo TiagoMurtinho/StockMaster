@@ -27,6 +27,7 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
+
                                 <tr class="clickable-row" data-id="{{ $documento->id }}">
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">{{ $documento->data }}</td>
@@ -48,8 +49,10 @@
                                     </td>
                                 </tr>
 
+
                                 @include('pages.admin.documento.modals.documento-delete-modal')
                             @endforeach
+
                             </tbody>
                         </table>
                     </div>

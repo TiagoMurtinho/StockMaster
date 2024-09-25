@@ -21,11 +21,12 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
-                                <tr>
+                                @foreach($documento->linha_documento as $linha)
+                                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $linha->id }}">
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">
-                                        @foreach($documento->linha_documento as $linha)
+
                                             {{ $linha->previsao }}
                                         @endforeach
                                     </td>
@@ -39,11 +40,6 @@
                                             }
                                         @endphp
                                         {{ $totalQuantidade }} {{__('entrega.paletes')}}
-                                    </td>
-                                    <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $linha->id }}">
-                                            <i class="bi bi-arrow-right-circle"></i>
-                                        </a>
                                     </td>
                                 </tr>
                             @endforeach

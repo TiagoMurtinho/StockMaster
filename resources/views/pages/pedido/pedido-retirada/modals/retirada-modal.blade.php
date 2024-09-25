@@ -1,6 +1,6 @@
 @foreach($documentos as $documento)
     <div class="modal fade" id="retiradaModal{{$documento->id}}" tabindex="-1" aria-labelledby="retiradaModalLabel{{$documento->id}}" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="retiradaModalLabel{{$documento->id}}">{{ __('retirada.detalhes') }}</h5>
@@ -29,7 +29,7 @@
                             </tbody>
                         </table>
 
-                        <form action="{{ route('paletes.retirar') }}" method="POST">
+                        <form id="documentoForm" action="{{ route('paletes.retirar') }}" method="POST">
                             @csrf
                             <input type="hidden" name="documento_id" value="{{ $documento->id }}">
                             <input type="hidden" name="linha_documento_id" value="{{ $linha->id }}">
@@ -67,7 +67,11 @@
                                                 <tr>
                                                     <td>
                                                         <label class="custom-checkbox">
-                                                            <input type="checkbox" name="paletes_selecionadas[]" value="{{ $palete->id }}">
+                                                            <input type="checkbox" name="paletes_selecionadas[]" value="{{ $palete->id }}"
+                                                                   data-tipo-palete-id="{{ $palete->tipo_palete_id }}"
+                                                                   data-artigo-id="{{ $palete->artigo_id }}"
+                                                                   data-armazem-id="{{ $palete->armazem_id }}"
+                                                                   data-localizacao="{{ $palete->localizacao }}">
                                                             <span class="checkbox-box"></span>
                                                         </label>
                                                     </td>
@@ -84,12 +88,25 @@
                             </div>
 
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary">{{ __('retirada.confirmar_selecao') }}</button>
+                                <button type="button" id="continuarGuiaTransporteBtn" class="btn btn-primary"
+                                        data-documento-numero="{{ $documento->numero }}"
+                                        data-documento-cliente-id="{{ $documento->cliente_id }}"
+                                        data-linha-observacao="{{ $linha->observacao }}"
+                                        data-linha-previsao="{{ $linha->previsao }}"
+                                        data-linha-taxa-id="{{ $linha->taxa_id }}"
+                                        data-documento-morada="{{ $documento->morada }}">
+                                {{ __('retirada.confirmar_selecao') }}
+                                </button>
                             </div>
                         </form>
                     @endforeach
                 </div>
             </div>
         </div>
+
     </div>
 @endforeach
+
+@include('pages.pedido.pedido-retirada.modals.guia-transporte-modal')
+
+

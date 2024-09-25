@@ -138,7 +138,7 @@ class PaleteController extends Controller
         }
     }
 
-    public function retirar(Request $request)
+    public function retirar(Request $request): JsonResponse
     {
 
         $request->validate([
@@ -156,7 +156,10 @@ class PaleteController extends Controller
             }
         }
 
-        return redirect()->back()->with('success', 'Paletes atualizadas com sucesso.');
+        return response()->json([
+            'success' => true,
+            'documento_id' => $request->input('documento_id')
+        ]);
     }
 
     /**

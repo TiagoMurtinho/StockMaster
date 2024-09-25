@@ -28,6 +28,7 @@ class DocumentoController extends Controller
     {
 
         $documentos = Documento::all();
+
         $tiposDocumento = TipoDocumento::whereIn('id', [1, 3])->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
@@ -180,9 +181,32 @@ class DocumentoController extends Controller
 
             $pdf = Pdf::loadView('pdf.rececao', compact('documento', 'artigos', 'armazens'));
 
-        } else {
+        } elseif ($documento->tipo_documento_id == 3) {
 
-            abort(404, 'Tipo de documento não suportado');
+            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.artigo_id');
+            });
+
+            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+
+            $pdf = Pdf::loadView('pdf.pedido-retirada', compact('documento', 'artigos'));
+
+        } elseif ($documento->tipo_documento_id == 4) {
+
+
+            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.artigo_id');
+            });
+
+            $armazemIds = $documento->linha_documento->flatMap(function ($linha) {
+                return $linha->tipo_palete->pluck('pivot.armazem_id');
+            });
+
+            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+            $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
+
+            $pdf = Pdf::loadView('pdf.guia-transporte', compact('documento', 'artigos', 'armazens'));
+
         }
 
         return $pdf->download($nomeArquivo);

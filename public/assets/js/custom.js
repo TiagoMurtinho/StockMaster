@@ -509,11 +509,7 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
 document.addEventListener('click', function(event) {
     if (event.target && event.target.classList.contains('add-palete-row')) {
         adicionarNovaLinha();
-    }
-});
-
-document.addEventListener('click', function(event) {
-    if (event.target && event.target.closest('.remove-palete-row')) {
+    } else if (event.target && event.target.closest('.remove-palete-row')) {
         const row = event.target.closest('tr.palete-row');
         row.hide();
     }
@@ -621,3 +617,80 @@ function saveChanges() {
         }
     });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('[id^="continuarGuiaTransporteBtn"]');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            let form = button.closest('form');
+            let formData = new FormData(form);
+
+            // Preencher os campos
+            let numero = button.getAttribute('data-documento-numero');
+            let clienteId = button.getAttribute('data-documento-cliente-id');
+            let observacao = button.getAttribute('data-linha-observacao');
+            let previsao = button.getAttribute('data-linha-previsao');
+            let taxaId = button.getAttribute('data-linha-taxa-id');
+            let morada = button.getAttribute('data-documento-morada');
+
+            document.getElementById('numero').value = numero;
+            document.getElementById('cliente_id').value = clienteId;
+            document.getElementById('observacao').value = observacao;
+            document.getElementById('previsao').value = previsao;
+            document.getElementById('taxa_id').value = taxaId;
+            document.getElementById('morada').value = morada;
+
+            let paletesDados = [];
+            const selectedPaletes = document.querySelectorAll('input[name="paletes_selecionadas[]"]:checked');
+
+            selectedPaletes.forEach(palete => {
+                let tipoPaleteId = palete.getAttribute('data-tipo-palete-id');
+                let artigoId = palete.getAttribute('data-artigo-id');
+                let armazemId = palete.getAttribute('data-armazem-id');
+                let localizacao = palete.getAttribute('data-localizacao');
+
+                paletesDados.push({
+                    tipo_palete_id: tipoPaleteId,
+                    artigo_id: artigoId,
+                    armazem_id: armazemId,
+                    localizacao: localizacao
+                });
+            });
+
+            formData.append('paletes_dados', JSON.stringify(paletesDados));
+
+            document.getElementById('paletes_dados').value = JSON.stringify(paletesDados);
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao enviar o formulário');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let documentoId = data.documento_id;
+                    let retiradaModal = bootstrap.Modal.getInstance(document.getElementById('retiradaModal' + documentoId));
+                    if (retiradaModal) {
+                        retiradaModal.hide();
+                    }
+
+                    let guiaTransporteModal = new bootstrap.Modal(document.getElementById('modalGuiaTransporte'));
+                    guiaTransporteModal.show();
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+        });
+    });
+});

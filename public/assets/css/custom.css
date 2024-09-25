@@ -89,6 +89,8 @@
     display: block;
 }
 
+
+
 @media (max-width: 1000px) {
     .modal-lg {
         width: 90%;
