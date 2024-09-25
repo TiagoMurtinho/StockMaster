@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -18,13 +19,19 @@ class Documento extends Model
 
     protected $fillable = [
         'estado',
+        'observacao',
+        'previsao',
         'numero',
         'data',
         'matricula',
         'morada',
         'hora_carga',
         'descarga',
+        'data_entrada',
+        'data_saida',
         'total',
+        'extra',
+        'taxa_id',
         'tipo_documento_id',
         'cliente_id',
         'user_id',
@@ -45,8 +52,15 @@ class Documento extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function linha_documento(): HasMany
+    public function taxa(): BelongsTo
     {
-        return $this->hasMany(LinhaDocumento::class, 'documento_id');
+        return $this->belongsTo(Taxa::class, 'taxa_id');
+    }
+
+    public function tipo_palete(): BelongsToMany
+    {
+        return $this->belongsToMany(TipoPalete::class, 'documento_tipo_palete')
+            ->withPivot('quantidade', 'artigo_id', 'armazem_id', 'localizacao')
+            ->withTimestamps();
     }
 }

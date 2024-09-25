@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_saida')->nullable();
             $table->foreignId('tipo_palete_id')->constrained('tipo_palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('linha_documento_id')->constrained('linha_documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('artigo_id')->nullable()->constrained('artigo', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('armazem_id')->nullable()->constrained('armazem', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('cliente_id')->constrained('cliente', 'id')->cascadeOnDelete()->cascadeOnUpdate();

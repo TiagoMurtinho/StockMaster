@@ -39,12 +39,6 @@
     padding-right: 10px;
 }
 
-.modal-documento {
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
 .custom-checkbox {
     display: flex;
     justify-content: center;

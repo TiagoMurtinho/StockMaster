@@ -33,7 +33,6 @@ Route::resource('tipo-palete', TipoPaleteController::class);
 Route::resource('cliente', ClienteController::class);
 Route::resource('armazem', ArmazemController::class);
 Route::resource('documento', DocumentoController::class)->except('show');
-Route::post('linha-documento', [DocumentoController::class, 'storeLinhaDocumento']);
 Route::resource('pedido-entrega', PedidoEntregaController::class);
 Route::resource('pedido-retirada', PedidoRetiradaController::class)->except('show');
 Route::resource('artigo', ArtigoController::class);

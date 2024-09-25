@@ -17,7 +17,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class DocumentoController extends Controller
 {
@@ -28,7 +27,6 @@ class DocumentoController extends Controller
     {
 
         $documentos = Documento::all();
-
         $tiposDocumento = TipoDocumento::whereIn('id', [1, 3])->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
@@ -58,67 +56,37 @@ class DocumentoController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        \Log::info('Dados recebidos:', $request->all());
+
         try {
+            // Validação
             $validated = $request->validate([
-                'numero' => 'required|numeric',
-                'matricula' => 'nullable|string|max:45',
-                'morada' => 'nullable|string|max:255',
-                'hora_carga' => 'nullable|date_format:H:i',
-                'hora_descarga' => 'nullable|date',
-                'total' => 'nullable|numeric',
-                'tipo_documento_id' => 'required|exists:tipo_documento,id',
-                'cliente_id' => 'required|exists:cliente,id',
+                'documento.numero' => 'required|numeric',
+                'documento.matricula' => 'nullable|string|max:45',
+                'documento.morada' => 'nullable|string|max:255',
+                'documento.total' => 'nullable|numeric',
+                'documento.observacao' => 'nullable|string|max:255',
+                'documento.previsao' => 'required|date',
+                'documento.extra' => 'nullable|numeric',
+                'documento.taxa_id' => 'required|integer|exists:taxa,id',
+                'documento.tipo_documento_id' => 'required|exists:tipo_documento,id',
+                'documento.cliente_id' => 'required|exists:cliente,id',
+                'linhas' => 'required|array',
+                'linhas.*.tipo_palete_id' => 'required|integer|exists:tipo_palete,id',
+                'linhas.*.quantidade' => 'required|integer|min:1',
+                'linhas.*.artigo_id' => 'required|integer|exists:artigo,id',
             ]);
 
-            $validated['user_id'] = auth()->id();
-            $validated['data'] = now();
+            // Criação do documento
+            $documentoData = $validated['documento'];
+            $documentoData['user_id'] = auth()->id();
+            $documentoData['data'] = now(); // Adiciona a data atual ao campo 'data'
 
-            $documento = Documento::create($validated);
+            $documento = Documento::create($documentoData);
 
-            return response()->json([
-                'success' => true,
-                'documento_id' => $documento->id,
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'errors' => $e->errors(),
-            ], 422);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function storeLinhaDocumento(Request $request): JsonResponse
-    {
-
-        $validated = $request->validate([
-            'observacao' => 'nullable|string|max:255',
-            'morada' => 'nullable|string|max:255',
-            'previsao' => 'required|date',
-            'extra' => 'nullable|numeric',
-            'taxa_id' => 'required|integer|exists:taxa,id',
-            'documento_id' => 'required|integer|exists:documento,id',
-            'linhas' => 'required|array',
-            'linhas.*.tipo_palete_id' => 'required|integer|exists:tipo_palete,id',
-            'linhas.*.quantidade' => 'required|integer|min:1',
-            'linhas.*.artigo_id' => 'required|integer|exists:artigo,id',
-        ]);
-
-        DB::beginTransaction();
-
-        try {
-
-            $validated['user_id'] = auth()->id();
-
-
-            $linhaDocumento = LinhaDocumento::create($validated);
-
+            // Criação das linhas associadas (tipo_palete, quantidade, artigo_id)
             foreach ($request->input('linhas') as $linha) {
-                $linhaDocumento->tipo_palete()->attach(
+                $documento->tipo_palete()->attach(
                     $linha['tipo_palete_id'],
                     [
                         'quantidade' => $linha['quantidade'],
@@ -127,23 +95,21 @@ class DocumentoController extends Controller
                 );
             }
 
-            DB::commit();
-
             return response()->json([
                 'success' => true,
-                'message' => 'Linha do documento criada com sucesso.',
+                'documento_id' => $documento->id,
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Resposta em caso de erro de validação
             return response()->json([
                 'success' => false,
-                'message' => 'Erro ao criar a linha do documento: ' . $e->getMessage(),
-            ], 500);
+                'errors' => $e->errors(),
+            ], 422);
         } catch (\Exception $e) {
-            DB::rollBack();
+            // Resposta em caso de erro geral
             return response()->json([
                 'success' => false,
-                'message' => 'Erro inesperado: ' . $e->getMessage(),
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
@@ -151,17 +117,13 @@ class DocumentoController extends Controller
     public function gerarPDF($id): Response
     {
         // Carrega o documento com suas relações
-        $documento = Documento::with(['linha_documento.tipo_palete'])->findOrFail($id);
+        $documento = Documento::with(['tipo_palete'])->findOrFail($id);
 
-        // Definir o nome do arquivo PDF
         $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
 
-        // Condicional baseado no tipo_documento_id
         if ($documento->tipo_documento_id == 1) {
 
-            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.artigo_id');
-            });
+            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
 
             $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
 

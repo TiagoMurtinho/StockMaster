@@ -35,51 +35,146 @@ $(document).ready(function() {
         $('#linhaDocumentoForm')[0].reset();
         $('#camposOcultos').hide()
 
-        if (tipoDocumentoId == 3) {
+        if (tipoDocumentoId === 3) {
             $('#camposOcultos').show()
         }
     });
 });
 
 $(document).ready(function() {
+    let documentoData = {}; // Objeto para armazenar os dados do primeiro modal
 
-    $('#continuarModalLinhaDocumentoBtn').click(function() {
-        var tipoDocumentoId = $('#tipo_documento').val();
-        var clienteId = $('#cliente').val();
-        var numero = $('#numero').val();
-        var matricula = $('#matricula').val();
-        var morada = $('#morada').val();
-        var total = $('#total').val();
-
+    // Função para carregar os artigos com base no clienteId
+    function loadArtigos(clienteId, selectElement) {
         $.ajax({
-            url: '/documento',
-            method: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                tipo_documento_id: tipoDocumentoId,
-                cliente_id: clienteId,
-                numero: numero,
-                matricula: matricula,
-                morada: morada,
-                total: total,
-            },
+            url: `/artigos/${clienteId}`,
+            method: 'GET',
             success: function(response) {
-                documentoId = response.documento_id;
-                $('#modalLinhaDocumento').data('cliente-id', clienteId);
-                $('#modalAddDocumento').modal('hide');
-                $('#modalLinhaDocumento').modal('show');
+                if (Array.isArray(response)) {
+                    const options = response.map(artigo =>
+                        `<option value="${artigo.id}">${artigo.nome}</option>`
+                    ).join('');
+                    $(selectElement).html(`<option value="">Selecione um Artigo</option>${options}`);
+                } else {
+                    console.error('Resposta inválida para artigos:', response);
+                }
             },
             error: function(xhr, status, error) {
-                console.log('Erro ao criar o documento: ' + xhr.responseText);
+                console.error('Erro ao carregar os artigos:', error);
             }
         });
+    }
+
+    // Função para carregar os tipos de palete
+    function loadTipoPaletes() {
+        return $.ajax({
+            url: '/tipo-paletes',
+            method: 'GET',
+        });
+    }
+
+    // Evento para continuar e abrir o segundo modal
+    $('#continuarModalLinhaDocumentoBtn').click(function() {
+        // Captura os dados do primeiro modal
+        documentoData.tipo_documento_id = $('#tipo_documento').val();
+        documentoData.cliente_id = $('#cliente').val();
+        documentoData.numero = $('#numero').val();
+        documentoData.morada = $('#morada').val();
+        documentoData.observacao = $('#observacao').val();
+        documentoData.taxa_id = $('#taxa_id').val();
+        documentoData.previsao = $('#previsao').val();
+
+        console.log(documentoData);
+
+        $('#modalAddDocumento').modal('hide');
+
+        $('#modalLinhaDocumento').data('cliente-id', documentoData.cliente_id);
+        $('#modalLinhaDocumento').modal('show');
     });
 
-    $('#criarDocumentoBtn').click(function() {
-        var observacao = $('#observacao').val();
-        var taxaId = $('#taxa_id').val();
-        var previsao = $('#previsao').val();
+    // Evento para voltar ao primeiro modal
+    $('#voltarAoPrimeiroModal').click(function() {
+        $('#modalLinhaDocumento').modal('hide');
+        $('#modalAddDocumento').modal('show');
 
+        // Restaurar os dados no primeiro modal
+        $('#tipo_documento').val(documentoData.tipo_documento_id);
+        $('#cliente').val(documentoData.cliente_id);
+        $('#numero').val(documentoData.numero);
+        $('#morada').val(documentoData.morada);
+        $('#observacao').val(documentoData.observacao);
+        $('#taxa_id').val(documentoData.taxa_id);
+        $('#previsao').val(documentoData.previsao);
+    });
+
+    // Evento ao abrir o segundo modal
+    $('#modalLinhaDocumento').on('show.bs.modal', function() {
+        const clienteId = documentoData.cliente_id; // Obtém o cliente_id armazenado
+
+        if (clienteId) {
+            // Carregar tipos de palete
+            loadTipoPaletes().done(function(response) {
+                if (Array.isArray(response)) {
+                    var tipoPaleteSelect = $('#paleteFields .palete-row select[name="tipo_palete_id[]"]');
+                    tipoPaleteSelect.empty();
+                    var options = response.map(tipoPalete =>
+                        `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`
+                    ).join('');
+                    tipoPaleteSelect.append(`<option value="">Selecione um Tipo de Palete</option>${options}`);
+
+                    // Carregar artigos para cada linha de palete
+                    $('#paleteFields .palete-row').each(function() {
+                        loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
+                    });
+                } else {
+                    console.error('Resposta inválida para tipos de palete:', response);
+                }
+            });
+
+            // Adicionar nova linha de palete com artigos dinâmicos
+            $('#addPaleteRow').off('click').on('click', function() {
+                const newRow = `
+                    <div class="palete-row mb-3">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="tipo_palete_id" class="form-label">Tipo de Palete</label>
+                                <select name="tipo_palete_id[]" class="form-select" required>
+                                    ${$('#paleteFields .palete-row select[name="tipo_palete_id[]"]').html()}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="quantidade" class="form-label">Quantidade</label>
+                                <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="artigo_id" class="form-label">Artigo</label>
+                                <select name="artigo_id[]" class="form-select" required>
+                                    <option value="">Selecione um Artigo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-1 d-flex align-items-end">
+                                <a type="button" class="remove-palete-row">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>`;
+
+                $('#paleteFields').append(newRow);
+
+                // Carrega os artigos para o novo select de artigo
+                loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
+            });
+
+            // Remover uma linha de palete
+            $(document).on('click', '.remove-palete-row', function() {
+                $(this).closest('.palete-row').remove();
+            });
+        }
+    });
+
+    // Evento para criar o documento final com todas as informações
+    $('#criarDocumentoBtn').click(function() {
         var tipoPaleteIds = [];
         var quantidades = [];
         var artigoIds = [];
@@ -91,6 +186,7 @@ $(document).ready(function() {
         $('input[name="quantidade[]"]').each(function() {
             quantidades.push($(this).val());
         });
+
         $('select[name="artigo_id[]"]').each(function() {
             artigoIds.push($(this).val());
         });
@@ -103,26 +199,22 @@ $(document).ready(function() {
             };
         });
 
+        // Faz o pedido AJAX com todos os dados
         $.ajax({
-            url: '/linha-documento',
+            url: '/documento',
             method: 'POST',
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                documento_id: documentoId,
-                observacao: observacao,
-                taxa_id: taxaId,
-                previsao: previsao,
+                documento: documentoData, // Inclui os dados do primeiro modal
                 linhas: linhasData
             },
             success: function(response) {
-
                 atualizarTabelaDocumentos();
-
                 $('#modalLinhaDocumento').modal('hide');
-                window.location.href = '/documento/' + documentoId + '/pdf';
+                window.location.href = '/documento/' + response.documento_id + '/pdf';
             },
             error: function(xhr, status, error) {
-                console.log('Erro ao criar a linha do documento: ' + xhr.responseText);
+                console.log('Erro ao criar o documento: ' + xhr.responseText);
             }
         });
     });
@@ -165,98 +257,6 @@ function atualizarTabelaDocumentos() {
         }
     });
 }
-
-$(document).ready(function() {
-
-    function loadArtigos(clienteId, selectElement) {
-        $.ajax({
-            url: `/artigos/${clienteId}`,
-            method: 'GET',
-            success: function(response) {
-                if (Array.isArray(response)) {
-                    const options = response.map(artigo =>
-                        `<option value="${artigo.id}">${artigo.nome}</option>`
-                    ).join('');
-                    $(selectElement).html(`<option value="">Selecione um Artigo</option>${options}`);
-                } else {
-                    console.error('Resposta inválida para artigos:', response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Erro ao carregar os artigos:', error);
-            }
-        });
-    }
-
-    $('#modalLinhaDocumento').on('show.bs.modal', function() {
-        const clienteId = $(this).data('cliente-id');
-        console.log('Cliente ID:', clienteId);
-
-        if (clienteId) {
-
-            $.ajax({
-                url: '/tipo-paletes',
-                method: 'GET',
-                success: function(response) {
-                    if (Array.isArray(response)) {
-                        var tipoPaleteSelect = $('#paleteFields .palete-row select[name="tipo_palete_id[]"]');
-                        tipoPaleteSelect.empty();
-                        var options = response.map(tipoPalete =>
-                            `<option value="${tipoPalete.id}">${tipoPalete.tipo}</option>`
-                        ).join('');
-                        tipoPaleteSelect.append(`<option value="">Selecione um Tipo de Palete</option>${options}`);
-
-                        $('#paleteFields .palete-row').each(function() {
-                            loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
-                        });
-                    } else {
-                        console.error('Resposta inválida para tipos de palete:', response);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Erro ao carregar os tipos de palete:', error);
-                }
-            });
-
-            $('#addPaleteRow').off('click').on('click', function() {
-                const newRow = `
-                    <div class="palete-row mb-3">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label for="tipo_palete_id" class="form-label">Tipo de Palete</label>
-                                    <select name="tipo_palete_id[]" class="form-select" required>
-                                        ${$('#paleteFields .palete-row select[name="tipo_palete_id[]"]').html()}
-                                    </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="quantidade" class="form-label">Quantidade</label>
-                                <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="artigo_id" class="form-label">Artigo</label>
-                                <select name="artigo_id[]" class="form-select" required>
-                                    <option value="">Selecione um Artigo</option>
-                                </select>
-                            </div>
-                            <div class="col-md-1 d-flex align-items-end">
-                                <a type="button" class="remove-palete-row">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>`;
-
-                $('#paleteFields').append(newRow);
-
-                loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
-            });
-
-            $(document).on('click', '.remove-palete-row', function() {
-                $(this).closest('.palete-row').remove();
-            });
-        }
-    });
-});
 
 document.addEventListener('DOMContentLoaded', function () {
     const armazemOptionsElement = document.getElementById('armazem-options');

@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('linha_documento_tipo_palete', function (Blueprint $table) {
+        Schema::create('documento_tipo_palete', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('linha_documento_id')->constrained('linha_documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('tipo_palete_id')->constrained('tipo_palete', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('artigo_id')->constrained('artigo', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('armazem_id')->nullable()->constrained('armazem', 'id')->cascadeOnDelete()->cascadeOnUpdate();
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('linha_documento_tipo_palete');
+        Schema::dropIfExists('documento_tipo_palete');
     }
 };
