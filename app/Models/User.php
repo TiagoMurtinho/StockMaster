@@ -73,11 +73,6 @@ class User extends Authenticatable
         return $this->hasMany(Documento::class, 'user_id');
     }
 
-    public function linha_documento(): HasMany
-    {
-        return $this->hasMany(LinhaDocumento::class, 'user_id');
-    }
-
     public function palete(): HasMany
     {
         return $this->hasMany(Palete::class, 'user_id');
