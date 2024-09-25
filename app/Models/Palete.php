@@ -19,7 +19,7 @@ class Palete extends Model
         'data_entrada',
         'data_saida',
         'tipo_palete_id',
-        'linha_documento_id',
+        'documento_id',
         'user_id',
         'artigo_id',
         'armazem_id',
@@ -31,9 +31,9 @@ class Palete extends Model
         return $this->belongsTo(TipoPalete::class, 'tipo_palete_id');
     }
 
-    public function linha_documento(): BelongsTo
+    public function documento(): BelongsTo
     {
-        return $this->belongsTo(LinhaDocumento::class, 'linha_documento_id');
+        return $this->belongsTo(Documento::class, 'documento_id');
     }
 
     public function artigo(): BelongsTo

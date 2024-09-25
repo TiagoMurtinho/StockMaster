@@ -7,10 +7,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    @foreach($documento->linha_documento as $linha)
                         <h5>{{ __('retirada.documento') }} {{ $documento->numero }}</h5>
                         <p>{{ __('retirada.cliente') }} {{ $documento->cliente->nome }}</p>
-                        <p>{{ __('retirada.previsao_saida') }} {{ $linha->previsao }}</p>
+                        <p>{{ __('retirada.previsao_saida') }} {{ $documento->previsao }}</p>
 
                         <table class="table">
                             <thead>
@@ -20,7 +19,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach($linha->tipo_palete as $tipoPalete)
+                            @foreach($documento->tipo_palete as $tipoPalete)
                                 <tr>
                                     <td>{{ $artigos[$tipoPalete->pivot->artigo_id]->nome ?? 'Artigo não disponível' }}</td>
                                     <td>{{ $tipoPalete->pivot->quantidade }}</td>
@@ -32,7 +31,6 @@
                         <form id="documentoForm" action="{{ route('paletes.retirar') }}" method="POST">
                             @csrf
                             <input type="hidden" name="documento_id" value="{{ $documento->id }}">
-                            <input type="hidden" name="linha_documento_id" value="{{ $linha->id }}">
 
                             <h5>{{ __('retirada.paletes_associadas') }}</h5>
                             <div class="scrollable-palete-area">
@@ -47,10 +45,10 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($linha->tipo_palete as $tipoPalete)
+                                    @foreach($documento->tipo_palete as $tipoPalete)
                                         @php
                                             $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
-                                            $paletesDisponiveis = $paletesPorLinha[$documento->id][$linha->id][$tipoPalete->id] ?? collect();
+                                            $paletesDisponiveis = $paletesPorLinha[$documento->id][$tipoPalete->id] ?? collect();
                                             $quantidadeDisponivel = $paletesDisponiveis->where('artigo_id', $tipoPalete->pivot->artigo_id)->where('tipo_palete_id', $tipoPalete->id)->count();
                                         @endphp
 
@@ -91,9 +89,9 @@
                                 <button type="button" id="continuarGuiaTransporteBtn" class="btn btn-primary"
                                         data-documento-numero="{{ $documento->numero }}"
                                         data-documento-cliente-id="{{ $documento->cliente_id }}"
-                                        data-linha-observacao="{{ $linha->observacao }}"
-                                        data-linha-previsao="{{ $linha->previsao }}"
-                                        data-linha-taxa-id="{{ $linha->taxa_id }}"
+                                        data-linha-observacao="{{ $documento->observacao }}"
+                                        data-linha-previsao="{{ $documento->previsao }}"
+                                        data-linha-taxa-id="{{ $documento->taxa_id }}"
                                         data-documento-morada="{{ $documento->morada }}">
                                 {{ __('retirada.confirmar_selecao') }}
                                 </button>
@@ -105,7 +103,6 @@
         </div>
 
     </div>
-@endforeach
 
 @include('pages.pedido.pedido-retirada.modals.guia-transporte-modal')
 

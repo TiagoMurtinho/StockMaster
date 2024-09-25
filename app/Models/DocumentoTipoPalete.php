@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class LinhaDocumentoTipoPalete extends Model
+class DocumentoTipoPalete extends Model
 {
     use HasFactory;
 
-    protected $table = 'linha_documento_tipo_palete';
+    protected $table = 'documento_tipo_palete';
 
     protected $fillable = [
-        'linha_documento_id',
+        'documento_id',
         'tipo_palete_id',
         'artigo_id',
         'armazem_id',
@@ -20,9 +20,9 @@ class LinhaDocumentoTipoPalete extends Model
         'localizacao'
     ];
 
-    public function linha_documento()
+    public function documento()
     {
-        return $this->belongsTo(LinhaDocumento::class);
+        return $this->belongsTo(Documento::class);
     }
 
     public function tipo_palete()

@@ -58,7 +58,7 @@
                         </tr>
                         </thead>
                         <tbody class="modal-linhas">
-                        <!-- Linhas preenchidas via JavaScript -->
+
                         </tbody>
                     </table>
                 </div>

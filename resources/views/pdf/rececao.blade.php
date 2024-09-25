@@ -51,8 +51,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($documento->linha_documento as $linha)
-                @foreach($linha->tipo_palete as $tipoPalete)
+                @foreach($documento->tipo_palete as $tipoPalete)
                     <tr>
                         <td>{{ $tipoPalete->tipo }}</td>
                         <td>{{ $tipoPalete->pivot->localizacao }}</td>
@@ -64,7 +63,7 @@
                                 {{ $artigos[$artigoId]->nome }}
                             @endif
                         </td>
-                        <td>{{ $linha->data_entrada}}</td>
+                        <td>{{ $documento->data_entrada}}</td>
                         <td>
                             @php
                                 $armazemId = $tipoPalete->pivot->armazem_id;
@@ -75,7 +74,6 @@
                         </td>
                     </tr>
                 @endforeach
-            @endforeach
             </tbody>
         </table>
     </div>

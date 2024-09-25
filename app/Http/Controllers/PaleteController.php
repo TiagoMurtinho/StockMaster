@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Documento;
 use App\Models\LinhaDocumento;
-use App\Models\LinhaDocumentoTipoPalete;
+use App\Models\DocumentoTipoPalete;
 use App\Models\Palete;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -41,8 +41,8 @@ class PaleteController extends Controller
         try {
 
             $validatedData = $request->validate([
-                'linha_documento_id' => 'required|exists:linha_documento,id',
-                'localizacao' => 'nullable|array',
+                'documento_id' => 'required|exists:documento,id',
+                'localizacao' => 'required|array',
                 'tipo_palete_id' => 'required|array',
                 'data_entrada' => 'nullable|array',
                 'armazem_id' => 'required|array',
@@ -50,31 +50,24 @@ class PaleteController extends Controller
                 'observacao' => 'nullable|string',
             ]);
 
-            $linhaDocumentoId = $validatedData['linha_documento_id'];
+            $documentoId = $validatedData['documento_id'];
             $userId = auth()->id();
 
-            $linhaDocumento = LinhaDocumento::with('documento')->findOrFail($linhaDocumentoId);
-            $documentoOriginal = $linhaDocumento->documento;
+            $documentoOriginal = Documento::findOrFail($documentoId);
 
-            $observacao = $validatedData['observacao'];
-            $observacaoFinal = $observacao ?? $linhaDocumento->observacao;
+            $observacaoFinal = !empty($validatedData['observacao']) ? $validatedData['observacao'] : $documentoOriginal->observacao;
 
             $novoDocumento = Documento::create([
                 'numero' => $documentoOriginal->numero,
+                'previsao' => $documentoOriginal->previsao,
                 'data' => now(),
+                'data_entrada' => now(),
                 'estado' => 'terminado',
+                'observacao' => $observacaoFinal,
                 'tipo_documento_id' => 2,
                 'cliente_id' => $documentoOriginal->cliente_id,
                 'user_id' => $userId,
-            ]);
-
-            $novaLinhaDocumento = LinhaDocumento::create([
-                'documento_id' => $novoDocumento->id,
-                'previsao' => $linhaDocumento->previsao,
-                'data_entrada' =>  now(),
-                'observacao' => $observacaoFinal,
-                'taxa_id' => $linhaDocumento->taxa->id,
-                'user_id' => $userId,
+                'taxa_id' => $documentoOriginal->taxa_id
             ]);
 
             $documentoOriginal->update(['estado' => 'terminado']);
@@ -84,7 +77,7 @@ class PaleteController extends Controller
             foreach ($validatedData['localizacao'] as $tipoPaleteId => $localizacoes) {
                 $tipoPalete = $validatedData['tipo_palete_id'][$tipoPaleteId];
                 $armazemIds = $validatedData['armazem_id'][$tipoPaleteId];
-                $artigoId = $linhaDocumento->tipo_palete->pluck('pivot.artigo_id')->first();
+                $artigoId = $documentoOriginal->tipo_palete->pluck('pivot.artigo_id')->first();
 
                 foreach ($localizacoes as $index => $localizacao) {
                     $armazemId = $armazemIds[$index] ?? null;
@@ -94,9 +87,9 @@ class PaleteController extends Controller
                     }
 
                     $palete = Palete::create([
-                        'linha_documento_id' => $novaLinhaDocumento->id,
+                        'documento_id' => $novoDocumento->id,
                         'localizacao' => $localizacao,
-                        'data_entrada' => '2024-09-05',
+                        'data_entrada' => now(),
                         'tipo_palete_id' => $tipoPalete,
                         'artigo_id' => $artigoId,
                         'armazem_id' => $armazemId,
@@ -104,8 +97,8 @@ class PaleteController extends Controller
                         'user_id' => $userId,
                     ]);
 
-                    LinhaDocumentoTipoPalete::create([
-                        'linha_documento_id' => $novaLinhaDocumento->id,
+                    DocumentoTipoPalete::create([
+                        'documento_id' => $novoDocumento->id,
                         'artigo_id' => $artigoId,
                         'localizacao' => $palete->localizacao,
                         'armazem_id' => $palete->armazem->id,
@@ -117,7 +110,6 @@ class PaleteController extends Controller
                 }
             }
 
-
             DB::commit();
 
             return response()->json([
@@ -125,7 +117,6 @@ class PaleteController extends Controller
                 'documento_id' => $novoDocumento->id,
                 'paletes_criadas' => $paletesCriadas,
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
 
@@ -143,7 +134,7 @@ class PaleteController extends Controller
 
         $request->validate([
             'paletes_selecionadas' => 'required|array',
-            'linha_documento_id' => 'required|exists:linha_documento,id',
+            'documento_id' => 'required|exists:documento,id',
         ]);
 
         foreach ($request->paletes_selecionadas as $paleteId) {

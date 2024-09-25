@@ -52,12 +52,11 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($documento->linha_documento as $linha)
-                @foreach($linha->tipo_palete as $tipoPalete)
+                @foreach($documento->tipo_palete as $tipoPalete)
                     <tr>
-                        <td>{{ $linha->observacao }}</td>
-                        <td>{{ $linha->taxa->valor }}</td>
-                        <td>{{ $linha->previsao }}</td>
+                        <td>{{ $documento->observacao }}</td>
+                        <td>{{ $documento->taxa->valor }}</td>
+                        <td>{{ $documento->previsao }}</td>
                         <td>{{ $tipoPalete->tipo }}</td>
                         <td>{{ $tipoPalete->pivot->quantidade }}</td>
                         <td>
@@ -70,7 +69,6 @@
                         </td>
                     </tr>
                 @endforeach
-            @endforeach
             </tbody>
         </table>
     </div>

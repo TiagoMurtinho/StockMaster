@@ -21,22 +21,19 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
-                                @foreach($documento->linha_documento as $linha)
-                                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $linha->id }}">
+                                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $documento->id }}">
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">
 
-                                            {{ $linha->previsao }}
-                                        @endforeach
+                                            {{ $documento->previsao }}
+
                                     </td>
                                     <td class="align-middle text-center">
                                         @php
                                             $totalQuantidade = 0;
-                                            foreach ($documento->linha_documento as $linha) {
-                                                foreach ($linha->tipo_palete as $tipoPalete) {
-                                                    $totalQuantidade += $tipoPalete->pivot->quantidade;
-                                                }
+                                            foreach ($documento->tipo_palete as $tipoPalete) {
+                                                $totalQuantidade += $tipoPalete->pivot->quantidade;
                                             }
                                         @endphp
                                         {{ $totalQuantidade }} {{__('entrega.paletes')}}

@@ -18,12 +18,10 @@ class PedidoEntregaController extends Controller
     public function index()
     {
 
-        $documentos = Documento::with('linha_documento.tipo_palete')
+        $documentos = Documento::with('tipo_palete')
             ->where('tipo_documento_id', 1)
             ->where('estado', 'pendente')
-            ->whereHas('linha_documento', function ($query) {
-                $query->orderBy('linha_documento.previsao', 'asc');
-            })
+            ->orderBy('documento.previsao', 'asc')
             ->get();
 
         $armazens = Armazem::all();

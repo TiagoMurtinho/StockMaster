@@ -25,17 +25,13 @@
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">
-                                        @foreach($documento->linha_documento as $linha)
-                                            {{ $linha->previsao }}
-                                        @endforeach
+                                            {{ $documento->previsao }}
                                     </td>
                                     <td class="align-middle text-center">
                                         @php
                                             $totalQuantidade = 0;
-                                            foreach ($documento->linha_documento as $linha) {
-                                                foreach ($linha->tipo_palete as $tipoPalete) {
+                                            foreach ($documento->tipo_palete as $tipoPalete) {
                                                     $totalQuantidade += $tipoPalete->pivot->quantidade;
-                                                }
                                             }
                                         @endphp
                                         {{ $totalQuantidade }} {{ __('retirada.paletes') }}

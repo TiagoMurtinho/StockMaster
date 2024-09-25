@@ -26,8 +26,8 @@
                         <input type="text" class="form-control" id="morada" name="morada">
                     </div>
                     <div class="mb-3">
-                        <label for="descarga" class="form-label">{{__('documento.add_descarga')}}</label>
-                        <input type="datetime-local" class="form-control" id="descarga" name="descarga">
+                        <label for="previsao_descarga" class="form-label">{{__('documento.add_descarga')}}</label>
+                        <input type="datetime-local" class="form-control" id="previsao_descarga" name="previsao_descarga">
                     </div>
                 </div>
 

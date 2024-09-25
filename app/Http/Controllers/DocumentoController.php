@@ -7,7 +7,7 @@ use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
 use App\Models\LinhaDocumento;
-use App\Models\LinhaDocumentoTipoPalete;
+use App\Models\DocumentoTipoPalete;
 use App\Models\Taxa;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
@@ -130,13 +130,9 @@ class DocumentoController extends Controller
             $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
         } elseif ($documento->tipo_documento_id == 2) {
 
-            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.artigo_id');
-            });
+            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
 
-            $armazemIds = $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.armazem_id');
-            });
+            $armazemIds = $documento->tipo_palete->pluck('pivot.armazem_id');
 
             $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
             $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
@@ -145,9 +141,7 @@ class DocumentoController extends Controller
 
         } elseif ($documento->tipo_documento_id == 3) {
 
-            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.artigo_id');
-            });
+            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
 
             $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
 
@@ -156,13 +150,9 @@ class DocumentoController extends Controller
         } elseif ($documento->tipo_documento_id == 4) {
 
 
-            $artigoIds = $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.artigo_id');
-            });
+            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
 
-            $armazemIds = $documento->linha_documento->flatMap(function ($linha) {
-                return $linha->tipo_palete->pluck('pivot.armazem_id');
-            });
+            $armazemIds = $documento->tipo_palete->pluck('pivot.armazem_id');
 
             $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
             $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
@@ -180,23 +170,19 @@ class DocumentoController extends Controller
     public function show($id)
     {
         try {
-
-            $documento = Documento::with(['linha_documento.tipo_palete' => function($query) {
-                $query->withPivot('id', 'quantidade', 'artigo_id'); // Inclua o ID da pivot
+            $documento = Documento::with(['tipo_palete' => function($query) {
+                $query->withPivot('quantidade', 'artigo_id', 'id');
             }])->findOrFail($id);
 
-            // Prepara os dados das linhas
-            $linhas = $documento->linha_documento->map(function ($linha) {
-                return $linha->tipo_palete->map(function ($tipoPalete) use ($linha) {
-                    $artigo = Artigo::find($tipoPalete->pivot->artigo_id);
-                    return [
-                        'tipo_palete' => $tipoPalete->tipo,
-                        'quantidade' => $tipoPalete->pivot->quantidade,
-                        'artigo' => $artigo->nome,
-                        'pivot_id' => $tipoPalete->pivot->id
-                    ];
-                });
-            })->flatten(1);
+            $linhas = $documento->tipo_palete->map(function ($tipoPalete) {
+                $artigo = Artigo::find($tipoPalete->pivot->artigo_id);
+                return [
+                    'tipo_palete' => $tipoPalete->tipo,
+                    'quantidade' => $tipoPalete->pivot->quantidade,
+                    'artigo' => $artigo ? $artigo->nome : null,
+                    'pivot_id' => $tipoPalete->pivot->id
+                ];
+            });
 
             return response()->json([
                 'success' => true,
@@ -232,18 +218,16 @@ class DocumentoController extends Controller
                 'documento' => 'required|array',
                 'documento.numero' => 'required|string',
                 'documento.data' => 'required|date',
-                'linha_documento' => 'required|array',
-                'linha_documento.id' => 'required|integer',
-                'linha_documento.observacao' => 'nullable|string|max:255',
-                'linha_documento.previsao' => 'nullable|date',
-                'linha_documento.taxa_id' => 'nullable|integer',
-                'linha_documento_tipo_palete' => 'required|array',
-                'linha_documento_tipo_palete.*.linha_documento_id' => 'required|integer',
-                'linha_documento_tipo_palete.*.tipo_palete' => 'required|string',
-                'linha_documento_tipo_palete.*.quantidade' => 'required|integer',
-                'linha_documento_tipo_palete.*.artigo' => 'required|string',
-                'linha_documento_tipo_palete.*.deleted' => 'boolean',
-                'linha_documento_tipo_palete.*.id' => 'nullable|integer', // ID opcional
+                'documento.observacao' => 'nullable|string|max:255',
+                'documento.previsao' => 'nullable|date',
+                'documento.taxa_id' => 'nullable|integer',
+                'documento_tipo_palete' => 'required|array',
+                'documento_tipo_palete.*.documento_id' => 'required|integer',
+                'documento_tipo_palete.*.tipo_palete' => 'required|string',
+                'documento_tipo_palete.*.quantidade' => 'required|integer',
+                'documento_tipo_palete.*.artigo' => 'required|string',
+                'documento_tipo_palete.*.deleted' => 'boolean',
+                'documento_tipo_palete.*.id' => 'nullable|integer',
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -253,71 +237,46 @@ class DocumentoController extends Controller
             ], 400);
         }
 
-        \Log::info('Dados recebidos para atualização', ['data' => $data]);
-
         $documento = Documento::find($id);
 
         if (!$documento) {
-            \Log::error('Documento não encontrado', ['documento_id' => $id]);
             return response()->json([
                 'success' => false,
                 'message' => 'Documento não encontrado para atualização'
             ]);
         }
 
-        // Atualizar os campos principais do documento
         $documento->numero = $data['documento']['numero'];
         $documento->data = $data['documento']['data'];
+        $documento->observacao = $data['documento']['observacao'] ?? $documento->observacao;
+        $documento->previsao = $data['documento']['previsao'] ?? $documento->previsao;
+        $documento->taxa_id = $data['documento']['taxa_id'] ?? $documento->taxa_id;
         $documento->user_id = $userId;
         $documento->save();
 
-        \Log::info('Documento atualizado', ['documento_id' => $documento->id]);
+        foreach ($data['documento_tipo_palete'] as $linhaData) {
 
-        $linhaDocumento = LinhaDocumento::find($data['linha_documento']['id']);
-
-        if ($linhaDocumento) {
-            $linhaDocumento->observacao = $data['linha_documento']['observacao'] ?? $linhaDocumento->observacao;
-            $linhaDocumento->previsao = $data['linha_documento']['previsao'] ?? $linhaDocumento->previsao;
-            $linhaDocumento->taxa_id = $data['linha_documento']['taxa_id'] ?? $linhaDocumento->taxa_id;
-            $linhaDocumento->save();
-
-            \Log::info('Linha documento atualizada', ['linha_documento_id' => $linhaDocumento->id]);
-        } else {
-            \Log::error('Linha documento não encontrada', ['linha_documento_id' => $data['linha_documento']['id']]);
-        }
-
-        foreach ($data['linha_documento_tipo_palete'] as $linhaData) {
-            // Verifica se o ID está presente
             if (isset($linhaData['id'])) {
-                // Se a linha foi marcada como deletada
+
                 if (isset($linhaData['deleted']) && $linhaData['deleted'] === true) {
-                    LinhaDocumentoTipoPalete::where('id', $linhaData['id'])->delete();
-                    \Log::info('Entrada removida da tabela LinhaDocumentoTipoPalete', ['pivot_id' => $linhaData['id']]);
+                    DocumentoTipoPalete::where('id', $linhaData['id'])->delete();
+
                 } else {
-                    // Atualiza a linha existente
-                    $linhaTipoPalete = LinhaDocumentoTipoPalete::find($linhaData['id']);
+
+                    $linhaTipoPalete = DocumentoTipoPalete::find($linhaData['id']);
                     if ($linhaTipoPalete) {
                         $linhaTipoPalete->quantidade = $linhaData['quantidade'];
                         $linhaTipoPalete->tipo_palete_id = $linhaData['tipo_palete'];
                         $linhaTipoPalete->artigo_id = $linhaData['artigo'];
                         $linhaTipoPalete->save();
-                        \Log::info('Tabela pivot atualizada', ['pivot_id' => $linhaTipoPalete->id]);
-                    } else {
-                        \Log::warning('Tabela pivot não encontrada para atualização', ['pivot_id' => $linhaData['id']]);
                     }
                 }
             } else {
-                // Cria uma nova entrada se o ID não estiver presente
-                LinhaDocumentoTipoPalete::create([
-                    'linha_documento_id' => $linhaData['linha_documento_id'],
+                DocumentoTipoPalete::create([
+                    'documento_id' => $linhaData['documento_id'],
                     'tipo_palete_id' => $linhaData['tipo_palete'],
                     'artigo_id' => $linhaData['artigo'],
                     'quantidade' => $linhaData['quantidade']
-                ]);
-                \Log::info('Nova entrada adicionada à tabela pivot', [
-                    'linha_documento_id' => $linhaData['linha_documento_id'],
-                    'tipo_palete_id' => $linhaData['tipo_palete'],
-                    'artigo_id' => $linhaData['artigo'],
                 ]);
             }
         }
@@ -333,25 +292,19 @@ class DocumentoController extends Controller
         $userId = Auth::id();
 
         try {
-            // Localiza o documento
+
             $documento = Documento::find($id);
 
             if (!$documento) {
-                \Log::error('Documento não encontrado', ['documento_id' => $id]);
                 return response()->json([
                     'success' => false,
                     'message' => 'Documento não encontrado para remoção'
                 ], 404);
             }
 
-            // Remove as linhas relacionadas
-            LinhaDocumento::where('documento_id', $id)->delete();
-            LinhaDocumentoTipoPalete::where('linha_documento_id', $documento->linha_documento_id)->delete();
+            DocumentoTipoPalete::where('documento_id', $documento->id)->delete();
 
-            // Remove o documento
             $documento->delete();
-
-            \Log::info('Documento removido com sucesso', ['documento_id' => $id]);
 
             return response()->json([
                 'success' => true,
@@ -359,7 +312,6 @@ class DocumentoController extends Controller
                 'redirect' => route('documento.index')
             ]);
         } catch (\Exception $e) {
-            \Log::error('Erro ao remover documento', ['error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover documento'
@@ -367,7 +319,7 @@ class DocumentoController extends Controller
         }
     }
 
-    public function getArtigosPorCliente($clienteId): \Illuminate\Http\JsonResponse
+    public function getArtigosPorCliente($clienteId): JsonResponse
     {
         $artigos = Artigo::where('cliente_id', $clienteId)->get();
 

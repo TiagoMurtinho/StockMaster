@@ -35,16 +35,15 @@ $(document).ready(function() {
         $('#linhaDocumentoForm')[0].reset();
         $('#camposOcultos').hide()
 
-        if (tipoDocumentoId === 3) {
+        if (tipoDocumentoId == 3) {
             $('#camposOcultos').show()
         }
     });
 });
 
 $(document).ready(function() {
-    let documentoData = {}; // Objeto para armazenar os dados do primeiro modal
+    let documentoData = {};
 
-    // Função para carregar os artigos com base no clienteId
     function loadArtigos(clienteId, selectElement) {
         $.ajax({
             url: `/artigos/${clienteId}`,
@@ -65,7 +64,6 @@ $(document).ready(function() {
         });
     }
 
-    // Função para carregar os tipos de palete
     function loadTipoPaletes() {
         return $.ajax({
             url: '/tipo-paletes',
@@ -73,9 +71,8 @@ $(document).ready(function() {
         });
     }
 
-    // Evento para continuar e abrir o segundo modal
     $('#continuarModalLinhaDocumentoBtn').click(function() {
-        // Captura os dados do primeiro modal
+
         documentoData.tipo_documento_id = $('#tipo_documento').val();
         documentoData.cliente_id = $('#cliente').val();
         documentoData.numero = $('#numero').val();
@@ -84,20 +81,16 @@ $(document).ready(function() {
         documentoData.taxa_id = $('#taxa_id').val();
         documentoData.previsao = $('#previsao').val();
 
-        console.log(documentoData);
-
         $('#modalAddDocumento').modal('hide');
 
         $('#modalLinhaDocumento').data('cliente-id', documentoData.cliente_id);
         $('#modalLinhaDocumento').modal('show');
     });
 
-    // Evento para voltar ao primeiro modal
     $('#voltarAoPrimeiroModal').click(function() {
         $('#modalLinhaDocumento').modal('hide');
         $('#modalAddDocumento').modal('show');
 
-        // Restaurar os dados no primeiro modal
         $('#tipo_documento').val(documentoData.tipo_documento_id);
         $('#cliente').val(documentoData.cliente_id);
         $('#numero').val(documentoData.numero);
@@ -107,12 +100,11 @@ $(document).ready(function() {
         $('#previsao').val(documentoData.previsao);
     });
 
-    // Evento ao abrir o segundo modal
     $('#modalLinhaDocumento').on('show.bs.modal', function() {
-        const clienteId = documentoData.cliente_id; // Obtém o cliente_id armazenado
+        const clienteId = documentoData.cliente_id;
 
         if (clienteId) {
-            // Carregar tipos de palete
+
             loadTipoPaletes().done(function(response) {
                 if (Array.isArray(response)) {
                     var tipoPaleteSelect = $('#paleteFields .palete-row select[name="tipo_palete_id[]"]');
@@ -122,7 +114,6 @@ $(document).ready(function() {
                     ).join('');
                     tipoPaleteSelect.append(`<option value="">Selecione um Tipo de Palete</option>${options}`);
 
-                    // Carregar artigos para cada linha de palete
                     $('#paleteFields .palete-row').each(function() {
                         loadArtigos(clienteId, $(this).find('select[name="artigo_id[]"]'));
                     });
@@ -131,7 +122,6 @@ $(document).ready(function() {
                 }
             });
 
-            // Adicionar nova linha de palete com artigos dinâmicos
             $('#addPaleteRow').off('click').on('click', function() {
                 const newRow = `
                     <div class="palete-row mb-3">
@@ -162,18 +152,15 @@ $(document).ready(function() {
 
                 $('#paleteFields').append(newRow);
 
-                // Carrega os artigos para o novo select de artigo
                 loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
             });
 
-            // Remover uma linha de palete
             $(document).on('click', '.remove-palete-row', function() {
                 $(this).closest('.palete-row').remove();
             });
         }
     });
 
-    // Evento para criar o documento final com todas as informações
     $('#criarDocumentoBtn').click(function() {
         var tipoPaleteIds = [];
         var quantidades = [];
@@ -199,13 +186,12 @@ $(document).ready(function() {
             };
         });
 
-        // Faz o pedido AJAX com todos os dados
         $.ajax({
             url: '/documento',
             method: 'POST',
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
-                documento: documentoData, // Inclui os dados do primeiro modal
+                documento: documentoData,
                 linhas: linhasData
             },
             success: function(response) {
@@ -286,51 +272,55 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-$('#modalForm').on('submit', function(e) {
-    e.preventDefault();
+$(document).ready(function() {
+    $('#modalRececaoForm').on('submit', function(e) {
+        e.preventDefault();
 
-    var $form = $(this);
-    var formData = $(this).serialize();
+        var $form = $(this);
+        var formData = $form.serialize();
+        var documentoIdAntigo = $form.find('input[name="documento_id"]').val(); // ID do documento antigo
 
-    $.ajax({
-        type: 'POST',
-        url: $form.attr('action'),
-        data: formData,
-        success: function(response) {
-            if (response.success) {
-                $('#rececaoModal' + response.linha_id).modal('hide');
+        $.ajax({
+            type: 'POST',
+            url: $form.attr('action'),
+            data: formData,
+            success: function(response) {
+                if (response.success) {
+                    // Fechar o modal usando o ID antigo do documento
+                    $('#rececaoModal' + documentoIdAntigo).modal('hide');
 
-                $.ajax({
-                    url: '/documento/' + response.documento_id + '/pdf',
-                    method: 'GET',
-                    data: { paletes_criadas: response.paletes_criadas },
-                    xhrFields: {
-                        responseType: 'blob'
-                    },
-                    success: function(blob) {
-                        var link = document.createElement('a');
-                        var url = window.URL.createObjectURL(blob);
-                        link.href = url;
-                        link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
-                        document.body.appendChild(link);
-                        link.click();
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(link);
-                    },
-                    error: function(xhr) {
-                        console.log(xhr);
-                        console.error(xhr.responseText);
-                        alert('Erro ao gerar o PDF.');
-                    }
-                });
-            } else {
-                alert('Erro ao criar documento.');
+                    // Gera o PDF
+                    $.ajax({
+                        url: '/documento/' + response.documento_id + '/pdf',
+                        method: 'GET',
+                        data: { paletes_criadas: response.paletes_criadas },
+                        xhrFields: {
+                            responseType: 'blob'
+                        },
+                        success: function(blob) {
+                            var link = document.createElement('a');
+                            var url = window.URL.createObjectURL(blob);
+                            link.href = url;
+                            link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
+                            document.body.appendChild(link);
+                            link.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(link);
+                        },
+                        error: function(xhr) {
+                            console.error(xhr);
+                            alert('Erro ao gerar o PDF.');
+                        }
+                    });
+                } else {
+                    alert('Erro ao criar documento.');
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr);
+                alert('Erro ao processar o pedido: ' + xhr.responseText);
             }
-        },
-        error: function(xhr) {
-            console.error(xhr.responseText);
-            alert('Erro ao processar o pedido.');
-        }
+        });
     });
 });
 
@@ -357,7 +347,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 dataType: 'json',
                 success: function (data) {
                     if (data.success) {
-                        console.log(data)
                         populateModal(data);
                         $('#documentoModal').modal('show');
                     } else {
@@ -386,18 +375,19 @@ function populateModal(data) {
     document.querySelector('.modal-documento-numero').value = data.documento.numero || '';
     document.querySelector('.modal-documento-data').value = data.documento.data || '';
     document.querySelector('.modal-documento-id').value = data.documento.id || '';
+    document.querySelector('.modal-documento-observacao').value = data.documento.observacao || '';
+    document.querySelector('.modal-documento-previsao').value = data.documento.previsao || '';
+    document.querySelector('.modal-documento-valor').value = data.documento.taxa_id || '';
 
-    const primeiraLinha = data.documento.linha_documento[0] || {};
-    document.querySelector('.modal-documento-observacao').value = primeiraLinha.observacao || '';
-    document.querySelector('.modal-documento-previsao').value = primeiraLinha.previsao || '';
-    document.querySelector('.modal-documento-valor').value = primeiraLinha.taxa_id || '';
+    if (data.linhas && data.linhas.length > 0) {
+        const primeiraLinha = data.linhas[0];
+        document.querySelector('.modal-linha-id').value = primeiraLinha.pivot_id || '';
+    }
 
-    document.querySelector('.modal-linha-id').value = primeiraLinha.id || '';
-
-    $.ajax({
-        url: '/taxas',
-        method: 'GET',
-        success: function(taxas) {
+    // Buscar taxas
+    fetch('/taxas')
+        .then(response => response.json())
+        .then(taxas => {
             const taxaSelect = document.querySelector('#taxaSelect');
             taxaSelect.innerHTML = '<option value="">Selecione uma taxa</option>';
 
@@ -408,40 +398,32 @@ function populateModal(data) {
                 taxaSelect.appendChild(option);
             });
 
-            if (primeiraLinha.taxa_id) {
-                taxaSelect.value = primeiraLinha.taxa_id;
+            if (data.documento.taxa_id) {
+                taxaSelect.value = data.documento.taxa_id;
             }
-        },
-        error: function(error) {
+        })
+        .catch(error => {
             console.error('Erro ao buscar as taxas:', error);
-        }
-    });
+        });
 
-    $.ajax({
-        url: '/tipo-paletes',
-        method: 'GET',
-        success: function(tiposPaleteResponse) {
+    fetch('/tipo-paletes')
+        .then(response => response.json())
+        .then(tiposPaleteResponse => {
             window.tiposPalete = tiposPaleteResponse;
 
-            $.ajax({
-                url: `/artigos/${clienteId}`,
-                method: 'GET',
-                success: function(artigosResponse) {
-                    window.artigos = artigosResponse;
-                    preencherLinhasModal(data.linhas, window.tiposPalete, window.artigos);
-                },
-                error: function(error) {
-                    console.error('Erro ao buscar artigos:', error);
-                }
-            });
-        },
-        error: function(error) {
-            console.error('Erro ao buscar tipos de palete:', error);
-        }
-    });
+            return fetch(`/artigos/${clienteId}`);
+        })
+        .then(response => response.json())
+        .then(artigosResponse => {
+            window.artigos = artigosResponse;
+            preencherLinhasModal(data.linhas, window.tiposPalete, window.artigos);
+        })
+        .catch(error => {
+            console.error('Erro ao buscar tipos de palete ou artigos:', error);
+        });
 }
 
-$(document).on('click', '.remove-palete-row', function() {
+$(document).on('click', '.remove-palete', function() {
 
     const row = $(this).closest('tr');
     const deletedInput = row.find('input[name="deleted[]"]');
@@ -463,18 +445,16 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
     const linhaContainer = document.querySelector('.modal-linhas');
     linhaContainer.innerHTML = '';
 
-    linhas.forEach((linha, index) => {
+    linhas.forEach((linha) => {
         const linhaElement = document.createElement('tr');
         linhaElement.classList.add('palete-row');
 
         let tipoPaleteOptions = tiposPalete.map(tipo => {
-
-            const selected = tipo.tipo === linha.tipo_palete ? 'selected' : '';
+            const selected = tipo.id === linha.tipo_palete_id ? 'selected' : '';
             return `<option value="${tipo.id}" ${selected}>${tipo.tipo}</option>`;
         }).join('');
 
         let artigoOptions = artigos.map(artigo => {
-
             const selected = artigo.nome === linha.artigo ? 'selected' : '';
             return `<option value="${artigo.id}" ${selected}>${artigo.nome}</option>`;
         }).join('');
@@ -494,7 +474,7 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
                 </select>
             </td>
             <td class="col-md-1 d-flex align-items-end">
-                <a type="button" class="remove-palete-row">
+                <a type="button" class="remove-palete">
                     <i class="bi bi-trash"></i>
                 </a>
                 <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="${linha.pivot_id || ''}" />
@@ -511,7 +491,7 @@ document.addEventListener('click', function(event) {
         adicionarNovaLinha();
     } else if (event.target && event.target.closest('.remove-palete-row')) {
         const row = event.target.closest('tr.palete-row');
-        row.hide();
+        row.remove();
     }
 });
 
@@ -542,7 +522,7 @@ function adicionarNovaLinha() {
                 </select>
             </td>
             <td class="col-md-1 d-flex align-items-end">
-                <a type="button" class="remove-palete-row">
+                <a type="button" class="remove-palete">
                     <i class="bi bi-trash"></i>
                 </a>
             </td>
@@ -551,7 +531,6 @@ function adicionarNovaLinha() {
     linhaContainer.insertAdjacentHTML('beforeend', novaLinha);
 
 }
-
 function saveChanges() {
     const documentoId = document.querySelector('.modal-documento-id').value;
 
@@ -564,17 +543,13 @@ function saveChanges() {
     const documento = {
         numero: document.querySelector('.modal-documento-numero').value,
         data: document.querySelector('.modal-documento-data').value,
-    };
-
-    const linhaId = document.querySelector('.modal-linha-id');
-    const linha_documento = {
-        id: linhaId.value, // ID da linha
         observacao: document.querySelector('.modal-documento-observacao').value,
         previsao: document.querySelector('.modal-documento-previsao').value,
-        taxa_id: document.querySelector('.modal-documento-valor').value,
+        taxa_id: document.querySelector('.modal-documento-valor').value
     };
 
-    const linha_documento_tipo_palete = [];
+    const documento_tipo_palete = [];
+
     document.querySelectorAll('.modal-linhas tr').forEach(row => {
         const inputs = row.querySelectorAll('input, select, textarea');
 
@@ -585,7 +560,7 @@ function saveChanges() {
         const deleted = deletedInput ? deletedInput.value === '1' : false;
 
         const linhaData = {
-            linha_documento_id: linhaId.value,
+            documento_id: documentoId,
             tipo_palete: inputs[0].value,
             quantidade: inputs[1].value,
             artigo: inputs[2].value,
@@ -596,13 +571,13 @@ function saveChanges() {
             linhaData.id = pivotId;
         }
 
-        linha_documento_tipo_palete.push(linhaData);
+        documento_tipo_palete.push(linhaData);
     });
 
     $.ajax({
         url: `/documento/${documentoId}`,
         method: 'PUT',
-        data: JSON.stringify({ documento, linha_documento, linha_documento_tipo_palete }),
+        data: JSON.stringify({ documento, documento_tipo_palete }),
         contentType: 'application/json',
         success: function (response) {
             if (response.success) {
