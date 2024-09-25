@@ -83,7 +83,9 @@
     display: block;
 }
 
-
+.active-icon i {
+    color: #007bff; /* Cor desejada para o ícone ativo */
+}
 
 @media (max-width: 1000px) {
     .modal-lg {
