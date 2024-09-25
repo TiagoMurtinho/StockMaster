@@ -131,15 +131,13 @@ class PaleteController extends Controller
 
     public function retirar(Request $request): JsonResponse
     {
-
         $request->validate([
             'paletes_selecionadas' => 'required|array',
             'documento_id' => 'required|exists:documento,id',
         ]);
 
         foreach ($request->paletes_selecionadas as $paleteId) {
-            $palete = Palete::where('id', $paleteId)
-                ->first();
+            $palete = Palete::where('id', $paleteId)->first();
 
             if ($palete) {
                 $palete->data_saida = now();

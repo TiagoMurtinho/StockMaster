@@ -102,6 +102,8 @@ class PedidoRetiradaController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('Requisição recebida:', $request->all());
+
         try {
 
             $request->validate([
@@ -149,7 +151,11 @@ class PedidoRetiradaController extends Controller
                 ]);
             }
 
-            return redirect()->route('documento.index')->with('success', 'Documento criado com sucesso!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Documento criado com sucesso!',
+                'documento' => $novoDocumento
+            ]);
         } catch (\Exception $e) {
             Log::error('Erro ao criar documento: ' . $e->getMessage());
             return redirect()->route('documento.index')->with('error', 'Erro ao criar documento: ' . $e->getMessage());

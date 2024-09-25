@@ -600,16 +600,12 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(event) {
             event.preventDefault();
 
-            let form = button.closest('form');
-            let formData = new FormData(form);
-
-            // Preencher os campos
-            let numero = button.getAttribute('data-documento-numero');
-            let clienteId = button.getAttribute('data-documento-cliente-id');
-            let observacao = button.getAttribute('data-linha-observacao');
-            let previsao = button.getAttribute('data-linha-previsao');
-            let taxaId = button.getAttribute('data-linha-taxa-id');
-            let morada = button.getAttribute('data-documento-morada');
+            const numero = button.getAttribute('data-documento-numero');
+            const clienteId = button.getAttribute('data-documento-cliente-id');
+            const observacao = button.getAttribute('data-linha-observacao');
+            const previsao = button.getAttribute('data-linha-previsao');
+            const taxaId = button.getAttribute('data-linha-taxa-id');
+            const morada = button.getAttribute('data-documento-morada');
 
             document.getElementById('numero').value = numero;
             document.getElementById('cliente_id').value = clienteId;
@@ -618,54 +614,102 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('taxa_id').value = taxaId;
             document.getElementById('morada').value = morada;
 
-            let paletesDados = [];
-            const selectedPaletes = document.querySelectorAll('input[name="paletes_selecionadas[]"]:checked');
+            const documentoId = button.getAttribute('data-documento-id');
+            const retiradaModal = bootstrap.Modal.getInstance(document.getElementById('retiradaModal' + documentoId));
+            if (retiradaModal) {
+                retiradaModal.hide();
+            }
 
-            selectedPaletes.forEach(palete => {
-                let tipoPaleteId = palete.getAttribute('data-tipo-palete-id');
-                let artigoId = palete.getAttribute('data-artigo-id');
-                let armazemId = palete.getAttribute('data-armazem-id');
-                let localizacao = palete.getAttribute('data-localizacao');
+            const guiaTransporteModal = new bootstrap.Modal(document.getElementById('modalGuiaTransporte'));
+            guiaTransporteModal.show();
 
-                paletesDados.push({
-                    tipo_palete_id: tipoPaleteId,
-                    artigo_id: artigoId,
-                    armazem_id: armazemId,
-                    localizacao: localizacao
+            const guiaForm = document.getElementById('documentoForm');
+            document.getElementById('confirmarEnvio').addEventListener('click', function() {
+
+                let paletesDados = [];
+                const selectedPaletes = document.querySelectorAll('input[name="paletes_selecionadas[]"]:checked');
+
+                selectedPaletes.forEach(palete => {
+                    paletesDados.push({
+                        tipo_palete_id: palete.getAttribute('data-tipo-palete-id'),
+                        artigo_id: palete.getAttribute('data-artigo-id'),
+                        armazem_id: palete.getAttribute('data-armazem-id'),
+                        localizacao: palete.getAttribute('data-localizacao')
+                    });
                 });
+
+                fetch('/paletes/retirar', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        paletes_selecionadas: paletesDados.map(p => p.artigo_id),
+                        documento_id: documentoId
+                    }),
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao atualizar as paletes');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Paletes atualizadas:", data);
+
+                        let formData = new FormData(guiaForm);
+                        formData.append('paletes_dados', JSON.stringify(paletesDados));
+
+                        return fetch(guiaForm.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao enviar o formulário');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Resposta do servidor:", data);
+
+                        const documentoId = data.documento.id;
+
+                        $.ajax({
+                            url: '/documento/' + documentoId + '/pdf',
+                            method: 'GET',
+                            xhrFields: {
+                                responseType: 'blob'
+                            },
+                            success: function(blob) {
+                                var link = document.createElement('a');
+                                var url = window.URL.createObjectURL(blob);
+                                link.href = url;
+                                link.download = 'guia_transporte_' + documentoId + '.pdf'; // Nome do arquivo
+                                document.body.appendChild(link);
+                                link.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(link);
+                            },
+                            error: function(xhr) {
+                                console.error(xhr);
+                                alert('Erro ao gerar o PDF.');
+                            }
+                        });
+
+                        guiaTransporteModal.hide();
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                    });
             });
-
-            formData.append('paletes_dados', JSON.stringify(paletesDados));
-
-            document.getElementById('paletes_dados').value = JSON.stringify(paletesDados);
-
-            fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao enviar o formulário');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    let documentoId = data.documento_id;
-                    let retiradaModal = bootstrap.Modal.getInstance(document.getElementById('retiradaModal' + documentoId));
-                    if (retiradaModal) {
-                        retiradaModal.hide();
-                    }
-
-                    let guiaTransporteModal = new bootstrap.Modal(document.getElementById('modalGuiaTransporte'));
-                    guiaTransporteModal.show();
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                });
         });
     });
 });
