@@ -17,9 +17,9 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create() /*View*/
     {
-        return view('auth.register');
+       /* return view('auth.register');*/
     }
 
     /**
@@ -27,24 +27,30 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
             'nome' => ['required', 'string', 'max:45'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'contacto' => ['nullable', 'string', 'max:45'],
+            'salario' => ['nullable', 'numeric'],
         ]);
 
         $user = User::create([
             'nome' => $request->nome,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'contacto' => $request->contacto,
+            'salario' => $request->salario,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        return response()->json([
+            'success' => true,
+            'message' => 'User criado com sucesso!',
+            'redirect' => route('user.index')
+        ]);
     }
 }

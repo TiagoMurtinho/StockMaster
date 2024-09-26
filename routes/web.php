@@ -11,6 +11,7 @@ use App\Http\Controllers\PedidoRetiradaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaxaController;
 use App\Http\Controllers\TipoPaleteController;
+use App\Http\Controllers\UserController;
 use App\Models\Taxa;
 use App\Models\TipoPalete;
 use Illuminate\Support\Facades\Route;
@@ -50,6 +51,7 @@ Route::get('/documento/json', [DocumentoController::class, 'indexJson']);
 Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
 Route::put('/documento/{id}', [DocumentoController::class, 'update']);
 Route::post('/paletes/retirar', [PaleteController::class, 'retirar'])->name('paletes.retirar');
+Route::resource('user', UserController::class);
 
 
 require __DIR__.'/auth.php';

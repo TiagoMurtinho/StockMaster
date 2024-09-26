@@ -42,6 +42,11 @@
                     <i class="bi bi-circle {{ request()->routeIs('documento.index') ? 'active-icon' : '' }}"></i><span>{{ __('sidebar.documentos') }}</span>
                 </a>
             </li>
+            <li>
+                <a class="{{ request()->routeIs('user.index') ? 'active' : '' }}" href="{{ route('user.index') }}" data-ajax="true">
+                    <i class="bi bi-circle {{ request()->routeIs('user.index') ? 'active-icon' : '' }}"></i><span>{{ __('sidebar.users') }}</span>
+                </a>
+            </li>
         </ul>
     </li>
 
