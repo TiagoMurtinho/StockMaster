@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register.store');
 
+    Route::put('/register/{id}', [RegisteredUserController::class, 'update'])->name('register.update');
+
     Route::get('verify-email', EmailVerificationPromptController::class)
                 ->name('verification.notice');
 

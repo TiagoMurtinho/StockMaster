@@ -29,7 +29,7 @@
                                     <td class="align-middle text-center">{{ $tipoPalete->valor }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal{{ $tipoPalete->id }}" onclick="confirmDelete('deleteTipoPaleteForm{{ $tipoPalete->id }}', '{{ route('tipo-palete.destroy', $tipoPalete->id) }}')">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal{{ $tipoPalete->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
                                                 {{__('tipo-palete.delete')}}
                                             </button>

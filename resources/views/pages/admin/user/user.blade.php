@@ -25,19 +25,23 @@
                             </thead>
                             <tbody>
                             @foreach($users as $user)
-                                <tr {{--data-bs-toggle="modal" data-bs-target="#editTaxaModal{{ $user->id }}"--}}>
+                                <tr data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}">
                                     <td class="align-middle text-center">{{ $user->nome }}</td>
                                     <td class="align-middle text-center">{{ $user->email }}</td>
                                     <td class="align-middle text-center">{{ $user->contacto }}</td>
                                     <td class="align-middle text-center">{{ $user->salario }}</td>
                                     <td class="align-middle">
-                                       {{-- <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal{{ $taxa->id }}" onclick="confirmDelete('deleteTaxaForm{{ $taxa->id }}', '{{ route('taxa.destroy', $taxa->id) }}')">--}}
+                                        <a href="#"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#deleteUserModal{{ $user->id }}"
+                                        >
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
                                                 {{__('user.delete')}}
                                             </button>
                                         </a>
                                     </td>
                                 </tr>
+                                @include('pages.admin.user.modals.user-delete-modal')
                             @endforeach
                             </tbody>
                         </table>
@@ -47,6 +51,8 @@
             </div>
         </div>
 
+
     @include('pages.admin.user.modals.user-add-modal')
+    @include('pages.admin.user.modals.user-edit-modal')
 
 @endsection

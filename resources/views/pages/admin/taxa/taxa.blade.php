@@ -29,7 +29,7 @@
                                     <td class="align-middle text-center">{{ $taxa->valor }}</td>
                                     <td class="align-middle text-center">{{ $taxa->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal{{ $taxa->id }}" onclick="confirmDelete('deleteTaxaForm{{ $taxa->id }}', '{{ route('taxa.destroy', $taxa->id) }}')">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal{{ $taxa->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
                                                 {{__('taxa.delete')}}
                                             </button>

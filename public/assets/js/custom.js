@@ -24,10 +24,6 @@ $(document).ready(function() {
     });
 });
 
-function confirmDelete(formId, url) {
-    document.getElementById(formId).action = url;
-}
-
 $(document).ready(function() {
     $('#tipo_documento').change(function() {
         var tipoDocumentoId = $(this).val();

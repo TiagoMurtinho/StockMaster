@@ -33,7 +33,7 @@
                                     <td class="align-middle text-center">{{ $cliente->nif }}</td>
                                     <td class="align-middle text-center">{{ $cliente->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal{{ $cliente->id }}" onclick="confirmDelete('deleteClienteForm{{ $cliente->id }}', '{{ route('cliente.destroy', $cliente->id) }}')">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal{{ $cliente->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
                                                 Eliminar
                                             </button>

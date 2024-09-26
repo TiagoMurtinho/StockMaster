@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body">
                 <p class="text-danger">{{ __('armazem.confirm_delete') }} {{ $armazem->nome }}</p>
-                <form class="ajax-form" id="deleteArmazemForm{{ $armazem->id }}" method="POST" action="">
+                <form class="ajax-form" id="deleteArmazemForm{{ $armazem->id }}" method="POST" action="{{ route('armazem.destroy', $armazem->id) }}">
                     @csrf
                     @method('DELETE')
                     <input type="hidden" name="id" id="armazemId{{ $armazem->id }}">

@@ -31,7 +31,7 @@
                                     <td class="align-middle text-center">{{ $armazem->tipo_palete->tipo }}</td>
                                     <td class="align-middle text-center">{{ $armazem->user->nome }}</td>
                                     <td class="align-middle">
-                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $armazem->id }}" onclick="confirmDelete('deleteArmazemForm{{ $armazem->id }}', '{{ route('armazem.destroy', $armazem->id) }}')">
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $armazem->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
                                                 {{__('armazem.delete')}}
                                             </button>
