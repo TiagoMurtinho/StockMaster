@@ -9,5 +9,6 @@ return [
     'artigos' => 'Artigos',
     'pedidos_de_entrega' => 'Pedidos de Entrega',
     'taxas' => 'Taxas',
-    'pedidos_de_retirada' => 'Pedidos de Retirada'
+    'pedidos_de_retirada' => 'Pedidos de Retirada',
+    'users' => 'Registo de Utilizadores'
 ];

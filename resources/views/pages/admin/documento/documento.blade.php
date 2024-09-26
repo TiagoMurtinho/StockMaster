@@ -35,7 +35,6 @@
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->user->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->estado }}</td>
-                                        <input type="hidden" class="modal-linha-id" value="{{ $documento->linha_documento_id }}" />
                                     <td class="text-center">
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
                                            class="btn btn-secondary btn-sm no-click-propagation">

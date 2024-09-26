@@ -30,7 +30,7 @@
 
                     <form id="documentoForm{{$documento->id}}" action="{{ route('paletes.retirar') }}" method="POST" onsubmit="return false;">
                         @csrf
-                        <input type="hidden" name="documento_id" value="{{ $documento->id }}">
+                        {{--<input type="hidden" name="documento_id" value="{{ $documento->id }}">--}}
 
                         <h5>{{ __('retirada.paletes_associadas') }}</h5>
                         <div class="scrollable-palete-area">
@@ -86,7 +86,7 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" id="continuarGuiaTransporteBtn" class="btn btn-primary"
+                            <button type="button" class="continuarGuiaTransporteBtn btn btn-primary"
                                     data-documento-id="{{ $documento->id }}"
                                     data-documento-numero="{{ $documento->numero }}"
                                     data-documento-cliente-id="{{ $documento->cliente_id }}"

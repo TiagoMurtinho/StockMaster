@@ -8,5 +8,4 @@
 
 <!-- Template Main JS File -->
 <script src="{{asset('assets/js/main.js')}}"></script>
-<script src="{{asset('assets/js/custom.js')}}"></script>
 <script src="https://unpkg.com/@phosphor-icons/web"></script>

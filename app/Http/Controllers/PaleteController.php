@@ -131,6 +131,12 @@ class PaleteController extends Controller
 
     public function retirar(Request $request): JsonResponse
     {
+        // Log da requisição recebida
+        Log::info('Requisição recebida para retirar paletes', [
+            'paletes_selecionadas' => $request->input('paletes_selecionadas'),
+            'documento_id' => $request->input('documento_id')
+        ]);
+
         $request->validate([
             'paletes_selecionadas' => 'required|array',
             'documento_id' => 'required|exists:documento,id',
@@ -142,6 +148,12 @@ class PaleteController extends Controller
             if ($palete) {
                 $palete->data_saida = now();
                 $palete->save();
+
+                // Log após salvar a palete
+                Log::info('Palete atualizada com sucesso', ['palete_id' => $paleteId]);
+            } else {
+                // Log caso a palete não seja encontrada
+                Log::warning('Palete não encontrada', ['palete_id' => $paleteId]);
             }
         }
 

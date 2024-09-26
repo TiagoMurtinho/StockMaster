@@ -1,5 +1,80 @@
 $(document).ready(function() {
-    $('.ajax-form').on('submit', function(event) {
+    let guiaTransporteInitialized = false;
+    let formHandlingInitialized = false;
+    let tipoDocumentoInitialized = false;
+
+    function initContentHandlers() {
+        if (!formHandlingInitialized) {
+            initFormHandling();
+            formHandlingInitialized = true;
+        }
+
+        if (!tipoDocumentoInitialized) {
+            initTipoDocumentoChangeHandling();
+            tipoDocumentoInitialized = true;
+        }
+
+        initContinuarModal();
+        initLinhaDocumentoModal();
+        initVoltarAoPrimeiroModal();
+        initAddPaleteRow();
+        initRemovePaleteRow();
+        initCriarDocumentoBtn();
+        initArmazemOptions();
+        fillArmazemSelects();
+        initRececaoFormHandler();
+        initDynamicAlert();
+        initClickableRows();
+        removePalete();
+        initPaleteRowEvents();
+
+        if (!guiaTransporteInitialized) {
+            initGuiaTransporteModalEvents();
+            guiaTransporteInitialized = true;
+        }
+    }
+
+    initContentHandlers();
+
+    function initDynamicContent() {
+
+        $(document).off('click', 'a[data-ajax="true"]').on('click', 'a[data-ajax="true"]', function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            console.log("Carregando conteúdo de: " + url);
+
+            $('#main').load(url + ' #main > *', function(response, status, xhr) {
+                if (status === "error") {
+                    console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
+                } else {
+                    console.log("Conteúdo carregado com sucesso.");
+                    initContentHandlers();
+
+                    $('a[data-ajax="true"]').removeClass('active');
+                    $('a[href="' + url + '"]').addClass('active');
+                }
+            });
+
+            window.history.pushState({path: url}, '', url);
+        });
+    }
+
+    initDynamicContent();
+
+    $(window).on('popstate', function() {
+        $('#main').load(location.href + ' #main > *', function(response, status, xhr) {
+            if (status === "error") {
+                console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
+            } else {
+                console.log("Conteúdo carregado com sucesso.");
+                initContentHandlers();
+            }
+        });
+    });
+});
+
+function initFormHandling() {
+    $(document).on('submit', '.ajax-form', function(event) {
         event.preventDefault();
 
         var $form = $(this);
@@ -8,13 +83,16 @@ $(document).ready(function() {
 
         $.ajax({
             url: $form.attr('action'),
-            type: $form.attr('method') || 'POST',
+            type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             success: function(response) {
                 if (response.success) {
-                    window.location.href = response.redirect;
+
+                    $form.closest('.modal').modal('hide');
+
+                    $form.closest('tr').remove();
                 }
             },
             error: function(xhr) {
@@ -22,52 +100,25 @@ $(document).ready(function() {
             }
         });
     });
-});
+}
 
-$(document).ready(function() {
-    $('#tipo_documento').change(function() {
+function initTipoDocumentoChangeHandling() {
+    $(document).on('change', '#tipo_documento', function() {
         var tipoDocumentoId = $(this).val();
 
         $('#linhaDocumentoForm')[0].reset();
-        $('#camposOcultos').hide()
+        $('#camposOcultos').hide();
 
         if (tipoDocumentoId == 3) {
-            $('#camposOcultos').show()
+            $('#camposOcultos').show();
         }
     });
-});
+}
 
-$(document).ready(function() {
-    let documentoData = {};
+let documentoData = {};
 
-    function loadArtigos(clienteId, selectElement) {
-        $.ajax({
-            url: `/artigos/${clienteId}`,
-            method: 'GET',
-            success: function(response) {
-                if (Array.isArray(response)) {
-                    const options = response.map(artigo =>
-                        `<option value="${artigo.id}">${artigo.nome}</option>`
-                    ).join('');
-                    $(selectElement).html(`<option value="">Selecione um Artigo</option>${options}`);
-                } else {
-                    console.error('Resposta inválida para artigos:', response);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Erro ao carregar os artigos:', error);
-            }
-        });
-    }
-
-    function loadTipoPaletes() {
-        return $.ajax({
-            url: '/tipo-paletes',
-            method: 'GET',
-        });
-    }
-
-    $('#continuarModalLinhaDocumentoBtn').click(function() {
+function initContinuarModal() {
+    $('#continuarModalLinhaDocumentoBtn').off('click').on('click', function() {
 
         documentoData.tipo_documento_id = $('#tipo_documento').val();
         documentoData.cliente_id = $('#cliente').val();
@@ -81,9 +132,41 @@ $(document).ready(function() {
 
         $('#modalLinhaDocumento').data('cliente-id', documentoData.cliente_id);
         $('#modalLinhaDocumento').modal('show');
-    });
 
-    $('#voltarAoPrimeiroModal').click(function() {
+        initCriarDocumentoBtn(documentoData);
+
+    });
+}
+
+function loadArtigos(clienteId, selectElement) {
+    $.ajax({
+        url: `/artigos/${clienteId}`,
+        method: 'GET',
+        success: function(response) {
+            if (Array.isArray(response)) {
+                const options = response.map(artigo =>
+                    `<option value="${artigo.id}">${artigo.nome}</option>`
+                ).join('');
+                $(selectElement).html(`<option value="">Selecione um Artigo</option>${options}`);
+            } else {
+                console.error('Resposta inválida para artigos:', response);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Erro ao carregar os artigos:', error);
+        }
+    });
+}
+
+function loadTipoPaletes() {
+    return $.ajax({
+        url: '/tipo-paletes',
+        method: 'GET',
+    });
+}
+
+function initVoltarAoPrimeiroModal() {
+    $('#voltarAoPrimeiroModal').off('click').on('click', function() {
         $('#modalLinhaDocumento').modal('hide');
         $('#modalAddDocumento').modal('show');
 
@@ -95,12 +178,13 @@ $(document).ready(function() {
         $('#taxa_id').val(documentoData.taxa_id);
         $('#previsao').val(documentoData.previsao);
     });
+}
 
-    $('#modalLinhaDocumento').on('show.bs.modal', function() {
-        const clienteId = documentoData.cliente_id;
+function initLinhaDocumentoModal() {
+    $('#modalLinhaDocumento').off('show.bs.modal').on('show.bs.modal', function() {
+        const clienteId = $('#modalLinhaDocumento').data('cliente-id');
 
         if (clienteId) {
-
             loadTipoPaletes().done(function(response) {
                 if (Array.isArray(response)) {
                     var tipoPaleteSelect = $('#paleteFields .palete-row select[name="tipo_palete_id[]"]');
@@ -117,47 +201,54 @@ $(document).ready(function() {
                     console.error('Resposta inválida para tipos de palete:', response);
                 }
             });
-
-            $('#addPaleteRow').off('click').on('click', function() {
-                const newRow = `
-                    <div class="palete-row mb-3">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <label for="tipo_palete_id" class="form-label">Tipo de Palete</label>
-                                <select name="tipo_palete_id[]" class="form-select" required>
-                                    ${$('#paleteFields .palete-row select[name="tipo_palete_id[]"]').html()}
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="quantidade" class="form-label">Quantidade</label>
-                                <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="artigo_id" class="form-label">Artigo</label>
-                                <select name="artigo_id[]" class="form-select" required>
-                                    <option value="">Selecione um Artigo</option>
-                                </select>
-                            </div>
-                            <div class="col-md-1 d-flex align-items-end">
-                                <a type="button" class="remove-palete-row">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>`;
-
-                $('#paleteFields').append(newRow);
-
-                loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
-            });
-
-            $(document).on('click', '.remove-palete-row', function() {
-                $(this).closest('.palete-row').remove();
-            });
         }
     });
+}
 
-    $('#criarDocumentoBtn').click(function() {
+function initAddPaleteRow() {
+    $('#addPaleteRow').off('click').on('click', function() {
+        const newRow = `
+<div class="palete-row mb-3">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="tipo_palete_id" class="form-label">Tipo de Palete</label>
+            <select name="tipo_palete_id[]" class="form-select" required>
+                ${$('#paleteFields .palete-row select[name="tipo_palete_id[]"]').html()}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="quantidade" class="form-label">Quantidade</label>
+            <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+        </div>
+        <div class="col-md-4">
+            <label for="artigo_id" class="form-label">Artigo</label>
+            <select name="artigo_id[]" class="form-select" required>
+                <option value="">Selecione um Artigo</option>
+            </select>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <a type="button" class="remove-palete-row">
+                <i class="bi bi-trash"></i>
+            </a>
+        </div>
+    </div>
+</div>`;
+
+        $('#paleteFields').append(newRow);
+
+        const clienteId = $('#modalLinhaDocumento').data('cliente-id');
+        loadArtigos(clienteId, '#paleteFields .palete-row:last select[name="artigo_id[]"]');
+    });
+}
+
+function initRemovePaleteRow() {
+    $(document).off('click', '.remove-palete-row').on('click', '.remove-palete-row', function() {
+        $(this).closest('.palete-row').remove();
+    });
+}
+
+function initCriarDocumentoBtn() {
+    $('#criarDocumentoBtn').off('click').on('click', function() {
         var tipoPaleteIds = [];
         var quantidades = [];
         var artigoIds = [];
@@ -200,7 +291,7 @@ $(document).ready(function() {
             }
         });
     });
-});
+}
 
 function atualizarTabelaDocumentos() {
     $.ajax({
@@ -223,11 +314,11 @@ function atualizarTabelaDocumentos() {
                             <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
                                 Gerar PDF
                             </a>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal{{ $documento->id }}">
-                                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                                Eliminar
-                                            </button>
-                                        </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal${documento.id}">
+                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                    Eliminar
+                                </button>
+                            </a>
                         </td>
                     </tr>
                 `;
@@ -240,41 +331,54 @@ function atualizarTabelaDocumentos() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
+let armazemOptions = [];
+
+function initArmazemOptions() {
     const armazemOptionsElement = document.getElementById('armazem-options');
     if (armazemOptionsElement) {
-        const armazemOptions = JSON.parse(armazemOptionsElement.textContent);
 
-        document.querySelectorAll('.armazem-select').forEach(select => {
-            const tipoPaleteId = select.getAttribute('data-tipo-palete-id');
-
-            const defaultOption = document.createElement('option');
-            defaultOption.value = '';
-            defaultOption.textContent = 'Nenhum armazém';
-            select.appendChild(defaultOption);
-
-            armazemOptions.forEach(armazem => {
-                const option = document.createElement('option');
-                option.value = armazem.id;
-                option.textContent = armazem.nome;
-
-                if (armazem.tipo_palete_id === parseInt(tipoPaleteId)) {
-                    option.selected = true;
-                }
-
-                select.appendChild(option);
-            });
-        });
+        armazemOptions = JSON.parse(armazemOptionsElement.textContent) || [];
+        console.log("Armazem Options Carregados:", armazemOptions);
     }
-});
+}
 
-$(document).ready(function() {
+function fillArmazemSelects() {
+    document.querySelectorAll('.armazem-select').forEach(select => {
+
+        select.innerHTML = '';
+
+        const tipoPaleteId = select.getAttribute('data-tipo-palete-id');
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Nenhum armazém';
+        select.appendChild(defaultOption);
+
+        armazemOptions.forEach(armazem => {
+            const option = document.createElement('option');
+            option.value = armazem.id;
+            option.textContent = armazem.nome;
+
+            if (armazem.tipo_palete_id === parseInt(tipoPaleteId)) {
+                option.selected = true;
+            }
+
+            select.appendChild(option);
+        });
+
+        select.querySelectorAll('option').forEach(option => {
+            console.log(` - ${option.textContent} (value: ${option.value})`);
+        });
+    });
+}
+
+function initRececaoFormHandler() {
     $('#modalRececaoForm').on('submit', function(e) {
         e.preventDefault();
 
         var $form = $(this);
         var formData = $form.serialize();
-        var documentoIdAntigo = $form.find('input[name="documento_id"]').val(); // ID do documento antigo
+        var documentoIdAntigo = $form.find('input[name="documento_id"]').val();
 
         $.ajax({
             type: 'POST',
@@ -282,32 +386,10 @@ $(document).ready(function() {
             data: formData,
             success: function(response) {
                 if (response.success) {
-                    // Fechar o modal usando o ID antigo do documento
+
                     $('#rececaoModal' + documentoIdAntigo).modal('hide');
 
-                    // Gera o PDF
-                    $.ajax({
-                        url: '/documento/' + response.documento_id + '/pdf',
-                        method: 'GET',
-                        data: { paletes_criadas: response.paletes_criadas },
-                        xhrFields: {
-                            responseType: 'blob'
-                        },
-                        success: function(blob) {
-                            var link = document.createElement('a');
-                            var url = window.URL.createObjectURL(blob);
-                            link.href = url;
-                            link.download = 'nota_recepcao_' + response.documento_id + '.pdf';
-                            document.body.appendChild(link);
-                            link.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(link);
-                        },
-                        error: function(xhr) {
-                            console.error(xhr);
-                            alert('Erro ao gerar o PDF.');
-                        }
-                    });
+                    generateRececaoPDF(response.documento_id, response.paletes_criadas);
                 } else {
                     alert('Erro ao criar documento.');
                 }
@@ -318,10 +400,34 @@ $(document).ready(function() {
             }
         });
     });
-});
+}
 
-document.addEventListener('DOMContentLoaded', function() {
+function generateRececaoPDF(documentoId, paletesCriadas) {
+    $.ajax({
+        url: '/documento/' + documentoId + '/pdf',
+        method: 'GET',
+        data: { paletes_criadas: paletesCriadas },
+        xhrFields: {
+            responseType: 'blob'
+        },
+        success: function(blob) {
+            var link = document.createElement('a');
+            var url = window.URL.createObjectURL(blob);
+            link.href = url;
+            link.download = 'nota_recepcao_' + documentoId + '.pdf';
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(link);
+        },
+        error: function(xhr) {
+            console.error(xhr);
+            alert('Erro ao gerar o PDF.');
+        }
+    });
+}
 
+function initDynamicAlert() {
     var alert = document.getElementById('mensagem-dinamica');
 
     if (alert) {
@@ -329,10 +435,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert.style.display = 'none';
         }, 3000);
     }
-});
+}
 
-document.addEventListener('DOMContentLoaded', function() {
-
+function initClickableRows() {
     document.querySelectorAll('.clickable-row').forEach(row => {
         row.addEventListener('click', function () {
             const documentoId = this.getAttribute('data-id');
@@ -355,12 +460,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
     document.querySelectorAll('.no-click-propagation').forEach(button => {
         button.addEventListener('click', function(event) {
             event.stopPropagation();
         });
     });
-});
+}
 
 window.tiposPalete = [];
 window.artigos = [];
@@ -377,7 +483,15 @@ function populateModal(data) {
 
     if (data.linhas && data.linhas.length > 0) {
         const primeiraLinha = data.linhas[0];
-        document.querySelector('.modal-linha-id').value = primeiraLinha.pivot_id || '';
+
+        const linhaIdInput = document.querySelector('.modal-linha-id');
+        if (linhaIdInput) {
+            linhaIdInput.value = primeiraLinha.pivot_id || '';
+        } else {
+            console.error('Elemento .modal-linha-id não encontrado.');
+        }
+    } else {
+        console.warn('Nenhuma linha encontrada no documento.');
     }
 
     // Buscar taxas
@@ -419,23 +533,24 @@ function populateModal(data) {
         });
 }
 
-$(document).on('click', '.remove-palete', function() {
+function removePalete() {
 
-    const row = $(this).closest('tr');
-    const deletedInput = row.find('input[name="deleted[]"]');
+    $(document).on('click', '.remove-palete', function() {
+        const row = $(this).closest('tr');
+        const deletedInput = row.find('input[name="deleted[]"]');
 
-    if (deletedInput.length) {
-        if (deletedInput.val() === '0') {
-            deletedInput.val(1);
-
-            row.hide();
+        if (deletedInput.length) {
+            if (deletedInput.val() === '0') {
+                deletedInput.val(1);
+                row.hide();
+            } else {
+                console.log('A linha já está marcada como deletada.');
+            }
         } else {
-            console.log('A linha já está marcada como deletada.');
+            console.error('Input "deleted[]" não encontrado na linha.');
         }
-    } else {
-        console.error('Input "deleted[]" não encontrado na linha.');
-    }
-});
+    });
+}
 
 function preencherLinhasModal(linhas, tiposPalete, artigos) {
     const linhaContainer = document.querySelector('.modal-linhas');
@@ -482,14 +597,18 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
     });
 }
 
-document.addEventListener('click', function(event) {
-    if (event.target && event.target.classList.contains('add-palete-row')) {
-        adicionarNovaLinha();
-    } else if (event.target && event.target.closest('.remove-palete-row')) {
-        const row = event.target.closest('tr.palete-row');
-        row.remove();
-    }
-});
+function initPaleteRowEvents() {
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.classList.contains('add-palete-row')) {
+            adicionarNovaLinha();
+        } else if (event.target && event.target.closest('.remove-palete-row')) {
+            const row = event.target.closest('tr.palete-row');
+            if (row) {
+                row.remove();
+            }
+        }
+    });
+}
 
 function adicionarNovaLinha() {
 
@@ -589,12 +708,14 @@ function saveChanges() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const buttons = document.querySelectorAll('[id^="continuarGuiaTransporteBtn"]');
+function initGuiaTransporteModalEvents() {
+    console.log("initGuiaTransporteModalEvents foi chamada.");
 
-    buttons.forEach(button => {
-        button.addEventListener('click', function(event) {
+    document.addEventListener('click', function(event) {
+        if (event.target && event.target.classList.contains('continuarGuiaTransporteBtn')) {
             event.preventDefault();
+
+            const button = event.target;
 
             const numero = button.getAttribute('data-documento-numero');
             const clienteId = button.getAttribute('data-documento-cliente-id');
@@ -620,8 +741,8 @@ document.addEventListener('DOMContentLoaded', function() {
             guiaTransporteModal.show();
 
             const guiaForm = document.getElementById('documentoForm');
-            document.getElementById('confirmarEnvio').addEventListener('click', function() {
 
+            document.getElementById('confirmarEnvio').onclick = function() {
                 let paletesDados = [];
                 const selectedPaletes = document.querySelectorAll('input[name="paletes_selecionadas[]"]:checked');
 
@@ -630,7 +751,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         tipo_palete_id: palete.getAttribute('data-tipo-palete-id'),
                         artigo_id: palete.getAttribute('data-artigo-id'),
                         armazem_id: palete.getAttribute('data-armazem-id'),
-                        localizacao: palete.getAttribute('data-localizacao')
+                        localizacao: palete.getAttribute('data-localizacao'),
+                        id: palete.value
                     });
                 });
 
@@ -642,7 +764,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        paletes_selecionadas: paletesDados.map(p => p.artigo_id),
+                        paletes_selecionadas: paletesDados.map(p => p.id),
                         documento_id: documentoId
                     }),
                 })
@@ -653,7 +775,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         return response.json();
                     })
                     .then(data => {
-                        console.log("Paletes atualizadas:", data);
 
                         let formData = new FormData(guiaForm);
                         formData.append('paletes_dados', JSON.stringify(paletesDados));
@@ -688,7 +809,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 var link = document.createElement('a');
                                 var url = window.URL.createObjectURL(blob);
                                 link.href = url;
-                                link.download = 'guia_transporte_' + documentoId + '.pdf'; // Nome do arquivo
+                                link.download = 'guia_transporte_' + documentoId + '.pdf';
                                 document.body.appendChild(link);
                                 link.click();
                                 window.URL.revokeObjectURL(url);
@@ -700,12 +821,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         });
 
-                        guiaTransporteModal.hide();
+                        $('#modalGuiaTransporte').modal('hide');
+
                     })
                     .catch(error => {
                         console.error('Erro:', error);
                     });
-            });
-        });
+            };
+        }
     });
-});
+}
