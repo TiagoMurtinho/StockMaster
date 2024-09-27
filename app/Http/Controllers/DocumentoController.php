@@ -119,75 +119,49 @@ class DocumentoController extends Controller
 
     public function gerarPDF($id): Response
     {
-        // Carrega o documento com suas relações
+
         $documento = Documento::with(['tipo_palete'])->findOrFail($id);
-
         $nomeArquivo = $documento->tipo_documento->nome . $id . '.pdf';
+        $armazemIds = $documento->tipo_palete->pluck('pivot.armazem_id');
+        $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
+        $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
 
-        if ($documento->tipo_documento_id == 1) {
+        switch ($documento->tipo_documento_id) {
+            case 1:
+                $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
+                break;
 
-            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
+            case 2:
+                $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
+                $pdf = Pdf::loadView('pdf.rececao', compact('documento', 'artigos', 'armazens'));
+                break;
 
-            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+            case 3:
+                $pdf = Pdf::loadView('pdf.pedido-retirada', compact('documento', 'artigos'));
+                break;
 
-            $pdf = Pdf::loadView('pdf.documento', compact('documento', 'artigos'));
-        } elseif ($documento->tipo_documento_id == 2) {
+            case 4:
+                $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
+                $pdf = Pdf::loadView('pdf.guia-transporte', compact('documento', 'artigos', 'armazens'));
+                break;
 
-            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
+            case 5:
+                $documentoTipo2 = Documento::where('cliente_id', $documento->cliente_id)
+                    ->where('tipo_documento_id', 2)
+                    ->first();
 
-            $armazemIds = $documento->tipo_palete->pluck('pivot.armazem_id');
-
-            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
-            $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
-
-            $pdf = Pdf::loadView('pdf.rececao', compact('documento', 'artigos', 'armazens'));
-
-        } elseif ($documento->tipo_documento_id == 3) {
-
-            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
-
-            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
-
-            $pdf = Pdf::loadView('pdf.pedido-retirada', compact('documento', 'artigos'));
-
-        } elseif ($documento->tipo_documento_id == 4) {
-
-
-            $artigoIds = $documento->tipo_palete->pluck('pivot.artigo_id');
-
-            $armazemIds = $documento->tipo_palete->pluck('pivot.armazem_id');
-
-            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
-            $armazens = Armazem::whereIn('id', $armazemIds)->get()->keyBy('id');
-
-            $pdf = Pdf::loadView('pdf.guia-transporte', compact('documento', 'artigos', 'armazens'));
-
-        } elseif ($documento->tipo_documento_id == 5) {
-            // Buscando o documento do tipo 2 associado ao cliente
-            $documentoTipo2 = Documento::where('cliente_id', $documento->cliente_id)
-                ->where('tipo_documento_id', 2)
-                ->first(); // Obtemos o primeiro documento de tipo 2
-
-            if ($documentoTipo2) {
-                // Agora buscamos as paletes associadas a esse documento
-                $paletes = Palete::where('documento_id', $documentoTipo2->id)->get();
-
-                // Adiciona um log para verificar se as paletes foram recuperadas
-                \Log::info('Paletes encontradas para o documento tipo 2:', $paletes->toArray());
-
-                if ($paletes->isEmpty()) {
-                    \Log::warning('Nenhuma palete encontrada para o documento tipo 2 ID: ' . $documentoTipo2->id);
+                $paletes = collect();
+                if ($documentoTipo2) {
+                    $paletes = Palete::where('documento_id', $documentoTipo2->id)->get();
                 }
-            } else {
-                \Log::warning('Nenhum documento tipo 2 encontrado para o cliente ID: ' . $documento->cliente_id);
-                return response()->json(['error' => 'Nenhum documento tipo 2 encontrado para este cliente.'], 404);
-            }
 
-            $artigoIds = $paletes->pluck('artigo_id')->filter();
-            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+                $artigoPaleteIds = $paletes->pluck('artigo_id')->filter();
+                $artigos = Artigo::whereIn('id', $artigoPaleteIds)->get()->keyBy('id');
+                $pdf = Pdf::loadView('pdf.faturacao', compact('documento', 'artigos', 'paletes'));
+                break;
 
-            // Carregar a view do PDF
-            $pdf = Pdf::loadView('pdf.faturacao', compact('documento', 'artigos', 'paletes'));
+            default:
+                throw new \Exception("Tipo de documento não reconhecido.");
         }
 
         return $pdf->download($nomeArquivo);

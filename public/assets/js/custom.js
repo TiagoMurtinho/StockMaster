@@ -42,13 +42,12 @@ $(document).ready(function() {
         $(document).off('click', 'a[data-ajax="true"]').on('click', 'a[data-ajax="true"]', function(e) {
             e.preventDefault();
             var url = $(this).attr('href');
-            console.log("Carregando conteúdo de: " + url);
 
             $('#main').load(url + ' #main > *', function(response, status, xhr) {
                 if (status === "error") {
                     console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
                 } else {
-                    console.log("Conteúdo carregado com sucesso.");
+
                     initContentHandlers();
 
                     $('a[data-ajax="true"]').removeClass('active');
@@ -105,14 +104,12 @@ function initFormHandling() {
 function initTipoDocumentoChangeHandling() {
     $(document).on('change', '#tipo_documento', function() {
         var tipoDocumentoId = $(this).val();
-        var clienteId = $('#cliente').val(); // Capturar o valor do cliente selecionado
+        var clienteId = $('#cliente').val();
 
-        // Resetar os formulários e esconder as seções
         $('#linhaDocumentoForm')[0].reset();
         $('#moradaOculta').hide();
         $('#faturacaoOculta').hide();
 
-        // Mostrar ou esconder campos dependendo do tipo de documento
         if (tipoDocumentoId == 3) {
             $('#moradaOculta').show();
         }
@@ -128,8 +125,6 @@ function initTipoDocumentoChangeHandling() {
                     success: function(response) {
 
                         $('#total').val(response.total);
-                        console.log('Valor de total atribuído ao campo #total:', response.total);
-
 
                         $('#faturacaoOculta').show();
                     },
@@ -162,7 +157,7 @@ function initContinuarModal() {
         $('#modalAddDocumento').modal('hide');
 
         if (documentoData.tipo_documento_id == 5) {
-            // Chama criarDocumentoSemLinha aqui, após o preenchimento dos campos
+
             criarDocumentoSemLinha();
         } else {
             $('#modalLinhaDocumento').data('cliente-id', documentoData.cliente_id);
@@ -174,10 +169,9 @@ function initContinuarModal() {
 }
 
 function criarDocumentoSemLinha() {
-    // Captura o valor extra que foi preenchido no formulário
+
     var extraValue = $('#extra').val();
 
-    // Captura o total do campo #total
     var totalValue = $('#total').val();
 
     $.ajax({
@@ -186,11 +180,11 @@ function criarDocumentoSemLinha() {
         data: {
             _token: $('meta[name="csrf-token"]').attr('content'),
             documento: {
-                ...documentoData, // Inclui todos os dados do documento
-                total: totalValue, // Adiciona o total
-                extra: extraValue // Adiciona o valor extra
+                ...documentoData,
+                total: totalValue,
+                extra: extraValue
             },
-            linhas: [] // Não há linhas para este tipo de documento
+            linhas: []
         },
         success: function(response) {
             atualizarTabelaDocumentos();
@@ -558,7 +552,6 @@ function populateModal(data) {
         console.warn('Nenhuma linha encontrada no documento.');
     }
 
-    // Buscar taxas
     fetch('/taxas')
         .then(response => response.json())
         .then(taxas => {
@@ -773,7 +766,6 @@ function saveChanges() {
 }
 
 function initGuiaTransporteModalEvents() {
-    console.log("initGuiaTransporteModalEvents foi chamada.");
 
     document.addEventListener('click', function(event) {
         if (event.target && event.target.classList.contains('continuarGuiaTransporteBtn')) {
