@@ -106,26 +106,48 @@ function initTipoDocumentoChangeHandling() {
         var tipoDocumentoId = $(this).val();
         var clienteId = $('#cliente').val();
 
+        // Resetar o formulário
         $('#linhaDocumentoForm')[0].reset();
         $('#moradaOculta').hide();
         $('#faturacaoOculta').hide();
+        $('#datasOcultas').hide(); // Ocultar inicialmente as datas de faturação
+
+        // Mostrar campos de taxa e previsão para tipos específicos
+        if (tipoDocumentoId == 1) {
+            $('#taxaOculta').show();
+            $('#previsaoOculta').show();
+        }
 
         if (tipoDocumentoId == 3) {
             $('#moradaOculta').show();
+            $('#taxaOculta').show();
+            $('#previsaoOculta').show();
         }
 
+        // Mostrar campos de data para faturação
         if (tipoDocumentoId == 5) {
             $('#taxaOculta').hide();
             $('#previsaoOculta').hide();
-            if (clienteId) {
+            $('#datasOcultas').show(); // Mostrar o container das datas
 
+            // Limpar valores anteriores de faturação
+            $('#total').val('');
+
+            if (clienteId) {
+                // Capturar as datas
+                var dataInicio = $('#data_inicio').val();
+                var dataFim = $('#data_fim').val();
+
+                // Enviar dados para o backend
                 $.ajax({
                     url: '/documento/faturacao/' + clienteId,
                     method: 'GET',
+                    data: {
+                        data_inicio: dataInicio,
+                        data_fim: dataFim
+                    },
                     success: function(response) {
-
                         $('#total').val(response.total);
-
                         $('#faturacaoOculta').show();
                     },
                     error: function(xhr, status, error) {

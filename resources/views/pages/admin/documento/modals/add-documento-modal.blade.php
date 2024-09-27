@@ -70,6 +70,17 @@
                         </div>
                     </div>
 
+                    <div class="row mb-3" id="datasOcultas">
+                        <div class="col-md-6">
+                            <label for="data_inicio" class="form-label">{{ __('documento.data_inicio') }}</label>
+                            <input type="date" class="form-control" id="data_inicio" name="data_inicio">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="data_fim" class="form-label">{{ __('documento.data_fim') }}</label>
+                            <input type="date" class="form-control" id="data_fim" name="data_fim">
+                        </div>
+                    </div>
+
                     <div class="row mb-3">
                         <div class="mb-3">
                             <label for="observacao" class="form-label">{{ __('documento.observacao') }}</label>

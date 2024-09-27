@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DocumentoController extends Controller
 {
@@ -349,23 +350,45 @@ class DocumentoController extends Controller
         $paletes = Palete::where('documento_id', $documentoTipo2->id)->get();
         $total = 0;
 
+        $dataInicio = request()->input('data_inicio');
+        $dataFim = request()->input('data_fim');
+
+        $dataInicioCarbon = $dataInicio ? Carbon::parse($dataInicio) : null;
+        $dataFimCarbon = $dataFim ? Carbon::parse($dataFim) : null;
+
         foreach ($paletes as $palete) {
             $tipoPalete = $palete->tipo_palete;
             $valorDiario = $tipoPalete->valor;
-            $dataEntrada = Carbon::parse($palete->data_entrada);
-            $dataSaida = $palete->data_saida ? Carbon::parse($palete->data_saida) : null;
+            $dataEntrada = Carbon::parse($palete->data_entrada)->startOfDay(); // Começo do dia
+            $dataSaida = $palete->data_saida ? Carbon::parse($palete->data_saida)->startOfDay() : Carbon::now()->startOfDay();
 
-            if ($dataSaida) {
-                $dias = $dataEntrada->diffInDays($dataSaida);
+            if ($dataInicioCarbon) {
+                if ($dataInicioCarbon->greaterThan($dataEntrada)) {
+                    $inicioFaturamento = $dataInicioCarbon->startOfDay();
+                } else {
+                    $inicioFaturamento = $dataEntrada;
+                }
             } else {
-                $dias = $dataEntrada->diffInDays(Carbon::now());
+                $inicioFaturamento = $dataEntrada;
             }
 
-            $dias = max($dias, 1);
-            $totalPalete = $dias * $valorDiario;
-            $total += $totalPalete;
-        }
+            $dataFinalFaturamento = $dataFimCarbon ? $dataFimCarbon->startOfDay() : $dataSaida;
 
+            if ($dataFinalFaturamento->greaterThan($dataSaida)) {
+                $dataFinalFaturamento = $dataSaida;
+            }
+
+            if ($dataFinalFaturamento->greaterThanOrEqualTo($inicioFaturamento)) {
+
+                $dias = $inicioFaturamento->diffInDays($dataFinalFaturamento) + 1;
+
+                $dias = max($dias, 1);
+
+                $totalPalete = $dias * $valorDiario;
+                $total += $totalPalete;
+
+            }
+        }
 
         $documentos = Documento::where('cliente_id', $clienteId)
             ->whereIn('tipo_documento_id', [2, 4])
@@ -378,10 +401,8 @@ class DocumentoController extends Controller
             }
         }
 
-        $extra = request()->input('extra', 0);
-
         return response()->json([
-            'total' => $total + $extra,
+            'total' => $total,
             'paletes' => $paletes,
         ]);
     }
