@@ -7,13 +7,13 @@
             </div>
             <div class="modal-body">
                 <p class="text-danger">{{ __('tipo-palete.confirm_delete') }} {{ $tipoPalete->tipo }}</p>
-                <form class="ajax-form" id="deleteTipoPaleteForm{{ $tipoPalete->id }}" method="POST" action="{{ route('tipo-palete.destroy', $tipoPalete->id) }}">
+                <form id="deleteTipoPaleteForm{{ $tipoPalete->id }}" method="POST" action="{{ route('tipo-palete.destroy', $tipoPalete->id) }}">
                     @csrf
                     @method('DELETE')
                     <input type="hidden" name="id" id="tipoPaleteId{{ $tipoPalete->id }}">
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('tipo-palete.cancel') }}</button>
-                        <button type="submit" class="btn btn-danger">{{ __('tipo-palete.delete') }}</button>
+                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTipoPaleteForm{{ $tipoPalete->id }}">{{ __('tipo-palete.delete') }}</button>
                     </div>
                 </form>
             </div>

@@ -2,6 +2,7 @@ $(document).ready(function() {
     let guiaTransporteInitialized = false;
     let formHandlingInitialized = false;
     let tipoDocumentoInitialized = false;
+    let deleteInitialized = false
 
     function initContentHandlers() {
 
@@ -19,9 +20,15 @@ $(document).ready(function() {
         removePalete();
         initPaleteRowEvents();
 
+
         if (!guiaTransporteInitialized) {
             initGuiaTransporteModalEvents();
             guiaTransporteInitialized = true;
+        }
+
+        if (!deleteInitialized) {
+            initDeleteHandler()
+            deleteInitialized = true;
         }
 
         if (!formHandlingInitialized) {
@@ -906,5 +913,41 @@ function initGuiaTransporteModalEvents() {
                     });
             };
         }
+    });
+}
+
+function initDeleteHandler() {
+
+    $(document).on('click', '.ajax-delete-btn', function(event) {
+        var formId = $(this).data('form-id');
+        var $form = $('#' + formId);
+
+        event.preventDefault();
+
+        var formData = new FormData($form[0]);
+
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-HTTP-Method-Override': 'DELETE'
+            },
+            success: function(response) {
+                if (response.success) {
+                    $form.closest('.modal').modal('hide');
+                    $form.closest('tr').remove();
+                } else {
+                    console.log('Erro:', response.message || 'Erro desconhecido');
+                }
+            },
+            error: function(xhr) {
+                console.log('Error:', xhr.responseText);
+            }
+        });
     });
 }

@@ -9,11 +9,11 @@
                 Tem certeza que deseja excluir este documento?
             </div>
             <div class="modal-footer">
-                <form class="ajax-form" id="deleteDocumentoForm{{ $documento->id }}" action="{{ route('documento.destroy', $documento->id) }}" method="POST">
+                <form id="deleteDocumentoForm{{ $documento->id }}" action="{{ route('documento.destroy', $documento->id) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                    <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteDocumentoForm{{ $documento->id }}">Eliminar</button>
                 </form>
             </div>
         </div>
