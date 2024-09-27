@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('matricula', 45)->nullable();
             $table->string('morada', 255)->nullable();
             $table->date('data');
-            $table->date('previsao');
+            $table->date('previsao')->nullable();
             $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_saida')->nullable();
             $table->dateTime('previsao_descarga')->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('observacao', 255)->nullable();
             $table->foreignId('tipo_documento_id')->constrained('tipo_documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('cliente_id')->constrained('cliente','id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('taxa_id')->constrained('taxa', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('taxa_id')->nullable()->constrained('taxa', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });

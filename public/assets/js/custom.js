@@ -4,15 +4,6 @@ $(document).ready(function() {
     let tipoDocumentoInitialized = false;
 
     function initContentHandlers() {
-        if (!formHandlingInitialized) {
-            initFormHandling();
-            formHandlingInitialized = true;
-        }
-
-        if (!tipoDocumentoInitialized) {
-            initTipoDocumentoChangeHandling();
-            tipoDocumentoInitialized = true;
-        }
 
         initContinuarModal();
         initLinhaDocumentoModal();
@@ -31,6 +22,16 @@ $(document).ready(function() {
         if (!guiaTransporteInitialized) {
             initGuiaTransporteModalEvents();
             guiaTransporteInitialized = true;
+        }
+
+        if (!formHandlingInitialized) {
+            initFormHandling();
+            formHandlingInitialized = true;
+        }
+
+        if (!tipoDocumentoInitialized) {
+            initTipoDocumentoChangeHandling();
+            tipoDocumentoInitialized = true;
         }
     }
 
@@ -66,7 +67,6 @@ $(document).ready(function() {
             if (status === "error") {
                 console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
             } else {
-                console.log("Conteúdo carregado com sucesso.");
                 initContentHandlers();
             }
         });
@@ -105,12 +105,41 @@ function initFormHandling() {
 function initTipoDocumentoChangeHandling() {
     $(document).on('change', '#tipo_documento', function() {
         var tipoDocumentoId = $(this).val();
+        var clienteId = $('#cliente').val(); // Capturar o valor do cliente selecionado
 
+        // Resetar os formulários e esconder as seções
         $('#linhaDocumentoForm')[0].reset();
-        $('#camposOcultos').hide();
+        $('#moradaOculta').hide();
+        $('#faturacaoOculta').hide();
 
+        // Mostrar ou esconder campos dependendo do tipo de documento
         if (tipoDocumentoId == 3) {
-            $('#camposOcultos').show();
+            $('#moradaOculta').show();
+        }
+
+        if (tipoDocumentoId == 5) {
+            $('#taxaOculta').hide();
+            $('#previsaoOculta').hide();
+            if (clienteId) {
+
+                $.ajax({
+                    url: '/documento/faturacao/' + clienteId,
+                    method: 'GET',
+                    success: function(response) {
+
+                        $('#total').val(response.total);
+                        console.log('Valor de total atribuído ao campo #total:', response.total);
+
+
+                        $('#faturacaoOculta').show();
+                    },
+                    error: function(xhr, status, error) {
+                        console.log('Erro ao obter faturação: ' + xhr.responseText);
+                    }
+                });
+            } else {
+                console.log('Nenhum cliente selecionado para faturação.');
+            }
         }
     });
 }
@@ -127,14 +156,49 @@ function initContinuarModal() {
         documentoData.observacao = $('#observacao').val();
         documentoData.taxa_id = $('#taxa_id').val();
         documentoData.previsao = $('#previsao').val();
+        documentoData.total = $('#total').val();
+        documentoData.extra = $('#extra').val();
 
         $('#modalAddDocumento').modal('hide');
 
-        $('#modalLinhaDocumento').data('cliente-id', documentoData.cliente_id);
-        $('#modalLinhaDocumento').modal('show');
+        if (documentoData.tipo_documento_id == 5) {
+            // Chama criarDocumentoSemLinha aqui, após o preenchimento dos campos
+            criarDocumentoSemLinha();
+        } else {
+            $('#modalLinhaDocumento').data('cliente-id', documentoData.cliente_id);
+            $('#modalLinhaDocumento').modal('show');
+        }
 
         initCriarDocumentoBtn(documentoData);
+    });
+}
 
+function criarDocumentoSemLinha() {
+    // Captura o valor extra que foi preenchido no formulário
+    var extraValue = $('#extra').val();
+
+    // Captura o total do campo #total
+    var totalValue = $('#total').val();
+
+    $.ajax({
+        url: '/documento',
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            documento: {
+                ...documentoData, // Inclui todos os dados do documento
+                total: totalValue, // Adiciona o total
+                extra: extraValue // Adiciona o valor extra
+            },
+            linhas: [] // Não há linhas para este tipo de documento
+        },
+        success: function(response) {
+            atualizarTabelaDocumentos();
+            window.location.href = '/documento/' + response.documento_id + '/pdf';
+        },
+        error: function(xhr, status, error) {
+            console.log('Erro ao criar o documento: ' + xhr.responseText);
+        }
     });
 }
 
@@ -795,7 +859,6 @@ function initGuiaTransporteModalEvents() {
                         return response.json();
                     })
                     .then(data => {
-                        console.log("Resposta do servidor:", data);
 
                         const documentoId = data.documento.id;
 

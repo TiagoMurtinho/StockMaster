@@ -8,10 +8,12 @@ use App\Models\Cliente;
 use App\Models\Documento;
 use App\Models\LinhaDocumento;
 use App\Models\DocumentoTipoPalete;
+use App\Models\Palete;
 use App\Models\Taxa;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -27,7 +29,7 @@ class DocumentoController extends Controller
     {
 
         $documentos = Documento::all();
-        $tiposDocumento = TipoDocumento::whereIn('id', [1, 3])->get();
+        $tiposDocumento = TipoDocumento::whereIn('id', [1, 3, 5])->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
         $taxas = Taxa::all();
@@ -56,43 +58,46 @@ class DocumentoController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        \Log::info('Dados recebidos:', $request->all());
-
         try {
-            // Validação
-            $validated = $request->validate([
+            $rules = [
                 'documento.numero' => 'required|numeric',
                 'documento.matricula' => 'nullable|string|max:45',
                 'documento.morada' => 'nullable|string|max:255',
                 'documento.total' => 'nullable|numeric',
                 'documento.observacao' => 'nullable|string|max:255',
-                'documento.previsao' => 'required|date',
                 'documento.extra' => 'nullable|numeric',
-                'documento.taxa_id' => 'required|integer|exists:taxa,id',
                 'documento.tipo_documento_id' => 'required|exists:tipo_documento,id',
                 'documento.cliente_id' => 'required|exists:cliente,id',
-                'linhas' => 'required|array',
-                'linhas.*.tipo_palete_id' => 'required|integer|exists:tipo_palete,id',
-                'linhas.*.quantidade' => 'required|integer|min:1',
-                'linhas.*.artigo_id' => 'required|integer|exists:artigo,id',
-            ]);
+            ];
 
-            // Criação do documento
+            // Adiciona regras condicionais
+            if ($request->input('documento.tipo_documento_id') != 5) {
+                $rules['documento.previsao'] = 'required|date';
+                $rules['documento.taxa_id'] = 'required|integer|exists:taxa,id';
+                $rules['linhas'] = 'required|array';
+                $rules['linhas.*.tipo_palete_id'] = 'required|integer|exists:tipo_palete,id';
+                $rules['linhas.*.quantidade'] = 'required|integer|min:1';
+                $rules['linhas.*.artigo_id'] = 'required|integer|exists:artigo,id';
+            }
+
+            $validated = $request->validate($rules);
+
             $documentoData = $validated['documento'];
             $documentoData['user_id'] = auth()->id();
-            $documentoData['data'] = now(); // Adiciona a data atual ao campo 'data'
+            $documentoData['data'] = now();
 
             $documento = Documento::create($documentoData);
 
-            // Criação das linhas associadas (tipo_palete, quantidade, artigo_id)
-            foreach ($request->input('linhas') as $linha) {
-                $documento->tipo_palete()->attach(
-                    $linha['tipo_palete_id'],
-                    [
-                        'quantidade' => $linha['quantidade'],
-                        'artigo_id' => $linha['artigo_id']
-                    ]
-                );
+            if (isset($validated['linhas'])) {
+                foreach ($validated['linhas'] as $linha) {
+                    $documento->tipo_palete()->attach(
+                        $linha['tipo_palete_id'],
+                        [
+                            'quantidade' => $linha['quantidade'],
+                            'artigo_id' => $linha['artigo_id']
+                        ]
+                    );
+                }
             }
 
             return response()->json([
@@ -100,13 +105,11 @@ class DocumentoController extends Controller
                 'documento_id' => $documento->id,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Resposta em caso de erro de validação
             return response()->json([
                 'success' => false,
                 'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            // Resposta em caso de erro geral
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -159,6 +162,32 @@ class DocumentoController extends Controller
 
             $pdf = Pdf::loadView('pdf.guia-transporte', compact('documento', 'artigos', 'armazens'));
 
+        } elseif ($documento->tipo_documento_id == 5) {
+            // Buscando o documento do tipo 2 associado ao cliente
+            $documentoTipo2 = Documento::where('cliente_id', $documento->cliente_id)
+                ->where('tipo_documento_id', 2)
+                ->first(); // Obtemos o primeiro documento de tipo 2
+
+            if ($documentoTipo2) {
+                // Agora buscamos as paletes associadas a esse documento
+                $paletes = Palete::where('documento_id', $documentoTipo2->id)->get();
+
+                // Adiciona um log para verificar se as paletes foram recuperadas
+                \Log::info('Paletes encontradas para o documento tipo 2:', $paletes->toArray());
+
+                if ($paletes->isEmpty()) {
+                    \Log::warning('Nenhuma palete encontrada para o documento tipo 2 ID: ' . $documentoTipo2->id);
+                }
+            } else {
+                \Log::warning('Nenhum documento tipo 2 encontrado para o cliente ID: ' . $documento->cliente_id);
+                return response()->json(['error' => 'Nenhum documento tipo 2 encontrado para este cliente.'], 404);
+            }
+
+            $artigoIds = $paletes->pluck('artigo_id')->filter();
+            $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+
+            // Carregar a view do PDF
+            $pdf = Pdf::loadView('pdf.faturacao', compact('documento', 'artigos', 'paletes'));
         }
 
         return $pdf->download($nomeArquivo);
@@ -324,6 +353,63 @@ class DocumentoController extends Controller
         $artigos = Artigo::where('cliente_id', $clienteId)->get();
 
         return response()->json($artigos);
+    }
+
+    public function faturacao($clienteId)
+    {
+        $cliente = Cliente::find($clienteId);
+
+        if (!$cliente) {
+            return response()->json(['error' => 'Cliente não encontrado.'], 404);
+        }
+
+        $documentoTipo2 = Documento::where('cliente_id', $clienteId)
+            ->where('tipo_documento_id', 2)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$documentoTipo2) {
+            return response()->json(['error' => 'Nenhum documento do tipo 2 encontrado para este cliente.'], 404);
+        }
+
+        $paletes = Palete::where('documento_id', $documentoTipo2->id)->get();
+        $total = 0;
+
+        foreach ($paletes as $palete) {
+            $tipoPalete = $palete->tipo_palete;
+            $valorDiario = $tipoPalete->valor;
+            $dataEntrada = Carbon::parse($palete->data_entrada);
+            $dataSaida = $palete->data_saida ? Carbon::parse($palete->data_saida) : null;
+
+            if ($dataSaida) {
+                $dias = $dataEntrada->diffInDays($dataSaida);
+            } else {
+                $dias = $dataEntrada->diffInDays(Carbon::now());
+            }
+
+            $dias = max($dias, 1);
+            $totalPalete = $dias * $valorDiario;
+            $total += $totalPalete;
+        }
+
+
+        $documentos = Documento::where('cliente_id', $clienteId)
+            ->whereIn('tipo_documento_id', [2, 4])
+            ->get();
+
+        foreach ($documentos as $documento) {
+            $taxa = Taxa::find($documento->taxa_id);
+            if ($taxa) {
+                $total += $taxa->valor;
+            }
+        }
+
+        $extra = request()->input('extra', 0);
+
+        return response()->json([
+            'total' => $total + $extra,
+            'paletes' => $paletes,
+        ]);
     }
 
 }

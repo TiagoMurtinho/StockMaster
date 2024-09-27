@@ -53,6 +53,7 @@ Route::put('/documento/{id}', [DocumentoController::class, 'update']);
 Route::post('/paletes/retirar', [PaleteController::class, 'retirar'])->name('paletes.retirar');
 Route::resource('user', UserController::class);
 Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+Route::get('/documento/faturacao/{clienteId}', [DocumentoController::class, 'faturacao']);
 
 
 require __DIR__.'/auth.php';
