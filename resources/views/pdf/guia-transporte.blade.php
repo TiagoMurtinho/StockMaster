@@ -83,7 +83,7 @@
         <h2>Informações do Transporte</h2>
         <p><strong>Morada:</strong> {{ $documento->morada }}</p>
         <p><strong>Matrícula:</strong> {{ $documento->matricula }}</p>
-        <p><strong>Previsão de Descarga:</strong> {{ $documento->previsao }}</p>
+        <p><strong>Previsão de Descarga:</strong> {{ $documento->previsao_descarga }}</p>
     </div>
     <div class="footer">
         <p>Obrigado por utilizar o nosso sistema!</p>

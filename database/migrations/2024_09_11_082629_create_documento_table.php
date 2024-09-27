@@ -22,7 +22,6 @@ return new class extends Migration
             $table->dateTime('data_entrada')->nullable();
             $table->dateTime('data_saida')->nullable();
             $table->dateTime('previsao_descarga')->nullable();
-            $table->dateTime('data_carregamento')->nullable();
             $table->float('extra')->nullable();
             $table->float('total')->nullable();
             $table->string('observacao', 255)->nullable();

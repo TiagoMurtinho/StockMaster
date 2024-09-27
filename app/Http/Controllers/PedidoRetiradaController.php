@@ -22,7 +22,6 @@ class PedidoRetiradaController extends Controller
      */
     public function index()
     {
-        // Obtém os documentos com a relação tipo_palete
         $documentos = Documento::with(['tipo_palete'])
             ->where('tipo_documento_id', 3)
             ->where('estado', 'pendente')
@@ -30,21 +29,17 @@ class PedidoRetiradaController extends Controller
             ->orderBy('data_entrada', 'asc')
             ->get();
 
-        // Inicializa coleções para artigoIds e tipoPaleteIds
         $artigoIds = collect();
         $tipoPaleteIds = collect();
 
-        // Itera sobre documentos para coletar IDs de artigos e tipos de palete
         foreach ($documentos as $documento) {
             $artigoIds = $artigoIds->merge($documento->tipo_palete->pluck('pivot.artigo_id'));
             $tipoPaleteIds = $tipoPaleteIds->merge($documento->tipo_palete->pluck('pivot.tipo_palete_id'));
         }
 
-        // Obtém artigos e tipos de palete
         $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
         $tipoPaletes = TipoPalete::whereIn('id', $tipoPaleteIds)->get()->keyBy('id');
 
-        // Obtém paletes disponíveis
         $paletes = Palete::whereNull('data_saida')
             ->whereIn('artigo_id', $artigoIds)
             ->whereIn('tipo_palete_id', $tipoPaleteIds)
@@ -54,16 +49,15 @@ class PedidoRetiradaController extends Controller
         $paletesPorLinha = [];
 
         foreach ($documentos as $documento) {
-            // Itera sobre os tipos de palete diretamente
+
             foreach ($documento->tipo_palete as $tipoPalete) {
-                // Define a estrutura do array para paletes por linha
+
                 if (!isset($paletesPorLinha[$documento->id][$tipoPalete->id])) {
                     $paletesPorLinha[$documento->id][$tipoPalete->id] = collect();
                 }
 
                 $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
 
-                // Filtra os paletes disponíveis
                 $paletesDisponiveis = $paletes
                     ->where('artigo_id', $tipoPalete->pivot->artigo_id)
                     ->where('tipo_palete_id', $tipoPalete->id)
@@ -76,7 +70,6 @@ class PedidoRetiradaController extends Controller
                     }
                 }
 
-                // Adiciona os paletes selecionados à estrutura
                 if ($paletesSelecionados->isNotEmpty()) {
                     $paletesPorLinha[$documento->id][$tipoPalete->id] = $paletesSelecionados;
                 }
@@ -117,6 +110,17 @@ class PedidoRetiradaController extends Controller
                 'previsao_descarga' => 'nullable|date',
                 'paletes_dados' => 'required|json',
             ]);
+
+            $documentoAntigo = Documento::where('cliente_id', $request->input('cliente_id'))
+                ->where('estado', '!=', 'terminado')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+
+            if ($documentoAntigo) {
+                $documentoAntigo->estado = 'terminado';
+                $documentoAntigo->save();
+            }
 
             $novoDocumento = Documento::create([
                 'numero' => $request->input('numero'),

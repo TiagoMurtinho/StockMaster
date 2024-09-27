@@ -19,21 +19,20 @@ class Documento extends Model
 
     protected $fillable = [
         'estado',
-        'observacao',
-        'previsao',
         'numero',
-        'data',
         'matricula',
         'morada',
-        'hora_carga',
-        'descarga',
+        'data',
+        'previsao',
         'data_entrada',
         'data_saida',
-        'total',
+        'previsao_descarga',
         'extra',
-        'taxa_id',
+        'total',
+        'observacao',
         'tipo_documento_id',
         'cliente_id',
+        'taxa_id',
         'user_id',
     ];
 
