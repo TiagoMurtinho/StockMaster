@@ -3,6 +3,7 @@ $(document).ready(function() {
     let formHandlingInitialized = false;
     let tipoDocumentoInitialized = false;
     let deleteInitialized = false
+    let captureInitialized = false
 
     function initContentHandlers() {
 
@@ -20,6 +21,11 @@ $(document).ready(function() {
         removePalete();
         initPaleteRowEvents();
 
+
+        if (!captureInitialized) {
+            captureId()
+            captureInitialized = true;
+        }
 
         if (!guiaTransporteInitialized) {
             initGuiaTransporteModalEvents();
@@ -423,9 +429,7 @@ let armazemOptions = [];
 function initArmazemOptions() {
     const armazemOptionsElement = document.getElementById('armazem-options');
     if (armazemOptionsElement) {
-
         armazemOptions = JSON.parse(armazemOptionsElement.textContent) || [];
-        console.log("Armazem Options Carregados:", armazemOptions);
     }
 }
 
@@ -940,7 +944,10 @@ function initDeleteHandler() {
             success: function(response) {
                 if (response.success) {
                     $form.closest('.modal').modal('hide');
-                    $form.closest('tr').remove();
+
+                    var rowSelector = 'tr[data-id="' + id + '"]';
+                    console.log('Tentando remover a linha com seletor:', rowSelector);
+                    removeRow(rowSelector);
                 } else {
                     console.log('Erro:', response.message || 'Erro desconhecido');
                 }
@@ -949,5 +956,33 @@ function initDeleteHandler() {
                 console.log('Error:', xhr.responseText);
             }
         });
+    });
+}
+
+function removeRow(selector) {
+    console.log('Tentando remover a linha com seletor:', selector);
+    var $rowToRemove = $(selector); // Seleciona a linha baseada no seletor passado
+    if ($rowToRemove.length) {
+        $rowToRemove.remove(); // Remove a linha
+        console.log('Linha removida: ' + selector); // Log quando a linha é removida
+    } else {
+        console.log('Linha não encontrada para o seletor: ' + selector);
+    }
+}
+let id = null;
+function captureId() {
+    $(document).on('show.bs.modal', '.modal', function (event) {
+        var button = $(event.relatedTarget); // Botão que abriu o modal
+        var $row = button.closest('tr'); // Captura a linha (tr) mais próxima
+
+        if ($row.length) {
+            id = $row.data('id'); // Captura o ID da linha correspondente
+            console.log('ID do armazém:', id); // Verifica o ID do armazém
+
+            // Define o ID no campo oculto do formulário do modal
+            $(this).find('input[name="id"]').val(id);
+        } else {
+            console.log('Linha correspondente não encontrada.');
+        }
     });
 }

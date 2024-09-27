@@ -24,7 +24,7 @@
                             </thead>
                             <tbody>
                             @foreach($tipoPaletes as $tipoPalete)
-                                <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}">
+                                <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}" class="tipoPaleteRow" data-id="{{ $tipoPalete->id }}">
                                     <td class="align-middle text-center">{{ $tipoPalete->tipo }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->valor }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->user->nome }}</td>

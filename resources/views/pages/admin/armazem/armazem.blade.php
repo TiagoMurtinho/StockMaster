@@ -25,7 +25,7 @@
                             </thead>
                             <tbody>
                             @foreach($armazens as $armazem)
-                                <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}">
+                                <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal{{ $armazem->id }}" class="armazemRow" data-id="{{ $armazem->id }}">
                                     <td class="align-middle text-center">{{ $armazem->nome }}</td>
                                     <td class="align-middle text-center">{{ $armazem->capacidade }}</td>
                                     <td class="align-middle text-center">{{ $armazem->tipo_palete->tipo }}</td>

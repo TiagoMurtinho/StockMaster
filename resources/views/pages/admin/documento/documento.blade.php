@@ -28,7 +28,7 @@
                             <tbody>
                             @foreach($documentos as $documento)
 
-                                <tr class="clickable-row" data-id="{{ $documento->id }}">
+                                <tr class="clickable-row documentoRow" data-id="{{ $documento->id }}">
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">{{ $documento->data }}</td>
                                     <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>

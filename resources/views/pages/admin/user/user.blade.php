@@ -25,7 +25,7 @@
                             </thead>
                             <tbody>
                             @foreach($users as $user)
-                                <tr data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}">
+                                <tr data-bs-toggle="modal" data-bs-target="#editUserModal{{ $user->id }}" class="userRow" data-id="{{ $user->id }}">
                                     <td class="align-middle text-center">{{ $user->nome }}</td>
                                     <td class="align-middle text-center">{{ $user->email }}</td>
                                     <td class="align-middle text-center">{{ $user->contacto }}</td>

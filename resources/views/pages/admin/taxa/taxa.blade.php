@@ -24,7 +24,7 @@
                             </thead>
                             <tbody>
                             @foreach($taxas as $taxa)
-                                <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal{{ $taxa->id }}">
+                                <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal{{ $taxa->id }}" class="taxaRow" data-id="{{ $taxa->id }}">
                                     <td class="align-middle text-center">{{ $taxa->nome }}</td>
                                     <td class="align-middle text-center">{{ $taxa->valor }}</td>
                                     <td class="align-middle text-center">{{ $taxa->user->nome }}</td>
