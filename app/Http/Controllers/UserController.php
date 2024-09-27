@@ -74,7 +74,7 @@ class UserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'User deleted successfully.',
-            'redirect' => route('user.index'), // Redireciona para a lista de usuários
+            'redirect' => route('user.index'),
         ]);
 
     }
