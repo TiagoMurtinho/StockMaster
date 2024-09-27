@@ -946,7 +946,6 @@ function initDeleteHandler() {
                     $form.closest('.modal').modal('hide');
 
                     var rowSelector = 'tr[data-id="' + id + '"]';
-                    console.log('Tentando remover a linha com seletor:', rowSelector);
                     removeRow(rowSelector);
                 } else {
                     console.log('Erro:', response.message || 'Erro desconhecido');
@@ -960,29 +959,21 @@ function initDeleteHandler() {
 }
 
 function removeRow(selector) {
-    console.log('Tentando remover a linha com seletor:', selector);
-    var $rowToRemove = $(selector); // Seleciona a linha baseada no seletor passado
+    var $rowToRemove = $(selector);
     if ($rowToRemove.length) {
-        $rowToRemove.remove(); // Remove a linha
-        console.log('Linha removida: ' + selector); // Log quando a linha é removida
-    } else {
-        console.log('Linha não encontrada para o seletor: ' + selector);
+        $rowToRemove.remove();
     }
 }
 let id = null;
 function captureId() {
     $(document).on('show.bs.modal', '.modal', function (event) {
-        var button = $(event.relatedTarget); // Botão que abriu o modal
-        var $row = button.closest('tr'); // Captura a linha (tr) mais próxima
+        var button = $(event.relatedTarget);
+        var $row = button.closest('tr');
 
         if ($row.length) {
-            id = $row.data('id'); // Captura o ID da linha correspondente
-            console.log('ID do armazém:', id); // Verifica o ID do armazém
+            id = $row.data('id');
 
-            // Define o ID no campo oculto do formulário do modal
             $(this).find('input[name="id"]').val(id);
-        } else {
-            console.log('Linha correspondente não encontrada.');
         }
     });
 }

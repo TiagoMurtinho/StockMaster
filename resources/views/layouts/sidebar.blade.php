@@ -1,7 +1,7 @@
 <ul class="sidebar-nav" id="sidebar-nav">
 
     <li class="nav-item">
-        <a class="nav-link collapsed {{ request()->routeIs('home') ? 'active' : '' }}" href="{{route('home')}}">
+        <a class="nav-link collapsed{{ request()->routeIs('home') ? 'active' : '' }}" href="{{route('home')}}" data-ajax="true">
             <i class="bi bi-grid {{ request()->routeIs('home') ? 'active-icon' : '' }}"></i>
             <span>Home</span>
         </a>
