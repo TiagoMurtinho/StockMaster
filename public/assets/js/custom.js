@@ -9,7 +9,7 @@ $(document).ready(function() {
 
         initContinuarModal();
         initLinhaDocumentoModal();
-        initVoltarAoPrimeiroModal();
+        initVoltarAoDocumentoModal();
         initAddPaleteRow();
         initRemovePaleteRow();
         initCriarDocumentoBtn();
@@ -20,6 +20,7 @@ $(document).ready(function() {
         initClickableRows();
         removePalete();
         initPaleteRowEvents();
+        initVoltarAoPedidoRetiradaModal()
 
 
         if (!captureInitialized) {
@@ -417,8 +418,8 @@ function loadTipoPaletes() {
     });
 }
 
-function initVoltarAoPrimeiroModal() {
-    $('#voltarAoPrimeiroModal').off('click').on('click', function() {
+function initVoltarAoDocumentoModal() {
+    $('#voltarAoDocumentoModal').off('click').on('click', function() {
         $('#modalLinhaDocumento').modal('hide');
         $('#modalAddDocumento').modal('show');
 
@@ -429,6 +430,18 @@ function initVoltarAoPrimeiroModal() {
         $('#observacao').val(documentoData.observacao);
         $('#taxa_id').val(documentoData.taxa_id);
         $('#previsao').val(documentoData.previsao);
+    });
+}
+
+function initVoltarAoPedidoRetiradaModal() {
+    $('#voltarAoPedidoRetiradaModal').off('click').on('click', function() {
+        $('#modalGuiaTransporte').modal('hide');
+
+        const documentoId = $(this).data('documento-id');
+        const PedidoRetiradaModal = $('#retiradaModal' + documentoId);
+
+        PedidoRetiradaModal.modal('show');
+
     });
 }
 

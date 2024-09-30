@@ -47,8 +47,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <div class="me-auto"> <!-- Adicionado para alinhar à esquerda -->
-                    <button type="button" class="btn btn-secondary" id="voltarAoPrimeiroModal">{{__('documento.voltar')}}</button>
+                <div class="me-auto">
+                    <button type="button" class="btn btn-secondary" id="voltarAoDocumentoModal">{{__('documento.voltar')}}</button>
                 </div>
                 <div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('documento.cancelar')}}</button>

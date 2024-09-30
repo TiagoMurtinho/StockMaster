@@ -41,5 +41,7 @@ return [
     'previsao' => 'Previsão',
     'add_linha' => 'Adicionar Linha',
     'fechar' => 'Fechar',
-    'salvar' => 'Editar'
+    'salvar' => 'Editar',
+    'voltar' => 'Voltar',
+    'adicionar_paletes' => 'Adicionar Paletes'
 ];

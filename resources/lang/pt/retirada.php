@@ -16,5 +16,8 @@ return [
     'data_entrada' => 'Data de Entrada:',
     'tipo_palete' => 'Tipo de Palete:',
     'confirmar_selecao' => 'Confirmar',
-    'localizacao' => 'Localização'
+    'localizacao' => 'Localização',
+    'voltar' => 'Voltar',
+    'guia_transporte' => 'Guia de Transporte',
+    'confirmar' => 'Confirmar'
 ];

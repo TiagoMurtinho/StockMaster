@@ -2,7 +2,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalGuiaTransporteModalLabel">{{ __('documento.guia_transporte') }}</h5>
+                <h5 class="modal-title" id="modalGuiaTransporteModalLabel">{{ __('retirada.guia_transporte') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="documentoForm" action="{{ route('pedido-retirada.store') }}" method="POST">
@@ -32,8 +32,13 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.cancelar') }}</button>
-                    <button type="button" class="btn btn-primary" id="confirmarEnvio">{{ __('documento.confirmar') }}</button>
+                    <div class="me-auto">
+                        <button type="button" class="btn btn-secondary" id="voltarAoPedidoRetiradaModal"  data-documento-id="{{ $documento->id }}">{{__('retirada.voltar')}}</button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.cancelar') }}</button>
+                        <button type="button" class="btn btn-primary" id="confirmarEnvio">{{ __('retirada.confirmar') }}</button>
+                    </div>
                 </div>
             </form>
         </div>
