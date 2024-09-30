@@ -14,6 +14,7 @@
                 <input type="hidden" name="previsao" id="previsao">
                 <input type="hidden" name="taxa_id" id="taxa_id">
                 <input type="hidden" name="paletes_dados" id="paletes_dados">
+                <input type="hidden" name="documento_id" value="{{ $documento->id }}">
 
                 <div class="modal-body modal-documento">
                     <div class="mb-3">

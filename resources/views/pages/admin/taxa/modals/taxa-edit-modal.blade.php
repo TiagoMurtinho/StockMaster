@@ -10,7 +10,7 @@
                     <div class="mb-4 text-sm text-gray-600">
                         {{ __('taxa.description') }}
                     </div>
-                    <form class="ajax-form" id="editTaxaForm{{ $taxa->id }}" method="POST" action="{{ route('taxa.update', ['taxon' => $taxa->id]) }}">
+                    <form class="ajax-form formTabelaTaxa" id="editTaxaForm{{ $taxa->id }}" method="POST" action="{{ route('taxa.update', ['taxon' => $taxa->id]) }}">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">

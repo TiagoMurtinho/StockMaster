@@ -49,7 +49,7 @@ class RegisteredUserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'User criado com sucesso!',
-            'redirect' => route('user.index')
+            'data' => $user
         ]);
     }
 
@@ -81,7 +81,7 @@ class RegisteredUserController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Utilizador atualizado com sucesso!',
-            'redirect' => route('user.index')
+            'data' => $user
         ]);
     }
 }

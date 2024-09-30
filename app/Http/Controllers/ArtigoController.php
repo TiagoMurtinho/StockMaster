@@ -54,10 +54,12 @@ class ArtigoController extends Controller
         $artigo->user_id = auth()->id();
         $artigo->save();
 
+        $artigo->load('cliente', 'user');
+
         return response()->json([
             'success' => true,
             'message' => 'Artigo criado com sucesso!',
-            'redirect' => route('artigo.index')
+            'data' => $artigo
         ]);
     }
 
@@ -102,10 +104,12 @@ class ArtigoController extends Controller
         $artigo->user_id = auth()->id();
         $artigo->save();
 
+        $artigo->load('cliente', 'user');
+
         return response()->json([
             'success' => true,
             'message' => 'Artigo criado com sucesso!',
-            'redirect' => route('artigo.index')
+            'data' => $artigo
         ]);
     }
 

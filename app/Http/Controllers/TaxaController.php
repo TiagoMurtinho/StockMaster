@@ -50,10 +50,12 @@ class TaxaController extends Controller
         $taxa->user_id = auth()->id();
         $taxa->save();
 
+        $taxa->load('user');
+
         return response()->json([
             'success' => true,
             'message' => 'Taxa criada com sucesso!',
-            'redirect' => route('taxa.index')
+            'data' => $taxa
         ]);
     }
 
@@ -103,10 +105,12 @@ class TaxaController extends Controller
         $taxa->user_id = auth()->id();
         $taxa->save();
 
+        $taxa->load('user');
+
         return response()->json([
             'success' => true,
             'message' => 'taxa atualizada com sucesso!',
-            'redirect' => route('taxa.index')
+            'data' => $taxa
         ]);
     }
 

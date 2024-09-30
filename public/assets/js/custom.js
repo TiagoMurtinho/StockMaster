@@ -85,6 +85,170 @@ $(document).ready(function() {
     });
 });
 
+function adicionarLinhaNaTabela(formClass, response) {
+
+    if (!response.data) {
+        console.error('O campo "data" está ausente na resposta:', response);
+        return;
+    }
+
+    var newRow = '';
+
+    if (formClass.includes('formTabelaArmazem')) {
+
+        newRow = `
+             <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal${response.data.id}" class="armazemRow" data-id="${response.data.id}">
+                <td class="align-middle text-center">${response.data.nome}</td>
+                <td class="align-middle text-center">${response.data.capacidade}</td>
+                <td class="align-middle text-center">${response.data.tipo_palete.tipo}</td>
+                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal${response.data.id}">
+                        <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                            Eliminar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+        `;
+
+        var existingRow = $('#armazemTable tbody').find(`tr[data-id="${response.data.id}"]`);
+
+        if (existingRow.length) {
+            existingRow.replaceWith(newRow);
+        } else {
+            $('#armazemTable tbody').append(newRow);
+        }
+
+    } else if (formClass.includes('formTabelaArtigo')) {
+
+        newRow = `
+             <tr data-bs-toggle="modal" data-bs-target="#editArtigoModal${response.data.id}" class="artigoRow" data-id="${response.data.id}">
+                <td class="align-middle text-center">${response.data.nome}</td>
+                <td class="align-middle text-center">${response.data.referencia}</td>
+                <td class="align-middle text-center">${response.data.cliente.nome}</td>
+                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal${response.data.id}">
+                        <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                            Eliminar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+        `;
+
+        var existingRow = $('#artigoTable tbody').find(`tr[data-id="${response.data.id}"]`);
+
+        if (existingRow.length) {
+            existingRow.replaceWith(newRow);
+        } else {
+            $('#artigoTable tbody').append(newRow);
+        }
+
+    } else if (formClass.includes('formTabelaCliente')) {
+
+        newRow = `
+            <tr data-bs-toggle="modal" data-bs-target="#editClienteModal${response.data.id}" class="clienteRow" data-id="${response.data.id}">
+                <td class="align-middle text-center">${response.data.nome}</td>
+                <td class="align-middle text-center">${response.data.morada}</td>
+                <td class="align-middle text-center">${response.data.codigo_postal}</td>
+                <td class="align-middle text-center">${response.data.nif}</td>
+                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal${response.data.id}">
+                        <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                            Eliminar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+        `;
+
+        var existingRow = $('#clienteTable tbody').find(`tr[data-id="${response.data.id}"]`);
+
+        if (existingRow.length) {
+            existingRow.replaceWith(newRow);
+        } else {
+            $('#clienteTable tbody').append(newRow);
+        }
+    } else if (formClass.includes('formTabelaTaxa')) {
+
+        newRow = `
+            <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal${response.data.id}" class="taxaRow" data-id="${response.data.id}">
+                <td class="align-middle text-center">${response.data.nome}</td>
+                <td class="align-middle text-center">${response.data.valor}</td>
+                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal${response.data.id}">
+                        <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                            Eliminar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+        `;
+
+        var existingRow = $('#taxaTable tbody').find(`tr[data-id="${response.data.id}"]`);
+
+        if (existingRow.length) {
+            existingRow.replaceWith(newRow);
+        } else {
+            $('#taxaTable tbody').append(newRow);
+        }
+    } else if (formClass.includes('formTabelaTipoPalete')) {
+
+        newRow = `
+            <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal${response.data.id}" class="TipoPaleteRow" data-id="${response.data.id}">
+                <td class="align-middle text-center">${response.data.tipo}</td>
+                <td class="align-middle text-center">${response.data.valor}</td>
+                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal${response.data.id}">
+                        <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                            Eliminar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+        `;
+
+        var existingRow = $('#tipoPaleteTable tbody').find(`tr[data-id="${response.data.id}"]`);
+
+        if (existingRow.length) {
+            existingRow.replaceWith(newRow);
+        } else {
+            $('#tipoPaleteTable tbody').append(newRow);
+        }
+
+    } else if (formClass.includes('formTabelaUser')) {
+
+        newRow = `
+            <tr data-bs-toggle="modal" data-bs-target="#editUserModal${response.data.id}" class="userRow" data-id="${response.data.id}">
+                <td class="align-middle text-center">${response.data.nome}</td>
+                <td class="align-middle text-center">${response.data.email}</td>
+                <td class="align-middle text-center">${response.data.contacto}</td>
+                <td class="align-middle text-center">${response.data.salario}</td>
+                <td class="align-middle">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal${response.data.id}">
+                        <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                            Eliminar
+                        </button>
+                    </a>
+                </td>
+            </tr>
+        `;
+
+        var existingRow = $('#userTable tbody').find(`tr[data-id="${response.data.id}"]`);
+
+        if (existingRow.length) {
+            existingRow.replaceWith(newRow);
+        } else {
+            $('#userTable tbody').append(newRow);
+        }
+    }
+}
+
 function initFormHandling() {
     $(document).on('submit', '.ajax-form', function(event) {
         event.preventDefault();
@@ -104,7 +268,7 @@ function initFormHandling() {
 
                     $form.closest('.modal').modal('hide');
 
-                    $form.closest('tr').remove();
+                    adicionarLinhaNaTabela($form.attr('class'), response);
                 }
             },
             error: function(xhr) {
@@ -119,13 +283,11 @@ function initTipoDocumentoChangeHandling() {
         var tipoDocumentoId = $(this).val();
         var clienteId = $('#cliente').val();
 
-        // Resetar o formulário
         $('#linhaDocumentoForm')[0].reset();
         $('#moradaOculta').hide();
         $('#faturacaoOculta').hide();
-        $('#datasOcultas').hide(); // Ocultar inicialmente as datas de faturação
+        $('#datasOcultas').hide();
 
-        // Mostrar campos de taxa e previsão para tipos específicos
         if (tipoDocumentoId == 1) {
             $('#taxaOculta').show();
             $('#previsaoOculta').show();
@@ -137,21 +299,18 @@ function initTipoDocumentoChangeHandling() {
             $('#previsaoOculta').show();
         }
 
-        // Mostrar campos de data para faturação
         if (tipoDocumentoId == 5) {
             $('#taxaOculta').hide();
             $('#previsaoOculta').hide();
-            $('#datasOcultas').show(); // Mostrar o container das datas
+            $('#datasOcultas').show();
 
-            // Limpar valores anteriores de faturação
             $('#total').val('');
 
             if (clienteId) {
-                // Capturar as datas
+
                 var dataInicio = $('#data_inicio').val();
                 var dataFim = $('#data_fim').val();
 
-                // Enviar dados para o backend
                 $.ajax({
                     url: '/documento/faturacao/' + clienteId,
                     method: 'GET',
@@ -399,7 +558,7 @@ function atualizarTabelaDocumentos() {
                     <tr class="clickable-row" data-id="${documento.id}">
                         <td class="align-middle text-center">${documento.numero}</td>
                         <td class="align-middle text-center">${documento.data}</td>
-                        <td class="align-middle text-center">${documento.tipo_documento.nome}</td>
+                        <td class="align-middle text-center">${documento.tipo_documento.tipo}</td>
                         <td class="align-middle text-center">${documento.cliente.nome}</td>
                         <td class="align-middle text-center">${documento.user.nome}</td>
                         <td class="align-middle text-center">${documento.estado}</td>
@@ -457,9 +616,6 @@ function fillArmazemSelects() {
             select.appendChild(option);
         });
 
-        select.querySelectorAll('option').forEach(option => {
-            console.log(` - ${option.textContent} (value: ${option.value})`);
-        });
     });
 }
 
@@ -479,6 +635,7 @@ function initRececaoFormHandler() {
                 if (response.success) {
 
                     $('#rececaoModal' + documentoIdAntigo).modal('hide');
+                    removeRow(`tr[data-id="${documentoIdAntigo}"]`);
 
                     generateRececaoPDF(response.documento_id, response.paletes_criadas);
                 } else {
@@ -887,6 +1044,8 @@ function initGuiaTransporteModalEvents() {
 
                         const documentoId = data.documento.id;
 
+                        removeRow(`tr[data-documento-id="${documentoId}"]`);
+
                         $.ajax({
                             url: '/documento/' + documentoId + '/pdf',
                             method: 'GET',
@@ -910,6 +1069,7 @@ function initGuiaTransporteModalEvents() {
                         });
 
                         $('#modalGuiaTransporte').modal('hide');
+
 
                     })
                     .catch(error => {

@@ -8,36 +8,26 @@
             <div class="modal-body">
 
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('user.edit_description') }}
+                    {{ __('user.description') }}
                 </div>
 
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form class="ajax-form" method="POST" action="{{ route('register.update', $user->id) }}">
+                <form class="ajax-form formTabelaUser" method="POST" action="{{ route('register.update', $user->id) }}">
                     @csrf
-                    @method('PUT') <!-- Adiciona o método PUT para a atualização -->
+                    @method('PUT')
 
                     <div class="mb-3">
-                        <label for="editUserModalNome" class="form-label">{{ __('user.edit_nome') }}</label>
+                        <label for="editUserModalNome" class="form-label">{{ __('user.add_nome') }}</label>
                         <input id="editUserModalNome" class="form-control" type="text" name="nome" value="{{ $user->nome }}" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="editUserModalEmail" class="form-label">{{ __('user.edit_email') }}</label>
+                        <label for="editUserModalEmail" class="form-label">{{ __('user.add_email') }}</label>
                         <input id="editUserModalEmail" class="form-control" type="email" name="email" value="{{ $user->email }}" required>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalPassword" class="form-label">{{ __('user.edit_password') }}</label>
+                            <label for="editUserModalPassword" class="form-label">{{ __('user.add_password') }}</label>
                             <input id="editUserModalPassword" class="form-control" type="password" name="password">
                             <small class="form-text text-muted">Deixe em branco se não quiser alterar a senha.</small>
                         </div>
@@ -50,12 +40,12 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalContacto" class="form-label">{{ __('user.edit_contacto') }}</label>
+                            <label for="editUserModalContacto" class="form-label">{{ __('user.add_contacto') }}</label>
                             <input id="editUserModalContacto" class="form-control" type="text" name="contacto" value="{{ $user->contacto }}">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalSalario" class="form-label">{{ __('user.edit_salario') }}</label>
+                            <label for="editUserModalSalario" class="form-label">{{ __('user.add_salario') }}</label>
                             <input id="editUserModalSalario" class="form-control" type="number" min="0" step="0.01" name="salario" value="{{ $user->salario }}">
                         </div>
                     </div>

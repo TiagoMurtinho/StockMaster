@@ -11,7 +11,7 @@
                     {{ __('tipo-palete.description') }}
                 </div>
 
-                <form class="ajax-form" method="POST" action="{{ route('tipo-palete.store') }}">
+                <form class="ajax-form formTabelaTipoPalete" method="POST" action="{{ route('tipo-palete.store') }}">
                     @csrf
 
                     <div class="mb-3">

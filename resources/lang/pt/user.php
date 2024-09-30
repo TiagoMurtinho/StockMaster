@@ -11,9 +11,15 @@ return [
     'description' => 'Campos obrigatórios assinalados com *',
     'add_nome' => 'Nome*',
     'add_email' => 'E-mail*',
-    'add_contacto' => 'Contacto*',
+    'add_contacto' => 'Contacto',
     'add_salario' => 'Salário',
     'add_user' => 'Adicionar Utilizador',
     'cancel' => 'Cancelar',
-    'add' => 'Adicionar'
+    'add' => 'Adicionar',
+    'delete_user' => 'Eliminar Utilizador',
+    'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
+    'edit_user' => 'Editar Utilizador',
+    'update' => 'Editar',
+    'add_password' => 'Palavra-Passe*',
+    'confirm_password' => 'Confirmar Palavra-Passe*'
 ];

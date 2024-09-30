@@ -11,17 +11,7 @@
                     {{ __('user.description') }}
                 </div>
 
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
-                <form class="ajax-form" method="POST" action="{{ route('register.store') }}">
+                <form class="ajax-form formTabelaUser" method="POST" action="{{ route('register.store') }}">
                     @csrf
 
                     <div class="mb-3">

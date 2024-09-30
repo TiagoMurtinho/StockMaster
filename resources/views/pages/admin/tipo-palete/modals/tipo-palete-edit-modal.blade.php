@@ -10,7 +10,7 @@
                     <div class="mb-4 text-sm text-gray-600">
                         {{ __('tipo-palete.description') }}
                     </div>
-                    <form class="ajax-form" id="editTipoPaleteForm{{ $tipoPalete->id }}" method="POST" action="{{ route('tipo-palete.update', ['tipo_palete' => $tipoPalete->id]) }}">
+                    <form class="ajax-form formTabelaTipoPalete" id="editTipoPaleteForm{{ $tipoPalete->id }}" method="POST" action="{{ route('tipo-palete.update', ['tipo_palete' => $tipoPalete->id]) }}">
                         @csrf
                         @method('PUT')
                         <div class="mb-3">

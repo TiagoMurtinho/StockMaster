@@ -11,7 +11,7 @@
                     {{ __('taxa.description') }}
                 </div>
 
-                <form class="ajax-form" method="POST" action="{{ route('taxa.store') }}">
+                <form class="ajax-form formTabelaTaxa" method="POST" action="{{ route('taxa.store') }}">
                     @csrf
 
                     <div class="mb-3">

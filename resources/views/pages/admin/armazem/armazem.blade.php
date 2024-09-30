@@ -13,7 +13,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-transparent align-middle">
+                        <table id="armazemTable" class="table table-hover table-transparent align-middle">
                             <thead>
                             <tr>
                                 <th scope="col" class="text-center">{{ __('armazem.nome') }}</th>

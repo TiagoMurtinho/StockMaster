@@ -12,7 +12,7 @@
                         {{ __('artigo.description') }}
                     </div>
 
-                    <form class="ajax-form" method="POST" action="{{ route('artigo.update', ['artigo' => $artigo->id]) }}">
+                    <form class="ajax-form formTabelaArtigo" method="POST" action="{{ route('artigo.update', ['artigo' => $artigo->id]) }}">
 
                         @csrf
                         @method('PUT')

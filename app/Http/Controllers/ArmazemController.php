@@ -56,10 +56,12 @@ class ArmazemController extends Controller
         $armazem->user_id = auth()->id();
         $armazem->save();
 
+        $armazem->load('tipo_palete', 'user');
+
         return response()->json([
             'success' => true,
             'message' => 'Armazem criado com sucesso!',
-            'redirect' => route('armazem.index')
+            'data' => $armazem
         ]);
     }
 
@@ -104,10 +106,12 @@ class ArmazemController extends Controller
         $armazem->user_id = auth()->id();
         $armazem->save();
 
+        $armazem->load('tipo_palete', 'user');
+
         return response()->json([
             'success' => true,
             'message' => 'Armazem criado com sucesso!',
-            'redirect' => route('armazem.index')
+            'data' => $armazem
         ]);
     }
 

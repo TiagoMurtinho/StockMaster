@@ -51,10 +51,12 @@ class TipoPaleteController extends Controller
         $tipoPalete->user_id = auth()->id();
         $tipoPalete->save();
 
+        $tipoPalete->load('user');
+
         return response()->json([
             'success' => true,
             'message' => 'Tipo de palete criado com sucesso!',
-            'redirect' => route('tipo-palete.index')
+            'data' => $tipoPalete
         ]);
     }
 
@@ -105,10 +107,12 @@ class TipoPaleteController extends Controller
         $tipoPalete->user_id = auth()->id();
         $tipoPalete->save();
 
+        $tipoPalete->load('user');
+
         return response()->json([
             'success' => true,
             'message' => 'Tipo de palete atualizado com sucesso!',
-            'redirect' => route('tipo-palete.index')
+            'data' => $tipoPalete
         ]);
     }
 

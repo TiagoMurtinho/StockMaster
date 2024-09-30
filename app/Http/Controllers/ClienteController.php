@@ -56,10 +56,12 @@ class ClienteController extends Controller
         $cliente->user_id = auth()->id();
         $cliente->save();
 
+        $cliente->load('user');
+
         return response()->json([
             'success' => true,
             'message' => 'Tipo de palete criado com sucesso!',
-            'redirect' => route('cliente.index')
+            'data' => $cliente
         ]);
     }
 
@@ -106,10 +108,12 @@ class ClienteController extends Controller
         $cliente->user_id = auth()->id();
         $cliente->save();
 
+        $cliente->load('user');
+
         return response()->json([
             'success' => true,
             'message' => 'Tipo de palete criado com sucesso!',
-            'redirect' => route('cliente.index')
+            'data' => $cliente
         ]);
     }
 

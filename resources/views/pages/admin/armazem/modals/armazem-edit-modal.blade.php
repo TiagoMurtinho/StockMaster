@@ -12,7 +12,7 @@
                         {{ __('armazem.description') }}
                     </div>
 
-                    <form class="ajax-form" method="POST" action="{{ route('armazem.update', ['armazem' => $armazem->id]) }}">
+                    <form class="ajax-form formTabelaArmazem" method="POST" action="{{ route('armazem.update', ['armazem' => $armazem->id]) }}">
 
                         @csrf
                         @method('PUT')
