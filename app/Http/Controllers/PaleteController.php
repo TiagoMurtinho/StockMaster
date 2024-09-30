@@ -145,11 +145,6 @@ class PaleteController extends Controller
                 $palete->data_saida = now();
                 $palete->save();
 
-                // Log após salvar a palete
-                Log::info('Palete atualizada com sucesso', ['palete_id' => $paleteId]);
-            } else {
-                // Log caso a palete não seja encontrada
-                Log::warning('Palete não encontrada', ['palete_id' => $paleteId]);
             }
         }
 

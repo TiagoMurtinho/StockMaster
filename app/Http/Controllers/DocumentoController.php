@@ -71,7 +71,6 @@ class DocumentoController extends Controller
                 'documento.cliente_id' => 'required|exists:cliente,id',
             ];
 
-            // Adiciona regras condicionais
             if ($request->input('documento.tipo_documento_id') != 5) {
                 $rules['documento.previsao'] = 'required|date';
                 $rules['documento.taxa_id'] = 'required|integer|exists:taxa,id';
@@ -106,11 +105,28 @@ class DocumentoController extends Controller
                 'message' => 'Documento inserido com sucesso!',
                 'documento_id' => $documento->id,
             ]);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
+
+            $documentoErrors = [];
+            $linhasErrors = [];
+
+            foreach ($e->errors() as $field => $errorMessages) {
+                if (str_starts_with($field, 'documento')) {
+                    $documentoErrors[$field] = $errorMessages;
+                } elseif (str_starts_with($field, 'linhas')) {
+                    $linhasErrors[$field] = $errorMessages;
+                }
+            }
+
             return response()->json([
                 'success' => false,
-                'errors' => $e->errors(),
+                'errors' => [
+                    'documento' => $documentoErrors,
+                    'linhas' => $linhasErrors,
+                ],
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

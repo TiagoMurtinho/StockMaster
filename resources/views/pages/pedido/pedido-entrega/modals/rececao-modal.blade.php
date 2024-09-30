@@ -7,6 +7,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+
+                        <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                         <form id="modalRececaoForm" action="{{ route('palete.store') }}" method="POST">
                             @csrf
                             <input type="hidden" name="documento_id" value="{{ $documento->id }}">

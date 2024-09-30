@@ -11,6 +11,8 @@
                     {{ __('user.description') }}
                 </div>
 
+                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                 <form class="ajax-form formTabelaUser" method="POST" action="{{ route('register.update', $user->id) }}">
                     @csrf
                     @method('PUT')

@@ -257,6 +257,7 @@ function initFormHandling() {
         var $form = $(this);
         var formData = new FormData($form[0]);
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        $('.error-messages').html('').addClass('d-none');
 
         $.ajax({
             url: $form.attr('action'),
@@ -279,7 +280,18 @@ function initFormHandling() {
                 }
             },
             error: function(xhr) {
-                console.log('Error:', xhr.responseText);
+
+                var errors = xhr.responseJSON.errors;
+                var errorHtml = '<ul>';
+                for (var key in errors) {
+                    if (errors.hasOwnProperty(key)) {
+                        errors[key].forEach(function(error) {
+                            errorHtml += '<li>' + error + '</li>';
+                        });
+                    }
+                }
+                errorHtml += '</ul>';
+                $('.error-messages').html(errorHtml).removeClass('d-none');
             }
         });
     });
@@ -391,8 +403,20 @@ function criarDocumentoSemLinha() {
             atualizarTabelaDocumentos();
             window.location.href = '/documento/' + response.documento_id + '/pdf';
         },
-        error: function(xhr, status, error) {
-            console.log('Erro ao criar o documento: ' + xhr.responseText);
+        error: function(xhr) {
+
+            $('#modalAddDocumento').modal('show');
+            var errors = xhr.responseJSON.errors;
+            var errorHtml = '<ul>';
+            for (var key in errors) {
+                if (errors.hasOwnProperty(key)) {
+                    errors[key].forEach(function(error) {
+                        errorHtml += '<li>' + error + '</li>';
+                    });
+                }
+            }
+            errorHtml += '</ul>';
+            $('.error-messages').html(errorHtml).removeClass('d-none');
         }
     });
 }
@@ -563,8 +587,43 @@ function initCriarDocumentoBtn() {
 
                 initDynamicAlert();
             },
-            error: function(xhr, status, error) {
-                console.log('Erro ao criar o documento: ' + xhr.responseText);
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+
+                    $('.error-messages').html('').addClass('d-none');
+
+                    var hasDocumentoErrors = Object.keys(errors.documento).length > 0;
+                    var hasLinhasErrors = Object.keys(errors.linhas).length > 0;
+
+                    if (hasDocumentoErrors) {
+                        $('#modalLinhaDocumento').modal('hide');
+                        $('#modalAddDocumento').modal('show');
+
+                        var errorHtml = '<ul>';
+                        for (var key in errors.documento) {
+                            errors.documento[key].forEach(function(error) {
+                                errorHtml += '<li>' + error + '</li>';
+                            });
+                        }
+                        errorHtml += '</ul>';
+                        $('.error-messages').html(errorHtml).removeClass('d-none');
+                    }
+
+                    if (hasLinhasErrors) {
+                        $('#modalAddDocumento').modal('hide');
+                        $('#modalLinhaDocumento').modal('show');
+
+                        var errorHtml = '<ul>';
+                        for (var key in errors.linhas) {
+                            errors.linhas[key].forEach(function(error) {
+                                errorHtml += '<li>' + error + '</li>';
+                            });
+                        }
+                        errorHtml += '</ul>';
+                        $('.error-messages').html(errorHtml).removeClass('d-none');
+                    }
+                }
             }
         });
     });
@@ -674,8 +733,18 @@ function initRececaoFormHandler() {
                 }
             },
             error: function(xhr) {
-                console.error(xhr);
-                alert('Erro ao processar o pedido: ' + xhr.responseText);
+
+                var errors = xhr.responseJSON.errors;
+                var errorHtml = '<ul>';
+                for (var key in errors) {
+                    if (errors.hasOwnProperty(key)) {
+                        errors[key].forEach(function(error) {
+                            errorHtml += '<li>' + error + '</li>';
+                        });
+                    }
+                }
+                errorHtml += '</ul>';
+                $('.error-messages').html(errorHtml).removeClass('d-none');
             }
         });
     });
@@ -987,7 +1056,6 @@ function saveChanges() {
 }
 
 function initGuiaTransporteModalEvents() {
-
     document.addEventListener('click', function(event) {
         if (event.target && event.target.classList.contains('continuarGuiaTransporteBtn')) {
             event.preventDefault();
@@ -1033,45 +1101,46 @@ function initGuiaTransporteModalEvents() {
                     });
                 });
 
-                fetch('/paletes/retirar', {
+                if (paletesDados.length === 0) {
+
+                    guiaTransporteModal.hide();
+
+                    retiradaModal.show();
+
+                    var errorHtml = '<ul><li>Por favor, selecione pelo menos uma palete.</li></ul>';
+                    $('.error-messages-paletes').html(errorHtml).removeClass('d-none');
+
+                    return;
+                }
+
+                let formData = new FormData(guiaForm);
+                formData.append('paletes_dados', JSON.stringify(paletesDados));
+
+                fetch(guiaForm.action, {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        paletes_selecionadas: paletesDados.map(p => p.id),
-                        documento_id: documentoId
-                    }),
+                    body: formData
                 })
                     .then(response => {
                         if (!response.ok) {
-                            throw new Error('Erro ao atualizar as paletes');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-
-                        $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-                        $('#mensagem-dinamica').show();
-
-                        initDynamicAlert();
-                        let formData = new FormData(guiaForm);
-                        formData.append('paletes_dados', JSON.stringify(paletesDados));
-
-                        return fetch(guiaForm.action, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
-                                'Accept': 'application/json'
-                            },
-                            body: formData
-                        });
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Erro ao enviar o formulário');
+                            return response.json().then(err => {
+                                // Exibir erros se existirem
+                                var errors = err.errors;
+                                var errorHtml = '<ul>';
+                                for (var key in errors) {
+                                    if (errors.hasOwnProperty(key)) {
+                                        errors[key].forEach(function(error) {
+                                            errorHtml += '<li>' + error + '</li>';
+                                        });
+                                    }
+                                }
+                                errorHtml += '</ul>';
+                                $('.error-messages').html(errorHtml).removeClass('d-none');
+                                throw new Error('Erro ao enviar o formulário');
+                            });
                         }
                         return response.json();
                     })
@@ -1079,10 +1148,35 @@ function initGuiaTransporteModalEvents() {
 
                         const documentoId = data.documento.id;
 
-                        removeRow(`tr[data-documento-id="${documentoId}"]`);
+                        return fetch('/paletes/retirar', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                paletes_selecionadas: paletesDados.map(p => p.id),
+                                documento_id: documentoId
+                            }),
+                        });
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao atualizar as paletes');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                        $('#mensagem-dinamica').show();
+
+                        initDynamicAlert();
+
+                        const newdocumentoId = data.documento_id;
 
                         $.ajax({
-                            url: '/documento/' + documentoId + '/pdf',
+                            url: '/documento/' + newdocumentoId + '/pdf',
                             method: 'GET',
                             xhrFields: {
                                 responseType: 'blob'
@@ -1091,7 +1185,7 @@ function initGuiaTransporteModalEvents() {
                                 var link = document.createElement('a');
                                 var url = window.URL.createObjectURL(blob);
                                 link.href = url;
-                                link.download = 'guia_transporte_' + documentoId + '.pdf';
+                                link.download = 'guia_transporte_' + newdocumentoId + '.pdf';
                                 document.body.appendChild(link);
                                 link.click();
                                 window.URL.revokeObjectURL(url);
@@ -1103,11 +1197,9 @@ function initGuiaTransporteModalEvents() {
                             }
                         });
 
+                        removeRow(`tr[data-documento-id="${documentoId}"]`);
+
                         $('#modalGuiaTransporte').modal('hide');
-
-
-
-
                     })
                     .catch(error => {
                         console.error('Erro:', error);
@@ -1156,9 +1248,9 @@ function initDeleteHandler() {
 }
 
 function removeRow(selector) {
-    var $rowToRemove = $(selector);
-    if ($rowToRemove.length) {
-        $rowToRemove.remove();
+    const row = document.querySelector(selector);
+    if (row) {
+        row.remove();
     }
 }
 let id = null;

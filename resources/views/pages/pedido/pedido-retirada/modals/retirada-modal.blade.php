@@ -11,6 +11,8 @@
                     <p>{{ __('retirada.cliente') }} {{ $documento->cliente->nome }}</p>
                     <p>{{ __('retirada.previsao_saida') }} {{ $documento->previsao }}</p>
 
+                    <div class="alert alert-danger d-none error-messages-paletes" role="alert"></div>
+
                     <table class="table">
                         <thead>
                         <tr>

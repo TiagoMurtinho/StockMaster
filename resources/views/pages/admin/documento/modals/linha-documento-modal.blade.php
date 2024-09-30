@@ -6,6 +6,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+
+                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                 <form id="linhaDocumentoForm">
 
                     <div class="scrollable-palete-area">

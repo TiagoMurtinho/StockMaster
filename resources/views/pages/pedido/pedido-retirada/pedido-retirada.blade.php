@@ -21,7 +21,7 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
-                                <tr  data-bs-toggle="modal" data-bs-target="#retiradaModal{{$documento->id}}" class="retiradaRow" data-id="{{ $documento->id }}">
+                                <tr  data-bs-toggle="modal" data-bs-target="#retiradaModal{{$documento->id}}" class="retiradaRow" data-documento-id="{{ $documento->id }}">
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">

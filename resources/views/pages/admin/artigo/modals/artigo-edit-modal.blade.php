@@ -12,6 +12,8 @@
                         {{ __('artigo.description') }}
                     </div>
 
+                    <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                     <form class="ajax-form formTabelaArtigo" method="POST" action="{{ route('artigo.update', ['artigo' => $artigo->id]) }}">
 
                         @csrf

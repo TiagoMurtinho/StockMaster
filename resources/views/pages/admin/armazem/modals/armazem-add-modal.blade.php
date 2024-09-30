@@ -11,6 +11,8 @@
                     {{ __('armazem.description') }}
                 </div>
 
+                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                 <form class="ajax-form formTabelaArmazem" method="POST" action="{{ route('armazem.store') }}">
                     @csrf
 

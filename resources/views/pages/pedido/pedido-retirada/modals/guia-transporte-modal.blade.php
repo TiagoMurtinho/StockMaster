@@ -17,6 +17,9 @@
                 <input type="hidden" name="documento_id" value="{{ $documento->id }}">
 
                 <div class="modal-body modal-documento">
+
+                    <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                     <div class="mb-3">
                         <label for="matricula" class="form-label">{{ __('documento.add_matricula') }}</label>
                         <input type="text" class="form-control" id="matricula" name="matricula" required>

@@ -7,9 +7,13 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+
                     <div class="mb-4 text-sm text-gray-600">
                         {{ __('taxa.description') }}
                     </div>
+
+                    <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                     <form class="ajax-form formTabelaTaxa" id="editTaxaForm{{ $taxa->id }}" method="POST" action="{{ route('taxa.update', ['taxon' => $taxa->id]) }}">
                         @csrf
                         @method('PUT')

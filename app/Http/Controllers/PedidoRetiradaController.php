@@ -95,11 +95,9 @@ class PedidoRetiradaController extends Controller
      */
     public function store(Request $request)
     {
-        Log::info('Requisição recebida:', $request->all());
 
         try {
-
-            $request->validate([
+            $validatedData = $request->validate([
                 'numero' => 'required|string|max:255',
                 'cliente_id' => 'required|integer',
                 'observacao' => 'nullable|string',
@@ -111,42 +109,44 @@ class PedidoRetiradaController extends Controller
                 'paletes_dados' => 'required|json',
             ]);
 
-            $documentoAntigo = Documento::where('cliente_id', $request->input('cliente_id'))
+            $documentoAntigo = Documento::where('cliente_id', $validatedData['cliente_id'])
                 ->where('estado', '!=', 'terminado')
                 ->orderBy('created_at', 'desc')
                 ->first();
-
 
             if ($documentoAntigo) {
                 $documentoAntigo->estado = 'terminado';
                 $documentoAntigo->save();
             }
 
+            $paletesDados = json_decode($validatedData['paletes_dados'], true);
+
+            if (!is_array($paletesDados) || count($paletesDados) === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nenhuma palete foi fornecida. O documento não pode ser criado.'
+                ], 422);
+            }
+
             $novoDocumento = Documento::create([
-                'numero' => $request->input('numero'),
-                'cliente_id' => $request->input('cliente_id'),
-                'morada' => $request->input('morada'),
-                'matricula' => $request->input('matricula'),
+                'numero' => $validatedData['numero'],
+                'cliente_id' => $validatedData['cliente_id'],
+                'morada' => $validatedData['morada'],
+                'matricula' => $validatedData['matricula'],
                 'data' => now(),
-                'previsao_descarga' => $request->input('previsao_descarga'),
+                'previsao_descarga' => $validatedData['previsao_descarga'],
                 'estado' => 'terminado',
                 'tipo_documento_id' => 4,
                 'user_id' => auth()->id(),
-                'observacao' => $request->input('observacao'),
-                'previsao' => $request->input('previsao'),
+                'observacao' => $validatedData['observacao'],
+                'previsao' => $validatedData['previsao'],
                 'data_saida' => now(),
-                'taxa_id' => $request->input('taxa_id'),
+                'taxa_id' => $validatedData['taxa_id'],
             ]);
-
-            $paletesDados = json_decode($request->input('paletes_dados'), true);
-
-            if (!is_array($paletesDados)) {
-                return redirect()->route('documento.index')->with('error', 'Dados das paletes inválidos.');
-            }
 
             foreach ($paletesDados as $palete) {
                 DocumentoTipoPalete::create([
-                    'documento_id' => $novoDocumento->id,  // Associar ao novo documento
+                    'documento_id' => $novoDocumento->id,
                     'tipo_palete_id' => $palete['tipo_palete_id'],
                     'artigo_id' => $palete['artigo_id'],
                     'armazem_id' => $palete['armazem_id'],
@@ -160,9 +160,18 @@ class PedidoRetiradaController extends Controller
                 'message' => 'Documento criado com sucesso!',
                 'documento' => $novoDocumento
             ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+
         } catch (\Exception $e) {
-            Log::error('Erro ao criar documento: ' . $e->getMessage());
-            return redirect()->route('documento.index')->with('error', 'Erro ao criar documento: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao criar documento: ' . $e->getMessage()
+            ], 500);
         }
     }
 

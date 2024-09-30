@@ -11,6 +11,8 @@
                     {{ __('taxa.description') }}
                 </div>
 
+                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                 <form class="ajax-form formTabelaTaxa" method="POST" action="{{ route('taxa.store') }}">
                     @csrf
 
