@@ -103,6 +103,7 @@ class DocumentoController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Documento inserido com sucesso!',
                 'documento_id' => $documento->id,
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -285,7 +286,10 @@ class DocumentoController extends Controller
             }
         }
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Documento atualizado com sucesso!',
+        ]);
     }
 
     /**

@@ -114,6 +114,7 @@ class PaleteController extends Controller
 
             return response()->json([
                 'success' => true,
+                'message' => 'Paletes registadas com sucesso!',
                 'documento_id' => $novoDocumento->id,
                 'paletes_criadas' => $paletesCriadas,
             ]);
@@ -131,11 +132,6 @@ class PaleteController extends Controller
 
     public function retirar(Request $request): JsonResponse
     {
-        // Log da requisição recebida
-        Log::info('Requisição recebida para retirar paletes', [
-            'paletes_selecionadas' => $request->input('paletes_selecionadas'),
-            'documento_id' => $request->input('documento_id')
-        ]);
 
         $request->validate([
             'paletes_selecionadas' => 'required|array',
@@ -159,6 +155,7 @@ class PaleteController extends Controller
 
         return response()->json([
             'success' => true,
+            'message' => 'Paletes retiradas com sucesso!',
             'documento_id' => $request->input('documento_id')
         ]);
     }

@@ -270,6 +270,12 @@ function initFormHandling() {
                     $form.closest('.modal').modal('hide');
 
                     adicionarLinhaNaTabela($form.attr('class'), response);
+
+                    $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                    $('#mensagem-dinamica').show();
+
+                    initDynamicAlert();
                 }
             },
             error: function(xhr) {
@@ -550,6 +556,12 @@ function initCriarDocumentoBtn() {
                 atualizarTabelaDocumentos();
                 $('#modalLinhaDocumento').modal('hide');
                 window.location.href = '/documento/' + response.documento_id + '/pdf';
+
+                $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                $('#mensagem-dinamica').show();
+
+                initDynamicAlert();
             },
             error: function(xhr, status, error) {
                 console.log('Erro ao criar o documento: ' + xhr.responseText);
@@ -571,7 +583,7 @@ function atualizarTabelaDocumentos() {
                     <tr class="clickable-row" data-id="${documento.id}">
                         <td class="align-middle text-center">${documento.numero}</td>
                         <td class="align-middle text-center">${documento.data}</td>
-                        <td class="align-middle text-center">${documento.tipo_documento.tipo}</td>
+                        <td class="align-middle text-center">${documento.tipo_documento.nome}</td>
                         <td class="align-middle text-center">${documento.cliente.nome}</td>
                         <td class="align-middle text-center">${documento.user.nome}</td>
                         <td class="align-middle text-center">${documento.estado}</td>
@@ -651,6 +663,12 @@ function initRececaoFormHandler() {
                     removeRow(`tr[data-id="${documentoIdAntigo}"]`);
 
                     generateRececaoPDF(response.documento_id, response.paletes_criadas);
+
+                    $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                    $('#mensagem-dinamica').show();
+
+                    initDynamicAlert();
                 } else {
                     alert('Erro ao criar documento.');
                 }
@@ -689,11 +707,11 @@ function generateRececaoPDF(documentoId, paletesCriadas) {
 }
 
 function initDynamicAlert() {
-    var alert = document.getElementById('mensagem-dinamica');
+    var alert = $('#mensagem-dinamica');
 
-    if (alert) {
+    if (alert.length) {
         setTimeout(function() {
-            alert.style.display = 'none';
+            alert.fadeOut();
         }, 3000);
     }
 }
@@ -1035,6 +1053,10 @@ function initGuiaTransporteModalEvents() {
                     })
                     .then(data => {
 
+                        $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                        $('#mensagem-dinamica').show();
+
+                        initDynamicAlert();
                         let formData = new FormData(guiaForm);
                         formData.append('paletes_dados', JSON.stringify(paletesDados));
 
@@ -1082,6 +1104,8 @@ function initGuiaTransporteModalEvents() {
                         });
 
                         $('#modalGuiaTransporte').modal('hide');
+
+
 
 
                     })
