@@ -6,14 +6,14 @@
 
         <section class="section dashboard">
             <div class="row">
-                <div class="col-12">
-                    @if (session('status'))
-                        <div id="mensagem-dinamica" class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-                </div>
+            <div class="col-12">
+                @if (session('status'))
+                    <div class="alert alert-success mensagem-dinamica" role="alert">
+                        {{ session('status') }}
+                    </div>
+                @endif
             </div>
+        </div>
         </section>
 
         <section class="section login d-flex flex-column align-items-center justify-content-center home-logo">

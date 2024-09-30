@@ -21,7 +21,7 @@
 @endif
 
 <main @if(!Request::is('/') && !Request::is('welcome')) id="main" @endif class="main @if(Request::is('/') || Request::is('welcome')) full-width @endif">
-    <div id="mensagem-dinamica" style="display: none;"></div>
+    <div class="mensagem-dinamica" style="display: none;"></div>
     @yield('content')
 </main>
 

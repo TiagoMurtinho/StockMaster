@@ -92,4 +92,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(Taxa::class, 'user_id');
     }
+
+    public function notificacao()
+    {
+        return $this->belongsToMany(Notificacao::class, 'notificacao_user')
+            ->withPivot('is_read')
+            ->withTimestamps();
+    }
 }

@@ -1,18 +1,17 @@
 <?php
 
-use App\Http\Controllers\{
-    ArmazemController,
+use App\Http\Controllers\{ArmazemController,
     ArtigoController,
     ClienteController,
     DocumentoController,
+    NotificacaoController,
     PaleteController,
     PedidoEntregaController,
     PedidoRetiradaController,
     ProfileController,
     TaxaController,
     TipoPaleteController,
-    UserController,
-};
+    UserController};
 
 use App\Models\{
     Taxa,
@@ -63,6 +62,9 @@ Route::middleware('custom')->group(function () {
     Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
     Route::get('/documento/faturacao/{clienteId}', [DocumentoController::class, 'faturacao']);
+
+    Route::get('/notificacoes', [NotificacaoController::class, 'index'])->name('notificacoes.index');
+    Route::put('/notificacoes/marcar-lidas', [NotificacaoController::class, 'update']);
 });
 
 require __DIR__.'/auth.php';

@@ -8,10 +8,12 @@ use App\Models\Cliente;
 use App\Models\Documento;
 use App\Models\LinhaDocumento;
 use App\Models\DocumentoTipoPalete;
+use App\Models\Notificacao;
 use App\Models\Palete;
 use App\Models\Taxa;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -60,6 +62,7 @@ class DocumentoController extends Controller
     public function store(Request $request): JsonResponse
     {
         try {
+
             $rules = [
                 'documento.numero' => 'required|numeric',
                 'documento.matricula' => 'nullable|string|max:45',
@@ -100,6 +103,11 @@ class DocumentoController extends Controller
                 }
             }
 
+            if (in_array($documento->tipo_documento_id, [1, 3])) {
+
+                $this->addNotification($documento->id, $documento->tipo_documento_id);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Documento inserido com sucesso!',
@@ -107,7 +115,6 @@ class DocumentoController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-
             $documentoErrors = [];
             $linhasErrors = [];
 
@@ -128,11 +135,31 @@ class DocumentoController extends Controller
             ], 422);
 
         } catch (\Exception $e) {
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    private function addNotification($documentoId, $tipoDocumentoId)
+    {
+
+        $message = $tipoDocumentoId == 1 ? "Nova solicitação de entrega!!" : "Nova solicitação de retirada!!";
+
+        $notificacao = Notificacao::create([
+            'documento_id' => $documentoId,
+            'message' => $message,
+            'created_at' => now(),
+        ]);
+
+        $users = User::all();
+
+        foreach ($users as $user) {
+            $notificacao->user()->attach($user->id, ['is_read' => false]);
+        }
+
     }
 
     public function gerarPDF($id): Response

@@ -62,4 +62,9 @@ class Documento extends Model
             ->withPivot('quantidade', 'artigo_id', 'armazem_id', 'localizacao')
             ->withTimestamps();
     }
+
+    public function notificacao(): HasMany
+    {
+        return $this->hasMany(Notificacao::class, 'documento_id');
+    }
 }

@@ -20,7 +20,8 @@ $(document).ready(function() {
         initClickableRows();
         removePalete();
         initPaleteRowEvents();
-        initVoltarAoPedidoRetiradaModal()
+        initVoltarAoPedidoRetiradaModal();
+        loadNotifications();
 
 
         if (!captureInitialized) {
@@ -272,9 +273,9 @@ function initFormHandling() {
 
                     adicionarLinhaNaTabela($form.attr('class'), response);
 
-                    $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
-                    $('#mensagem-dinamica').show();
+                    $('.mensagem-dinamica').show();
 
                     initDynamicAlert();
                 }
@@ -577,13 +578,14 @@ function initCriarDocumentoBtn() {
                 linhas: linhasData
             },
             success: function(response) {
+                loadNotifications();
                 atualizarTabelaDocumentos();
                 $('#modalLinhaDocumento').modal('hide');
                 window.location.href = '/documento/' + response.documento_id + '/pdf';
 
-                $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
-                $('#mensagem-dinamica').show();
+                $('.mensagem-dinamica').show();
 
                 initDynamicAlert();
             },
@@ -723,9 +725,9 @@ function initRececaoFormHandler() {
 
                     generateRececaoPDF(response.documento_id, response.paletes_criadas);
 
-                    $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                    $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
-                    $('#mensagem-dinamica').show();
+                    $('.mensagem-dinamica').show();
 
                     initDynamicAlert();
                 } else {
@@ -776,7 +778,7 @@ function generateRececaoPDF(documentoId, paletesCriadas) {
 }
 
 function initDynamicAlert() {
-    var alert = $('#mensagem-dinamica');
+    var alert = $('.mensagem-dinamica');
 
     if (alert.length) {
         setTimeout(function() {
@@ -1168,8 +1170,8 @@ function initGuiaTransporteModalEvents() {
                         return response.json();
                     })
                     .then(data => {
-                        $('#mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-                        $('#mensagem-dinamica').show();
+                        $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + data.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+                        $('.mensagem-dinamica').show();
 
                         initDynamicAlert();
 
@@ -1266,3 +1268,60 @@ function captureId() {
         }
     });
 }
+
+function loadNotifications() {
+    $.ajax({
+        url: '/notificacoes',
+        method: 'GET',
+        success: function(data) {
+            var notificationItems = $('#notificationItems');
+            var notificationCount = $('#notificationCount');
+            var notificationBadge = $('.badge-number');
+
+            notificationItems.empty();
+            notificationCount.text(data.length);
+            notificationBadge.text(data.length);
+
+            data.forEach(function(notification) {
+                notificationItems.append(`
+                    <li>
+                        <a class="dropdown-item text-center" href="#" data-notificacao-id="${notification.id}">
+                            ${notification.message}
+                        </a>
+                    </li>
+                `)
+            });
+
+            $('.nav-link.nav-icon').off('click').on('click', function() {
+                let notificationIds = [];
+
+                notificationItems.find('a.dropdown-item').each(function() {
+                    notificationIds.push($(this).data('notificacao-id'));
+                });
+
+                if (notificationIds.length > 0) {
+                    $.ajax({
+                        url: '/notificacoes/marcar-lidas',
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        data: {
+                            notification_ids: notificationIds
+                        },
+                        success: function(response) {
+                            notificationBadge.text('');
+                        },
+                        error: function(xhr) {
+                            console.error('Erro ao marcar notificações como lidas:', xhr);
+                        }
+                    });
+                }
+            });
+        },
+        error: function(xhr) {
+            console.error('Erro ao carregar notificações:', xhr);
+        }
+    });
+}
+
