@@ -27,7 +27,7 @@
                                 <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal{{ $taxa->id }}" class="taxaRow" data-id="{{ $taxa->id }}">
                                     <td class="align-middle text-center">{{ $taxa->nome }}</td>
                                     <td class="align-middle text-center">{{ $taxa->valor }}</td>
-                                    <td class="align-middle text-center">{{ $taxa->user->nome }}</td>
+                                    <td class="align-middle text-center">{{ $taxa->user->name }}</td>
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal{{ $taxa->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">

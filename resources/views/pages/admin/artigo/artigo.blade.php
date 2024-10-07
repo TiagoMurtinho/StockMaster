@@ -29,7 +29,7 @@
                                     <td class="align-middle text-center">{{ $artigo->nome }}</td>
                                     <td class="align-middle text-center">{{ $artigo->referencia }}</td>
                                     <td class="align-middle text-center">{{ $artigo->cliente->nome }}</td>
-                                    <td class="align-middle text-center">{{ $artigo->user->nome }}</td>
+                                    <td class="align-middle text-center">{{ $artigo->user->name }}</td>
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal{{ $artigo->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">

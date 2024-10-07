@@ -29,7 +29,7 @@
                                     <td class="align-middle text-center">{{ $armazem->nome }}</td>
                                     <td class="align-middle text-center">{{ $armazem->capacidade }}</td>
                                     <td class="align-middle text-center">{{ $armazem->tipo_palete->tipo }}</td>
-                                    <td class="align-middle text-center">{{ $armazem->user->nome }}</td>
+                                    <td class="align-middle text-center">{{ $armazem->user->name }}</td>
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal{{ $armazem->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">

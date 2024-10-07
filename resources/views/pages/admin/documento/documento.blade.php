@@ -33,7 +33,7 @@
                                     <td class="align-middle text-center">{{ $documento->data }}</td>
                                     <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
-                                    <td class="align-middle text-center">{{ $documento->user->nome }}</td>
+                                    <td class="align-middle text-center">{{ $documento->user->name }}</td>
                                     <td class="align-middle text-center">{{ $documento->estado }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('documento.pdf', $documento->id) }}"

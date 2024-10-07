@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('notificacao', function (Blueprint $table) {
             $table->id();
             $table->foreignId('documento_id')->constrained('documento', 'id')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('message');
             $table->timestamps();
         });

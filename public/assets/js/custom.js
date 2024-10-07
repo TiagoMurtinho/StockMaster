@@ -103,7 +103,7 @@ function adicionarLinhaNaTabela(formClass, response) {
                 <td class="align-middle text-center">${response.data.nome}</td>
                 <td class="align-middle text-center">${response.data.capacidade}</td>
                 <td class="align-middle text-center">${response.data.tipo_palete.tipo}</td>
-                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle text-center">${response.data.user.name}</td>
                 <td class="align-middle">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal${response.data.id}">
                         <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
@@ -129,7 +129,7 @@ function adicionarLinhaNaTabela(formClass, response) {
                 <td class="align-middle text-center">${response.data.nome}</td>
                 <td class="align-middle text-center">${response.data.referencia}</td>
                 <td class="align-middle text-center">${response.data.cliente.nome}</td>
-                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle text-center">${response.data.user.name}</td>
                 <td class="align-middle">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal${response.data.id}">
                         <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
@@ -156,7 +156,7 @@ function adicionarLinhaNaTabela(formClass, response) {
                 <td class="align-middle text-center">${response.data.morada}</td>
                 <td class="align-middle text-center">${response.data.codigo_postal}</td>
                 <td class="align-middle text-center">${response.data.nif}</td>
-                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle text-center">${response.data.user.name}</td>
                 <td class="align-middle">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal${response.data.id}">
                         <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
@@ -180,7 +180,7 @@ function adicionarLinhaNaTabela(formClass, response) {
             <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal${response.data.id}" class="taxaRow" data-id="${response.data.id}">
                 <td class="align-middle text-center">${response.data.nome}</td>
                 <td class="align-middle text-center">${response.data.valor}</td>
-                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle text-center">${response.data.user.name}</td>
                 <td class="align-middle">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal${response.data.id}">
                         <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
@@ -204,7 +204,7 @@ function adicionarLinhaNaTabela(formClass, response) {
             <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal${response.data.id}" class="TipoPaleteRow" data-id="${response.data.id}">
                 <td class="align-middle text-center">${response.data.tipo}</td>
                 <td class="align-middle text-center">${response.data.valor}</td>
-                <td class="align-middle text-center">${response.data.user.nome}</td>
+                <td class="align-middle text-center">${response.data.user.name}</td>
                 <td class="align-middle">
                     <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal${response.data.id}">
                         <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
@@ -227,7 +227,7 @@ function adicionarLinhaNaTabela(formClass, response) {
 
         newRow = `
             <tr data-bs-toggle="modal" data-bs-target="#editUserModal${response.data.id}" class="userRow" data-id="${response.data.id}">
-                <td class="align-middle text-center">${response.data.nome}</td>
+                <td class="align-middle text-center">${response.data.name}</td>
                 <td class="align-middle text-center">${response.data.email}</td>
                 <td class="align-middle text-center">${response.data.contacto}</td>
                 <td class="align-middle text-center">${response.data.salario}</td>
@@ -646,7 +646,7 @@ function atualizarTabelaDocumentos() {
                         <td class="align-middle text-center">${documento.data}</td>
                         <td class="align-middle text-center">${documento.tipo_documento.nome}</td>
                         <td class="align-middle text-center">${documento.cliente.nome}</td>
-                        <td class="align-middle text-center">${documento.user.nome}</td>
+                        <td class="align-middle text-center">${documento.user.name}</td>
                         <td class="align-middle text-center">${documento.estado}</td>
                         <td class="text-center">
                             <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">

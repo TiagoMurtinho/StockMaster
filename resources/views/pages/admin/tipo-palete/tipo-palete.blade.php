@@ -27,7 +27,7 @@
                                 <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal{{ $tipoPalete->id }}" class="tipoPaleteRow" data-id="{{ $tipoPalete->id }}">
                                     <td class="align-middle text-center">{{ $tipoPalete->tipo }}</td>
                                     <td class="align-middle text-center">{{ $tipoPalete->valor }}</td>
-                                    <td class="align-middle text-center">{{ $tipoPalete->user->nome }}</td>
+                                    <td class="align-middle text-center">{{ $tipoPalete->user->name }}</td>
                                     <td class="align-middle">
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal{{ $tipoPalete->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
