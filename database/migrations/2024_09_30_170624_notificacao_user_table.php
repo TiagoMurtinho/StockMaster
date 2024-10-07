@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('notificacao_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('notificacao_id')->constrained('notificacao', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->boolean('is_read')->default(false);
             $table->timestamps();

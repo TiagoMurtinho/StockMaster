@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('tipo', 45);
             $table->float('valor');
-            $table->foreignId('user_id')->constrained('user', 'id')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('user_id')->constrained('users', 'id')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
