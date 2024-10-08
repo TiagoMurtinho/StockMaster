@@ -22,7 +22,7 @@ class PedidoEntregaController extends Controller
             ->where('tipo_documento_id', 1)
             ->where('estado', 'pendente')
             ->orderBy('documento.previsao', 'asc')
-            ->get();
+            ->paginate(10);
 
         $armazens = Armazem::all();
         $tiposDocumento = TipoDocumento::all();
@@ -78,5 +78,22 @@ class PedidoEntregaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+
+        $documentos = Documento::where('tipo_documento_id', 1)
+        ->where(function($query) use ($search) {
+            $query->whereHas('cliente', function($q) use ($search) {
+                $q->where('nome', 'like', '%' . $search . '%');
+            })
+                ->orWhere('numero', 'like', '%' . $search . '%');
+        })
+            ->with('cliente', 'tipo_palete')
+            ->get();
+
+        return response()->json($documentos);
     }
 }

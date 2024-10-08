@@ -18,7 +18,7 @@ class ArtigoController extends Controller
     {
         $clientes = Cliente::all();
         $users = User::all();
-        $artigos = Artigo::with('user', 'cliente')->get();
+        $artigos = Artigo::with('user', 'cliente')->paginate(10);
         return view('pages.admin.artigo.artigo', compact('artigos', 'users', 'clientes'));
     }
 
@@ -134,5 +134,20 @@ class ArtigoController extends Controller
             'message' => 'Artigo eliminado com sucesso!',
             'redirect' => route('artigo.index')
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+
+        $artigos = Artigo::where('nome', 'like', '%' . $search . '%')
+            ->orWhere('referencia', 'like', '%' . $search . '%')
+            ->orWhereHas('cliente', function ($query) use ($search) {
+                $query->where('nome', 'like', '%' . $search . '%');
+            })
+            ->with('cliente', 'user')
+            ->get();
+
+        return response()->json($artigos);
     }
 }

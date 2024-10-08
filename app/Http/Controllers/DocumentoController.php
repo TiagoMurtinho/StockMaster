@@ -31,7 +31,7 @@ class DocumentoController extends Controller
     public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
 
-        $documentos = Documento::all();
+        $documentos = Documento::paginate(10);
         $tiposDocumento = TipoDocumento::whereIn('id', [1, 3, 5])->get();
         $clientes = Cliente::all();
         $tipoPaletes = TipoPalete::all();
@@ -39,10 +39,6 @@ class DocumentoController extends Controller
         return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'taxas'));
     }
 
-    public function indexJson()
-    {
-        return response()->json(Documento::with('tipo_documento', 'cliente', 'user')->get());
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -112,6 +108,7 @@ class DocumentoController extends Controller
                 'success' => true,
                 'message' => 'Documento inserido com sucesso!',
                 'documento_id' => $documento->id,
+                'documento' => Documento::with('tipo_documento', 'cliente', 'user')->find($documento->id),
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -452,6 +449,23 @@ class DocumentoController extends Controller
             'total' => $total,
             'paletes' => $paletes,
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+
+        $documentos = Documento::where('numero', 'like', '%' . $search . '%')
+            ->orWhereHas('tipo_documento', function($query) use ($search) {
+                $query->where('nome', 'like', '%' . $search . '%');
+            })
+            ->orWhereHas('cliente', function($query) use ($search) {
+                $query->where('nome', 'like', '%' . $search . '%');
+            })
+            ->with('tipo_documento', 'cliente', 'user')
+            ->get();
+
+        return response()->json($documentos);
     }
 
 }

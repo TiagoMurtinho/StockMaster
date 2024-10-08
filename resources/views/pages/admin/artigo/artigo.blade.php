@@ -1,11 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mt-5">
+    <div class="container mt-2">
         <div class="actions-card">
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('artigo.artigo') }}</h5>
+                    <input type="text" id="artigoSearch" class="form-control ms-3" placeholder="Pesquisar por nome, referência ou cliente" style="width: 340px;">
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#addArtigoModal">
                         {{__('artigo.novo_artigo')}}
@@ -42,7 +43,7 @@
                             @endforeach
                             </tbody>
                         </table>
-
+                        {{ $artigos->links('vendor.pagination.bootstrap-5') }}
                     </div>
                 </div>
             </div>

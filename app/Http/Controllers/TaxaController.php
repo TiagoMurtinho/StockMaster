@@ -16,7 +16,7 @@ class TaxaController extends Controller
     public function index()
     {
         $users = User::all();
-        $taxas = Taxa::with('user')->get();
+        $taxas = Taxa::with('user')->paginate(10);
         return view('pages.admin.taxa.taxa', compact('taxas', 'users'));
     }
 
@@ -135,5 +135,16 @@ class TaxaController extends Controller
             'message' => 'Taxa eliminado com sucesso!',
             'redirect' => route('taxa.index')
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+
+        $taxas = Taxa::where('nome', 'like', '%' . $search . '%')
+            ->with('user')
+            ->get();
+
+        return response()->json($taxas);
     }
 }

@@ -17,7 +17,7 @@ class ClienteController extends Controller
     public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
         $users = User::all();
-        $clientes = Cliente::with('user')->get();
+        $clientes = Cliente::with('user')->paginate(10);
         return view('pages.admin.cliente.cliente', compact('clientes', 'users'));
     }
 
@@ -138,5 +138,16 @@ class ClienteController extends Controller
             'message' => 'Cliente eliminado com sucesso!',
             'redirect' => route('cliente.index')
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+        $clientes = Cliente::with('user')
+        ->where('nome', 'like', '%' . $search . '%')
+            ->orWhere('nif', 'like', '%' . $search . '%')
+            ->get();
+
+        return response()->json($clientes);
     }
 }

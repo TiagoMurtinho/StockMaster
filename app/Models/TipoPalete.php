@@ -27,13 +27,6 @@ class TipoPalete extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function linha_documento(): BelongsToMany
-    {
-        return $this->belongsToMany(LinhaDocumento::class, 'linha_documento_tipo_palete')
-            ->withPivot('quantidade', 'artigo_id'/*, 'id'*/)
-            ->withTimestamps();
-    }
-
     public function palete(): HasMany
     {
         return $this->hasMany(Palete::class, 'tipo_palete_id');

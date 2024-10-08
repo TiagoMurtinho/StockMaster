@@ -6,6 +6,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('documento.documentos') }}</h5>
+                    <input type="text" id="documentoSearch" class="form-control ms-3" placeholder="Pesquisar por numero cliente ou tipo" style="width: 320px;">
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#modalAddDocumento">
                         Novo Documento
@@ -13,7 +14,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-transparent align-middle">
+                        <table id="documentoTable" class="table table-hover table-transparent align-middle">
                             <thead>
                             <tr>
                                 <th scope="col" class="text-center">{{ __('documento.numero') }}</th>
@@ -25,7 +26,7 @@
                                 <th></th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="documentoTableBody">
                             @foreach($documentos as $documento)
 
                                 <tr class="clickable-row documentoRow" data-id="{{ $documento->id }}">
@@ -54,6 +55,7 @@
 
                             </tbody>
                         </table>
+                        {{ $documentos->links('vendor.pagination.bootstrap-5') }}
                     </div>
                 </div>
             </div>

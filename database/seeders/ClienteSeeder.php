@@ -3,8 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Cliente;
+use Faker\Factory as Faker;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class ClienteSeeder extends Seeder
 {
@@ -13,32 +15,18 @@ class ClienteSeeder extends Seeder
      */
     public function run(): void
     {
-        $cliente = [
-            [
-                'nome' => 'Visabeira',
-                'morada' => 'Rua da progamação nº29',
-                'codigo_postal' => '2500-123',
-                'nif' => 251244765,
-                'user_id' => 1
-            ],
-            [
-                'nome' => 'Bordallo Pinheiro',
-                'morada' => 'Rua da progamação nº23',
-                'codigo_postal' => '2500-124',
-                'nif' => 231233789,
-                'user_id' => 1
-            ],
-            [
-                'nome' => 'Vista Alegre',
-                'morada' => 'Rua da progamação nº12',
-                'codigo_postal' => '2500-121',
-                'nif' => 212233432,
-                'user_id' => 1
-            ],
-        ];
+        $faker = Faker::create();
 
-        foreach ($cliente as $clienteData) {
-            Cliente::create($clienteData);
+        for ($i = 0; $i < 1000; $i++) {
+            DB::table('cliente')->insert([
+                'nome' => $faker->name,
+                'morada' => $faker->address,
+                'codigo_postal' => $faker->bothify('####-###'),
+                'nif' => $faker->numberBetween('10000000', '20000000'),
+                'user_id' => $faker->numberBetween('1', '5'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }

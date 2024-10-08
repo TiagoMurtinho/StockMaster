@@ -7,6 +7,7 @@ use App\Models\User;
 use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class TipoPaleteController extends Controller
@@ -17,7 +18,7 @@ class TipoPaleteController extends Controller
     public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
     {
         $users = User::all();
-        $tipoPaletes = TipoPalete::with('user')->get();
+        $tipoPaletes = TipoPalete::with('user')->paginate(10);
         return view('pages.admin.tipo-palete.tipo-palete', compact('tipoPaletes', 'users'));
     }
 
@@ -137,5 +138,18 @@ class TipoPaleteController extends Controller
             'message' => 'Tipo de palete eliminado com sucesso!',
             'redirect' => route('tipo-palete.index')
         ]);
+    }
+
+    public function search(Request $request)
+    {
+
+        $search = $request->input('query');
+
+        $tipoPaletes = TipoPalete::where('tipo', 'like', '%' . $search . '%')
+            ->orWhere('valor', 'like', '%' . $search . '%')
+            ->with('user')
+            ->get();
+
+        return response()->json($tipoPaletes);
     }
 }

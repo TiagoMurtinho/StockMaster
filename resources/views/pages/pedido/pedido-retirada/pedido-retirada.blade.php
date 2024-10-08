@@ -6,10 +6,11 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('retirada.retirada') }}</h5>
+                    <input type="text" id="retiradaSearch" class="form-control ms-3" placeholder="Pesquisar por numero ou cliente" style="width: 280px;">
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover table-transparent align-middle">
+                        <table id="retiradaTable" class="table table-hover table-transparent align-middle">
                             <thead>
                             <tr>
                                 <th scope="col" class="text-center">{{ __('retirada.cliente') }}</th>
@@ -41,6 +42,7 @@
                             @endforeach
                             </tbody>
                         </table>
+                        {{ $documentos->links('vendor.pagination.bootstrap-5') }}
                     </div>
                 </div>
             </div>

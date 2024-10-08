@@ -18,7 +18,7 @@
 
                     <div class="mb-3">
                         <label for="addUserModalNome" class="form-label">{{ __('user.add_nome') }}</label>
-                        <input id="addUserModalNome" class="form-control" type="text" name="nome" required>
+                        <input id="addUserModalNome" class="form-control" type="text" name="name" required>
                     </div>
 
                     <div class="mb-3">

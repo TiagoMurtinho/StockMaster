@@ -11,6 +11,7 @@ use App\Models\DocumentoTipoPalete;
 use App\Models\Palete;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +28,7 @@ class PedidoRetiradaController extends Controller
             ->where('estado', 'pendente')
             ->whereDate('previsao', today())
             ->orderBy('data_entrada', 'asc')
-            ->get();
+            ->paginate(10);
 
         $artigoIds = collect();
         $tipoPaleteIds = collect();
@@ -205,5 +206,24 @@ class PedidoRetiradaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+        $today = Carbon::today();
+
+        $documentos = Documento::where('tipo_documento_id', 3)
+            ->whereDate('previsao', $today)
+            ->where(function ($query) use ($search) {
+                $query->where('numero', 'like', '%' . $search . '%')
+                    ->orWhereHas('cliente', function ($q) use ($search) {
+                        $q->where('nome', 'like', '%' . $search . '%');
+                    });
+            })
+            ->with('cliente')
+            ->get();
+
+        return response()->json($documentos);
     }
 }

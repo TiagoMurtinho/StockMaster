@@ -13,7 +13,7 @@
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
 
-                <form id="documentoForm" action="{{ route('documento.store') }}" method="POST">
+                <form id="documentoForm" class="formTabelaDocumento" action="{{ route('documento.store') }}" method="POST">
                     @csrf
 
                     <div class="row mb-3">

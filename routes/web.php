@@ -46,7 +46,6 @@ Route::middleware('custom')->group(function () {
 
     Route::get('/documento/{id}/pdf', [DocumentoController::class, 'gerarPDF'])->name('documento.pdf');
     Route::get('/artigos/{clienteId}', [DocumentoController::class, 'getArtigosPorCliente']);
-    Route::get('/documento/json', [DocumentoController::class, 'indexJson']);
     Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
     Route::put('/documento/{id}', [DocumentoController::class, 'update']);
     Route::post('/paletes/retirar', [PaleteController::class, 'retirar'])->name('paletes.retirar');
@@ -65,6 +64,16 @@ Route::middleware('custom')->group(function () {
 
     Route::get('/notificacoes', [NotificacaoController::class, 'index'])->name('notificacoes.index');
     Route::put('/notificacoes/marcar-lidas', [NotificacaoController::class, 'update']);
+
+    Route::get('/clientes/search', [ClienteController::class, 'search'])->name('clientes.search');
+    Route::get('/tipoPalete/search', [TipoPaleteController::class, 'search'])->name('tipo-palete.search');
+    Route::get('/armazens/search', [ArmazemController::class, 'search'])->name('armazens.search');
+    Route::get('/Artigo/search', [ArtigoController::class, 'search'])->name('artigo.search');
+    Route::get('/taxas/search', [TaxaController::class, 'search'])->name('taxa.search');
+    Route::get('/documentos/search', [DocumentoController::class, 'search'])->name('documento.search');
+    Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('/entrega/search', [PedidoEntregaController::class, 'search'])->name('entrega.search');
+    Route::get('/retirada/search', [PedidoRetiradaController::class, 'search'])->name('retirada.search');
 });
 
 require __DIR__.'/auth.php';

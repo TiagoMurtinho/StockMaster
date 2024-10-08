@@ -2,11 +2,10 @@ $(document).ready(function() {
     let guiaTransporteInitialized = false;
     let formHandlingInitialized = false;
     let tipoDocumentoInitialized = false;
-    let deleteInitialized = false
-    let captureInitialized = false
+    let deleteInitialized = false;
+    let captureInitialized = false;
 
     function initContentHandlers() {
-
         initContinuarModal();
         initLinhaDocumentoModal();
         initVoltarAoDocumentoModal();
@@ -22,10 +21,18 @@ $(document).ready(function() {
         initPaleteRowEvents();
         initVoltarAoPedidoRetiradaModal();
         loadNotifications();
-
+        initializeClientSearch();
+        initTipoPaleteSearch();
+        initArmazemSearch();
+        initArtigoSearch();
+        initTaxaSearch();
+        initDocumentoSearch();
+        initUserSearch();
+        initEntregaSearch();
+        initRetiradaSearch();
 
         if (!captureInitialized) {
-            captureId()
+            captureId();
             captureInitialized = true;
         }
 
@@ -35,7 +42,7 @@ $(document).ready(function() {
         }
 
         if (!deleteInitialized) {
-            initDeleteHandler()
+            initDeleteHandler();
             deleteInitialized = true;
         }
 
@@ -52,21 +59,29 @@ $(document).ready(function() {
 
     initContentHandlers();
 
-    function initDynamicContent() {
+    // Função para inicializar a sidebar e manter o estado ativo
+    function initSidebar() {
+        var activeLink = localStorage.getItem('activeSidebarLink');
+        if (activeLink) {
+            $('a[data-ajax="true"]').removeClass('active');
+            $('a[href="' + activeLink + '"]').addClass('active'); // Aplica a classe ativa ao link armazenado
+        }
+    }
 
+    function initDynamicContent() {
         $(document).off('click', 'a[data-ajax="true"]').on('click', 'a[data-ajax="true"]', function(e) {
             e.preventDefault();
             var url = $(this).attr('href');
+
+            // Armazena o link ativo no Local Storage
+            localStorage.setItem('activeSidebarLink', url);
 
             $('#main').load(url + ' #main > *', function(response, status, xhr) {
                 if (status === "error") {
                     console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
                 } else {
-
-                    initContentHandlers();
-
-                    $('a[data-ajax="true"]').removeClass('active');
-                    $('a[href="' + url + '"]').addClass('active');
+                    initContentHandlers(); // Inicializa os manipuladores de conteúdo
+                    initSidebar(); // Re-inicializa a sidebar para manter o estado
                 }
             });
 
@@ -81,9 +96,27 @@ $(document).ready(function() {
             if (status === "error") {
                 console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
             } else {
-                initContentHandlers();
+                initContentHandlers(); // Inicializa os manipuladores de conteúdo
+                initSidebar(); // Re-inicializa a sidebar
             }
         });
+    });
+
+    // Manter a classe ativa durante a paginação
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault(); // Evita o comportamento padrão de clique
+        var url = $(this).attr('href');
+
+        $('#main').load(url + ' #main > *', function(response, status, xhr) {
+            if (status === "error") {
+                console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
+            } else {
+                initContentHandlers(); // Inicializa os manipuladores de conteúdo
+                initSidebar(); // Re-inicializa a sidebar
+            }
+        });
+
+        window.history.pushState({path: url}, '', url);
     });
 });
 
@@ -401,7 +434,7 @@ function criarDocumentoSemLinha() {
             linhas: []
         },
         success: function(response) {
-            atualizarTabelaDocumentos();
+            atualizarTabelaDocumentos(response.documento);
             window.location.href = '/documento/' + response.documento_id + '/pdf';
         },
         error: function(xhr) {
@@ -579,7 +612,7 @@ function initCriarDocumentoBtn() {
             },
             success: function(response) {
                 loadNotifications();
-                atualizarTabelaDocumentos();
+                atualizarTabelaDocumentos(response.documento);
                 $('#modalLinhaDocumento').modal('hide');
                 window.location.href = '/documento/' + response.documento_id + '/pdf';
 
@@ -631,42 +664,35 @@ function initCriarDocumentoBtn() {
     });
 }
 
-function atualizarTabelaDocumentos() {
-    $.ajax({
-        url: '/documento/json',
-        method: 'GET',
-        success: function(response) {
-            var tbody = $('tbody');
-            tbody.empty();
+function atualizarTabelaDocumentos(documento) {
+    var tbody = $('tbody');
 
-            response.forEach(function(documento) {
-                var linhaHtml = `
-                    <tr class="clickable-row" data-id="${documento.id}">
-                        <td class="align-middle text-center">${documento.numero}</td>
-                        <td class="align-middle text-center">${documento.data}</td>
-                        <td class="align-middle text-center">${documento.tipo_documento.nome}</td>
-                        <td class="align-middle text-center">${documento.cliente.nome}</td>
-                        <td class="align-middle text-center">${documento.user.name}</td>
-                        <td class="align-middle text-center">${documento.estado}</td>
-                        <td class="text-center">
-                            <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
-                                Gerar PDF
-                            </a>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal${documento.id}">
-                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                    Eliminar
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                `;
-                tbody.append(linhaHtml);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.log('Erro ao atualizar a tabela de documentos: ' + xhr.responseText);
-        }
-    });
+    var tipoDocumento = documento.tipo_documento ? documento.tipo_documento.nome : 'N/A';
+    var clienteNome = documento.cliente ? documento.cliente.nome : 'N/A';
+    var userName = documento.user ? documento.user.name : 'N/A';
+
+    var linhaHtml = `
+        <tr class="clickable-row" data-id="${documento.id}">
+            <td class="align-middle text-center">${documento.numero}</td>
+            <td class="align-middle text-center">${documento.data}</td>
+            <td class="align-middle text-center">${tipoDocumento}</td>
+            <td class="align-middle text-center">${clienteNome}</td>
+            <td class="align-middle text-center">${userName}</td>
+            <td class="align-middle text-center">${documento.estado}</td>
+            <td class="text-center">
+                <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
+                    Gerar PDF
+                </a>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal${documento.id}">
+                    <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                        Eliminar
+                    </button>
+                </a>
+            </td>
+        </tr>
+    `;
+
+    tbody.append(linhaHtml);
 }
 
 let armazemOptions = [];
@@ -1323,5 +1349,447 @@ function loadNotifications() {
             console.error('Erro ao carregar notificações:', xhr);
         }
     });
+}
+
+function initializeClientSearch() {
+    $('#clienteSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/clientes/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateClienteTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de clientes: ', error);
+            }
+        });
+    });
+}
+
+function updateClienteTable(clientes) {
+    var tbody = $('#clienteTable tbody');
+    tbody.empty();
+
+    if (clientes.length > 0) {
+        clientes.forEach(function(cliente) {
+            var clienteRow = `
+                <tr data-bs-toggle="modal" data-bs-target="#editClienteModal${cliente.id}" class="clienteRow" data-id="${cliente.id}">
+                    <td class="align-middle text-center">${cliente.nome}</td>
+                    <td class="align-middle text-center">${cliente.morada}</td>
+                    <td class="align-middle text-center">${cliente.codigo_postal}</td>
+                    <td class="align-middle text-center">${cliente.nif}</td>
+                    <td class="align-middle text-center">${cliente.user.name}</td>
+                    <td class="align-middle">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteClienteModal${cliente.id}">
+                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                Eliminar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            `;
+            tbody.append(clienteRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="6" class="text-center">Nenhum cliente encontrado.</td></tr>');
+    }
+}
+
+function initTipoPaleteSearch() {
+
+    $('#tipoPaleteSearch').on('input', function () {
+        var searchQuery = $(this).val();
+
+        console.log("Valor da pesquisa: ", searchQuery);
+
+        $.ajax({
+            url: '/tipoPalete/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function (response) {
+                console.log('Response:', response);
+                updateTipoPaleteTable(response);
+            },
+            error: function (xhr, status, error) {
+                console.log('Erro na pesquisa de tipos de paletes: ', error);
+            }
+        });
+    });
+}
+
+function updateTipoPaleteTable(tipoPaletes) {
+    var tbody = $('#tipoPaleteTable tbody');
+    tbody.empty();
+
+    if (tipoPaletes.length > 0) {
+        tipoPaletes.forEach(function(tipoPalete) {
+
+            var userName = tipoPalete.user ? tipoPalete.user.name : 'Desconhecido';
+
+            var tipoPaleteRow = `
+                <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal${tipoPalete.id}" class="tipoPaleteRow" data-id="${tipoPalete.id}">
+                    <td class="align-middle text-center">${tipoPalete.tipo}</td>
+                    <td class="align-middle text-center">${tipoPalete.valor}</td>
+                    <td class="align-middle text-center">${userName}</td>
+                    <td class="align-middle">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal${tipoPalete.id}">
+                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                Eliminar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            `;
+            tbody.append(tipoPaleteRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="4" class="text-center">Nenhum tipo de palete encontrado.</td></tr>');
+    }
+}
+
+function initArmazemSearch() {
+    $('#armazemSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/armazens/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateArmazemTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de armazéns: ', error);
+            }
+        });
+    });
+}
+
+function updateArmazemTable(armazens) {
+    var tbody = $('#armazemTable tbody');
+    tbody.empty();
+
+    if (armazens.length > 0) {
+        armazens.forEach(function(armazem) {
+            var armazemRow = `
+                    <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal${armazem.id}" class="armazemRow" data-id="${armazem.id}">
+                        <td class="align-middle text-center">${armazem.nome}</td>
+                        <td class="align-middle text-center">${armazem.capacidade}</td>
+                        <td class="align-middle text-center">${armazem.tipo_palete ? armazem.tipo_palete.tipo : 'Desconhecido'}</td>
+                        <td class="align-middle text-center">${armazem.user ? armazem.user.name : 'Desconhecido'}</td>
+                        <td class="align-middle">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal${armazem.id}">
+                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                    Eliminar
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            tbody.append(armazemRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="5" class="text-center">Nenhum armazém encontrado.</td></tr>');
+    }
+}
+
+function initArtigoSearch() {
+    $('#artigoSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/Artigo/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateArtigoTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de artigos: ', error);
+            }
+        });
+    });
+}
+
+function updateArtigoTable(artigos) {
+    var tbody = $('#artigoTable tbody');
+    tbody.empty();  // Limpar a tabela
+
+    if (artigos.length > 0) {
+        artigos.forEach(function(artigo) {
+            var artigoRow = `
+                    <tr data-bs-toggle="modal" data-bs-target="#editArtigoModal${artigo.id}" class="artigoRow" data-id="${artigo.id}">
+                        <td class="align-middle text-center">${artigo.nome}</td>
+                        <td class="align-middle text-center">${artigo.referencia}</td>
+                        <td class="align-middle text-center">${artigo.cliente ? artigo.cliente.nome : 'Desconhecido'}</td>
+                        <td class="align-middle text-center">${artigo.user ? artigo.user.name : 'Desconhecido'}</td>
+                        <td class="align-middle">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal${artigo.id}">
+                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                    Eliminar
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            tbody.append(artigoRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="5" class="text-center">Nenhum artigo encontrado.</td></tr>');
+    }
+}
+
+function initTaxaSearch() {
+    $('#taxaSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/taxas/search',  // A rota para a busca
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateTaxaTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de taxas: ', error);
+            }
+        });
+    });
+}
+
+function updateTaxaTable(taxas) {
+    var tbody = $('#taxaTable tbody');
+    tbody.empty();
+
+    if (taxas.length > 0) {
+        taxas.forEach(function(taxa) {
+            var taxaRow = `
+                    <tr data-bs-toggle="modal" data-bs-target="#editTaxaModal${taxa.id}" class="taxaRow" data-id="${taxa.id}">
+                        <td class="align-middle text-center">${taxa.nome}</td>
+                        <td class="align-middle text-center">${taxa.valor}</td>
+                        <td class="align-middle text-center">${taxa.user ? taxa.user.name : 'Desconhecido'}</td>
+                        <td class="align-middle">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTaxaModal${taxa.id}">
+                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                    Eliminar
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            tbody.append(taxaRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="4" class="text-center">Nenhuma taxa encontrada.</td></tr>');
+    }
+}
+
+function initDocumentoSearch() {
+    $('#documentoSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/documentos/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateDocumentoTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de documentos: ', error);
+            }
+        });
+    });
+}
+
+function updateDocumentoTable(documentos) {
+    var tbody = $('#documentoTableBody');
+    tbody.empty();
+
+    if (documentos.length > 0) {
+        documentos.forEach(function(documento) {
+            var documentoRow = `
+                    <tr class="clickable-row documentoRow" data-id="${documento.id}">
+                        <td class="align-middle text-center">${documento.numero}</td>
+                        <td class="align-middle text-center">${documento.data}</td>
+                        <td class="align-middle text-center">${documento.tipo_documento ? documento.tipo_documento.nome : 'Desconhecido'}</td>
+                        <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
+                        <td class="align-middle text-center">${documento.user ? documento.user.name : 'Desconhecido'}</td>
+                        <td class="align-middle text-center">${documento.estado}</td>
+                        <td class="text-center">
+                            <a href="/documento/pdf/${documento.id}" class="btn btn-secondary btn-sm no-click-propagation">
+                                Gerar PDF
+                            </a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal${documento.id}">
+                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                    Eliminar
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            tbody.append(documentoRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="7" class="text-center">Nenhum documento encontrado.</td></tr>');
+    }
+}
+
+function initUserSearch() {
+    $('#userSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/users/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateUserTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de usuários: ', error);
+            }
+        });
+    });
+}
+
+function updateUserTable(users) {
+    var tbody = $('#userTable tbody');
+    tbody.empty();
+
+    if (users.length > 0) {
+        users.forEach(function(user) {
+            var userRow = `
+                    <tr data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}" class="userRow" data-id="${user.id}">
+                        <td class="align-middle text-center">${user.name}</td>
+                        <td class="align-middle text-center">${user.email}</td>
+                        <td class="align-middle text-center">${user.contacto}</td>
+                        <td class="align-middle text-center">${user.salario}</td>
+                        <td class="align-middle">
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal${user.id}">
+                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                    Eliminar
+                                </button>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            tbody.append(userRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="5" class="text-center">Nenhum usuário encontrado.</td></tr>');
+    }
+}
+
+function initEntregaSearch() {
+    $('#entregaSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/entrega/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateEntregaTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de entregas: ', error);
+            }
+        });
+    });
+}
+
+function updateEntregaTable(documentos) {
+    var tbody = $('#entregaTable tbody');
+    tbody.empty();
+
+    if (documentos.length > 0) {
+        documentos.forEach(function(documento) {
+            var totalQuantidade = 0;
+            documento.tipo_palete.forEach(function(tipoPalete) {
+                totalQuantidade += tipoPalete.pivot.quantidade;
+            });
+
+            var entregaRow = `
+                    <tr data-bs-toggle="modal" data-bs-target="#rececaoModal${documento.id}" class="entregaRow" data-id="${documento.id}">
+                        <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
+                        <td class="align-middle text-center">${documento.numero}</td>
+                        <td class="align-middle text-center">${documento.previsao}</td>
+                        <td class="align-middle text-center">${totalQuantidade} Paletes</td>
+                    </tr>
+                `;
+            tbody.append(entregaRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="4" class="text-center">Nenhum Pedido de Entrega encontrado.</td></tr>');
+    }
+}
+
+function initRetiradaSearch() {
+    $('#retiradaSearch').on('input', function() {
+        var searchQuery = $(this).val();
+
+        $.ajax({
+            url: '/retirada/search',
+            method: 'GET',
+            data: {
+                query: searchQuery
+            },
+            success: function(response) {
+                updateRetiradaTable(response);
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro na pesquisa de retiradas: ', error);
+            }
+        });
+    });
+}
+
+function updateRetiradaTable(documentos) {
+    var tbody = $('#retiradaTable tbody');
+    tbody.empty();
+
+    if (documentos.length > 0) {
+        documentos.forEach(function(documento) {
+
+            var paleteQuantidade = 0;
+            if (Array.isArray(documento.tipo_palete)) {
+                paleteQuantidade = documento.tipo_palete.reduce(function(acc, tipoPalete) {
+                    return acc + tipoPalete.pivot.quantidade;
+                }, 0);
+            }
+
+            var documentRow = `
+                <tr data-bs-toggle="modal" data-bs-target="#retiradaModal${documento.id}" class="retiradaRow" data-documento-id="${documento.id}">
+                    <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${documento.numero}</td>
+                    <td class="align-middle text-center">${documento.previsao}</td>
+                    <td class="align-middle text-center">${paleteQuantidade} Paletes</td>
+                </tr>
+            `;
+            tbody.append(documentRow);
+        });
+    } else {
+        tbody.append('<tr><td colspan="5" class="text-center">Nenhum pedido encontrado.</td></tr>');
+    }
 }
 

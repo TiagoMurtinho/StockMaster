@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use App\Models\Artigo;
 use Faker\Factory as Faker;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class ArtigoSeeder extends Seeder
+class DocumentoTipoUmSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -17,11 +16,16 @@ class ArtigoSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for ($i = 0; $i < 10000; $i++) {
-            DB::table('artigo')->insert([
-                'nome' => $faker->name,
-                'referencia' => strtoupper($faker->lexify('???')),
+        for ($i = 0; $i < 2000; $i++) {
+            DB::table('documento')->insert([
+                'estado' => 'pendente',
+                'numero' => $faker->numberBetween('1', '2000'),
+                'data' => now(),
+                'previsao' => $faker->dateTimeBetween('now', '+30 days'),
+                'observacao' => $faker->text('255'),
+                'tipo_documento_id' => 1,
                 'cliente_id' => $faker->numberBetween('1', '1000'),
+                'taxa_id' => 1,
                 'user_id' => $faker->numberBetween('1', '5'),
                 'created_at' => now(),
                 'updated_at' => now(),

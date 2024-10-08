@@ -29,7 +29,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'nome' => ['required', 'string', 'max:45'],
+            'name' => ['required', 'string', 'max:45'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'contacto' => ['nullable', 'string', 'max:45'],
@@ -37,7 +37,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'nome' => $request->nome,
+            'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'contacto' => $request->contacto,
@@ -57,7 +57,7 @@ class RegisteredUserController extends Controller
     {
 
         $request->validate([
-            'nome' => ['required', 'string', 'max:45'],
+            'name' => ['required', 'string', 'max:45'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.",email,$id"],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'contacto' => ['nullable', 'string', 'max:45'],
@@ -66,7 +66,7 @@ class RegisteredUserController extends Controller
 
         $user = User::findOrFail($id);
 
-        $user->nome = $request->nome;
+        $user->name = $request->name;
         $user->email = $request->email;
 
         if ($request->filled('password')) {

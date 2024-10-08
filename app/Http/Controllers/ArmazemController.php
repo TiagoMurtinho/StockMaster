@@ -9,6 +9,7 @@ use App\Models\TipoPalete;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class ArmazemController extends Controller
@@ -20,7 +21,7 @@ class ArmazemController extends Controller
     {
         $tipoPaletes = TipoPalete::all();
         $users = User::all();
-        $armazens = Armazem::with('user', 'tipo_palete')->get();
+        $armazens = Armazem::with('user', 'tipo_palete')->paginate(10);
         return view('pages.admin.armazem.armazem', compact('armazens', 'users', 'tipoPaletes'));
     }
 
@@ -136,5 +137,19 @@ class ArmazemController extends Controller
             'message' => 'Armazém eliminado com sucesso!',
             'redirect' => route('armazem.index')
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->input('query');
+
+        $armazens = Armazem::where('nome', 'like', '%' . $search . '%')
+            ->orWhereHas('tipo_palete', function ($query) use ($search) {
+                $query->where('tipo', 'like', '%' . $search . '%');
+            })
+            ->with('tipo_palete', 'user')
+            ->get();
+
+        return response()->json($armazens);
     }
 }
