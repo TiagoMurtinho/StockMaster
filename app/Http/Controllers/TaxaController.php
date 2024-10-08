@@ -141,10 +141,18 @@ class TaxaController extends Controller
     {
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('taxa.index');
+        }
+
         $taxas = Taxa::where('nome', 'like', '%' . $search . '%')
             ->with('user')
             ->get();
 
-        return response()->json($taxas);
+        if ($request->ajax()) {
+            return response()->json($taxas);
+        }
+
+        return view('pages.admin.taxa.taxa', compact('taxas'));
     }
 }

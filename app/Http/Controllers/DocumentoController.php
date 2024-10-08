@@ -455,6 +455,10 @@ class DocumentoController extends Controller
     {
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('documento.index');
+        }
+
         $documentos = Documento::where('numero', 'like', '%' . $search . '%')
             ->orWhereHas('tipo_documento', function($query) use ($search) {
                 $query->where('nome', 'like', '%' . $search . '%');
@@ -465,7 +469,11 @@ class DocumentoController extends Controller
             ->with('tipo_documento', 'cliente', 'user')
             ->get();
 
-        return response()->json($documentos);
+        if ($request->ajax()) {
+            return response()->json($documentos);
+        }
+
+        return view('pages.admin.documento.documento', compact('documentos'));
     }
 
 }

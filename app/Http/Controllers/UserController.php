@@ -83,9 +83,17 @@ class UserController extends Controller
     {
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('user.index');
+        }
+
         $users = User::where('name', 'like', '%' . $search . '%')
             ->get();
 
-        return response()->json($users);
+        if ($request->ajax()) {
+            return response()->json($users);
+        }
+
+        return view('pages.admin.user.user', compact('users'));
     }
 }

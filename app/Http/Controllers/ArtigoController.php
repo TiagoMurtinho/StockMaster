@@ -140,6 +140,10 @@ class ArtigoController extends Controller
     {
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('artigo.index');
+        }
+
         $artigos = Artigo::where('nome', 'like', '%' . $search . '%')
             ->orWhere('referencia', 'like', '%' . $search . '%')
             ->orWhereHas('cliente', function ($query) use ($search) {
@@ -148,6 +152,10 @@ class ArtigoController extends Controller
             ->with('cliente', 'user')
             ->get();
 
+        if ($request->ajax()) {
         return response()->json($artigos);
+        }
+
+        return view('pages.admin.artigo.artigo', compact('artigos'));
     }
 }

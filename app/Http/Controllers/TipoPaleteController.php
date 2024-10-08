@@ -145,11 +145,18 @@ class TipoPaleteController extends Controller
 
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('tipo-palete.index');
+        }
+
         $tipoPaletes = TipoPalete::where('tipo', 'like', '%' . $search . '%')
             ->orWhere('valor', 'like', '%' . $search . '%')
             ->with('user')
             ->get();
-
+        if ($request->ajax()) {
         return response()->json($tipoPaletes);
+        }
+
+        return view('pages.admin.tipo-palete.tipo-palete', compact('tipoPaletes'));
     }
 }

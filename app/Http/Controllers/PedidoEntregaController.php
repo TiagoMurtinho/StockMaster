@@ -84,6 +84,10 @@ class PedidoEntregaController extends Controller
     {
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('pedido-entrega.index');
+        }
+
         $documentos = Documento::where('tipo_documento_id', 1)
         ->where(function($query) use ($search) {
             $query->whereHas('cliente', function($q) use ($search) {
@@ -94,6 +98,10 @@ class PedidoEntregaController extends Controller
             ->with('cliente', 'tipo_palete')
             ->get();
 
-        return response()->json($documentos);
+        if ($request->ajax()) {
+            return response()->json($documentos);
+        }
+
+        return view('pages.pedido.pedido-entrega.pedido-entrega', compact('documentos'));
     }
 }

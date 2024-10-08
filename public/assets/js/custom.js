@@ -59,29 +59,49 @@ $(document).ready(function() {
 
     initContentHandlers();
 
-    // Função para inicializar a sidebar e manter o estado ativo
     function initSidebar() {
-        var activeLink = localStorage.getItem('activeSidebarLink');
-        if (activeLink) {
+
+        $('#sidebar').addClass('open');
+
+        var activeDropdown = localStorage.getItem('activeDropdown');
+        if (activeDropdown) {
+            $('#' + activeDropdown).addClass('show');
+        }
+
+        var activeSidebarLink = localStorage.getItem('activeSidebarLink');
+        if (activeSidebarLink) {
             $('a[data-ajax="true"]').removeClass('active');
-            $('a[href="' + activeLink + '"]').addClass('active'); // Aplica a classe ativa ao link armazenado
+            $('a[href="' + activeSidebarLink + '"]').addClass('active');
         }
     }
+
+    function toggleDropdown($dropdown) {
+        var isOpen = $dropdown.hasClass('show');
+
+        if (isOpen) {
+            $dropdown.removeClass('show');
+            localStorage.removeItem('activeDropdown');
+        } else {
+            $dropdown.addClass('show');
+            localStorage.setItem('activeDropdown', $dropdown.attr('id'));
+        }
+    }
+
+    initSidebar();
 
     function initDynamicContent() {
         $(document).off('click', 'a[data-ajax="true"]').on('click', 'a[data-ajax="true"]', function(e) {
             e.preventDefault();
             var url = $(this).attr('href');
 
-            // Armazena o link ativo no Local Storage
             localStorage.setItem('activeSidebarLink', url);
 
             $('#main').load(url + ' #main > *', function(response, status, xhr) {
                 if (status === "error") {
                     console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
                 } else {
-                    initContentHandlers(); // Inicializa os manipuladores de conteúdo
-                    initSidebar(); // Re-inicializa a sidebar para manter o estado
+                    initContentHandlers();
+                    initSidebar();
                 }
             });
 
@@ -96,27 +116,32 @@ $(document).ready(function() {
             if (status === "error") {
                 console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
             } else {
-                initContentHandlers(); // Inicializa os manipuladores de conteúdo
-                initSidebar(); // Re-inicializa a sidebar
+                initContentHandlers();
+                initSidebar();
             }
         });
     });
 
-    // Manter a classe ativa durante a paginação
     $(document).on('click', '.pagination a', function(e) {
-        e.preventDefault(); // Evita o comportamento padrão de clique
+        e.preventDefault();
         var url = $(this).attr('href');
 
         $('#main').load(url + ' #main > *', function(response, status, xhr) {
             if (status === "error") {
                 console.log("Erro ao carregar o conteúdo: " + xhr.status + " " + xhr.statusText);
             } else {
-                initContentHandlers(); // Inicializa os manipuladores de conteúdo
-                initSidebar(); // Re-inicializa a sidebar
+                initContentHandlers();
+                initSidebar();
             }
         });
 
         window.history.pushState({path: url}, '', url);
+    });
+
+    $(document).on('click', '.dropdown-toggle', function(e) {
+        e.preventDefault();
+        var $dropdown = $(this).next('.dropdown-menu');
+        toggleDropdown($dropdown);
     });
 });
 
@@ -1355,6 +1380,11 @@ function initializeClientSearch() {
     $('#clienteSearch').on('input', function() {
         var searchQuery = $(this).val();
 
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
+
         $.ajax({
             url: '/clientes/search',
             method: 'GET',
@@ -1365,7 +1395,7 @@ function initializeClientSearch() {
                 updateClienteTable(response);
             },
             error: function(xhr, status, error) {
-                console.log('Erro na pesquisa de clientes: ', error);
+                console.log('Erro ao realizar a pesquisa:', error);
             }
         });
     });
@@ -1405,7 +1435,10 @@ function initTipoPaleteSearch() {
     $('#tipoPaleteSearch').on('input', function () {
         var searchQuery = $(this).val();
 
-        console.log("Valor da pesquisa: ", searchQuery);
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
 
         $.ajax({
             url: '/tipoPalete/search',
@@ -1414,7 +1447,6 @@ function initTipoPaleteSearch() {
                 query: searchQuery
             },
             success: function (response) {
-                console.log('Response:', response);
                 updateTipoPaleteTable(response);
             },
             error: function (xhr, status, error) {
@@ -1458,16 +1490,21 @@ function initArmazemSearch() {
     $('#armazemSearch').on('input', function() {
         var searchQuery = $(this).val();
 
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
+
         $.ajax({
             url: '/armazens/search',
             method: 'GET',
             data: {
                 query: searchQuery
             },
-            success: function(response) {
+            success: function (response) {
                 updateArmazemTable(response);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log('Erro na pesquisa de armazéns: ', error);
             }
         });
@@ -1503,8 +1540,18 @@ function updateArmazemTable(armazens) {
 }
 
 function initArtigoSearch() {
+    var currentRequestId = 0;
+
     $('#artigoSearch').on('input', function() {
         var searchQuery = $(this).val();
+
+        currentRequestId++;
+        var requestId = currentRequestId;
+
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
 
         $.ajax({
             url: '/Artigo/search',
@@ -1512,11 +1559,18 @@ function initArtigoSearch() {
             data: {
                 query: searchQuery
             },
+            cache: false,
             success: function(response) {
-                updateArtigoTable(response);
+                if (requestId === currentRequestId) {
+                    updateArtigoTable(response);
+                }
             },
             error: function(xhr, status, error) {
-                console.log('Erro na pesquisa de artigos: ', error);
+                if (status !== 'abort') {
+                    console.log('Erro na pesquisa de artigos: ', error);
+                } else {
+                    console.log('Requisição abortada com sucesso.');
+                }
             }
         });
     });
@@ -1524,7 +1578,7 @@ function initArtigoSearch() {
 
 function updateArtigoTable(artigos) {
     var tbody = $('#artigoTable tbody');
-    tbody.empty();  // Limpar a tabela
+    tbody.empty();
 
     if (artigos.length > 0) {
         artigos.forEach(function(artigo) {
@@ -1554,16 +1608,21 @@ function initTaxaSearch() {
     $('#taxaSearch').on('input', function() {
         var searchQuery = $(this).val();
 
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
+
         $.ajax({
             url: '/taxas/search',  // A rota para a busca
             method: 'GET',
             data: {
                 query: searchQuery
             },
-            success: function(response) {
+            success: function (response) {
                 updateTaxaTable(response);
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.log('Erro na pesquisa de taxas: ', error);
             }
         });
@@ -1598,8 +1657,18 @@ function updateTaxaTable(taxas) {
 }
 
 function initDocumentoSearch() {
+    var currentRequestId = 0;
+
     $('#documentoSearch').on('input', function() {
         var searchQuery = $(this).val();
+
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
+
+        currentRequestId++;
+        var requestId = currentRequestId;
 
         $.ajax({
             url: '/documentos/search',
@@ -1607,11 +1676,18 @@ function initDocumentoSearch() {
             data: {
                 query: searchQuery
             },
+            cache: false,
             success: function(response) {
-                updateDocumentoTable(response);
+                if (requestId === currentRequestId) {
+                    updateDocumentoTable(response);
+                }
             },
             error: function(xhr, status, error) {
-                console.log('Erro na pesquisa de documentos: ', error);
+                if (status !== 'abort') {
+                    console.log('Erro na pesquisa de documentos: ', error);
+                } else {
+                    console.log('Requisição abortada com sucesso.');
+                }
             }
         });
     });
@@ -1653,6 +1729,11 @@ function updateDocumentoTable(documentos) {
 function initUserSearch() {
     $('#userSearch').on('input', function() {
         var searchQuery = $(this).val();
+
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
 
         $.ajax({
             url: '/users/search',
@@ -1702,6 +1783,11 @@ function initEntregaSearch() {
     $('#entregaSearch').on('input', function() {
         var searchQuery = $(this).val();
 
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
+
         $.ajax({
             url: '/entrega/search',
             method: 'GET',
@@ -1747,6 +1833,11 @@ function updateEntregaTable(documentos) {
 function initRetiradaSearch() {
     $('#retiradaSearch').on('input', function() {
         var searchQuery = $(this).val();
+
+        if (searchQuery.trim() === "") {
+            location.reload();
+            return;
+        }
 
         $.ajax({
             url: '/retirada/search',

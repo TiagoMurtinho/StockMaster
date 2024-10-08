@@ -143,11 +143,20 @@ class ClienteController extends Controller
     public function search(Request $request)
     {
         $search = $request->input('query');
+
+        if (empty($search)) {
+            return redirect()->route('cliente.index');
+        }
+
         $clientes = Cliente::with('user')
-        ->where('nome', 'like', '%' . $search . '%')
+            ->where('nome', 'like', '%' . $search . '%')
             ->orWhere('nif', 'like', '%' . $search . '%')
             ->get();
 
-        return response()->json($clientes);
+        if ($request->ajax()) {
+            return response()->json($clientes);
+        }
+
+        return view('pages.admin.cliente.cliente', compact('clientes'));
     }
 }

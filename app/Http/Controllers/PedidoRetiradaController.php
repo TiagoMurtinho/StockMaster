@@ -213,6 +213,10 @@ class PedidoRetiradaController extends Controller
         $search = $request->input('query');
         $today = Carbon::today();
 
+        if (empty($search)) {
+            return redirect()->route('pedido-retirada.index');
+        }
+
         $documentos = Documento::where('tipo_documento_id', 3)
             ->whereDate('previsao', $today)
             ->where(function ($query) use ($search) {
@@ -224,6 +228,10 @@ class PedidoRetiradaController extends Controller
             ->with('cliente')
             ->get();
 
-        return response()->json($documentos);
+        if ($request->ajax()) {
+            return response()->json($documentos);
+        }
+
+        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos'));
     }
 }

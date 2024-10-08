@@ -143,6 +143,10 @@ class ArmazemController extends Controller
     {
         $search = $request->input('query');
 
+        if (empty($search)) {
+            return redirect()->route('armazem.index');
+        }
+
         $armazens = Armazem::where('nome', 'like', '%' . $search . '%')
             ->orWhereHas('tipo_palete', function ($query) use ($search) {
                 $query->where('tipo', 'like', '%' . $search . '%');
@@ -150,6 +154,10 @@ class ArmazemController extends Controller
             ->with('tipo_palete', 'user')
             ->get();
 
+        if ($request->ajax()) {
         return response()->json($armazens);
+        }
+
+        return view('pages.admin.armazem.armazem', compact('armazens'));
     }
 }
