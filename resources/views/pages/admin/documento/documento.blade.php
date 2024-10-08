@@ -38,7 +38,7 @@
                                     <td class="align-middle text-center">{{ $documento->estado }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
-                                           class="btn btn-secondary btn-sm no-click-propagation">
+                                           class="btn btn-secondary btn-sm ms-2 no-click-propagation">
                                             Gerar PDF
                                         </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal{{ $documento->id }}">
