@@ -9,7 +9,7 @@
                     <input type="text" id="documentoSearch" class="form-control ms-3" placeholder="Pesquisar por numero cliente ou tipo" style="width: 320px;">
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#modalAddDocumento">
-                        Novo Documento
+                        {{__('documento.new')}}
                     </button>
                 </div>
                 <div class="card-body">
@@ -39,11 +39,11 @@
                                     <td class="text-center">
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
                                            class="btn btn-secondary btn-sm ms-2 no-click-propagation">
-                                            Gerar PDF
+                                            {{__('documento.pdf')}}
                                         </a>
                                         <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal{{ $documento->id }}">
                                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                                Eliminar
+                                                {{__('documento.delete')}}
                                             </button>
                                         </a>
                                     </td>

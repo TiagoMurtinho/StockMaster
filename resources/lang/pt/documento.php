@@ -52,4 +52,10 @@ return [
     'voltar' => 'Voltar',
     'adicionar_paletes' => 'Adicionar Paletes',
     'description' => 'Campos obrigatórios assinalados com *',
+    'new' => 'Novo Documento',
+    'pdf' => 'Gerar PDF',
+    'delete' => 'Eliminar',
+    'confirm_delete' => 'Confirmar Exclusão',
+    'sure_delete' => 'Tem certeza que deseja excluir este documento ?',
+
 ];

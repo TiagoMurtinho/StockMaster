@@ -6,13 +6,15 @@ return [
     'max' => [
         'string' => 'O campo :attribute não pode ter mais de :max caracteres.',
     ],
+    'min' => [
+        'numeric' => 'O campo :attribute deve ser no mínimo :min.',
+        'string' => 'O campo :attribute deve ter pelo menos :min caracteres.',
+    ],
     'numeric' => 'O campo :attribute deve ser um número.',
     'integer' => 'O campo :attribute deve ser um número inteiro.',
     'exists' => 'O campo :attribute selecionado é inválido.',
     'date' => 'O campo :attribute deve ser uma data válida.',
-    'min' => [
-        'numeric' => 'O campo :attribute deve ser no mínimo :min.',
-    ],
+    'confirmed' => 'A confirmação do campo :attribute não corresponde.',
     'array' => 'O campo :attribute deve ser um array.',
 
     'custom' => [
@@ -55,7 +57,6 @@ return [
             'integer' => 'A taxa deve ser um número inteiro.',
             'exists' => 'A taxa selecionada é inválida.',
         ],
-
         'linhas' => [
             'required' => 'É necessário adicionar pelo menos uma linha.',
             'array' => 'As linhas devem ser enviadas em formato de lista (array).',
@@ -73,6 +74,15 @@ return [
             'required' => 'O artigo é obrigatório em cada linha.',
             'integer' => 'O artigo deve ser um número inteiro.',
             'exists' => 'O artigo selecionado não é válido.',
+        ],
+
+        'current_password' => [
+            'required' => 'A senha atual é obrigatória.',
+            'current_password' => 'A senha atual está incorreta.',
+        ],
+        'password' => [
+            'required' => 'A nova senha é obrigatória.',
+            'confirmed' => 'As senhas não coincidem.',
         ],
     ],
 ];

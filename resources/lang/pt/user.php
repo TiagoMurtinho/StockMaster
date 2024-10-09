@@ -21,5 +21,7 @@ return [
     'edit_user' => 'Editar Utilizador',
     'update' => 'Editar',
     'add_password' => 'Palavra-Passe*',
-    'confirm_password' => 'Confirmar Palavra-Passe*'
+    'confirm_password' => 'Confirmar Palavra-Passe*',
+    'alterar_senha' => 'Alterar Palavra-Passe',
+    'senha_atual' => 'Palavra-Passe atual*'
 ];

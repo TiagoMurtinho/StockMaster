@@ -3,13 +3,13 @@
     <li class="nav-item">
         <a class="nav-link collapsed{{ request()->routeIs('home') ? ' active' : '' }}" href="{{route('home')}}" data-ajax="true">
             <i class="bi bi-grid {{ request()->routeIs('home') ? 'active-icon' : '' }}"></i>
-            <span>Home</span>
+            <span>{{__('sidebar.home')}}</span>
         </a>
     </li>
 
     <li class="nav-item">
         <a id="adminDropdown" class="nav-link collapsed{{ request()->routeIs('tipo-palete.index') || request()->routeIs('cliente.index') || request()->routeIs('armazem.index') || request()->routeIs('artigo.index') || request()->routeIs('taxa.index') || request()->routeIs('documento.index') || request()->routeIs('user.index') ? ' active' : '' }}" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">
-            <i class="bi bi-menu-button-wide"></i><span>Administração</span><i class="bi bi-chevron-down ms-auto"></i>
+            <i class="bi bi-menu-button-wide"></i><span>{{__('sidebar.admin')}}</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="admin-nav" class="nav-content collapse {{ request()->routeIs('tipo-palete.index') || request()->routeIs('cliente.index') || request()->routeIs('armazem.index') || request()->routeIs('artigo.index') || request()->routeIs('taxa.index') || request()->routeIs('documento.index') || request()->routeIs('user.index') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
             <li>
@@ -52,7 +52,7 @@
 
     <li class="nav-item">
         <a id="pedidosDropdown" class="nav-link collapsed{{ request()->routeIs('pedido-entrega.index') || request()->routeIs('pedido-retirada.index') ? ' active' : '' }}" data-bs-target="#pedidos-nav" data-bs-toggle="collapse" href="#">
-            <i class="bi bi-menu-button-wide"></i><span>Pedidos</span><i class="bi bi-chevron-down ms-auto"></i>
+            <i class="bi bi-menu-button-wide"></i><span>{{__('sidebar.orders')}}</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="pedidos-nav" class="nav-content collapse {{ request()->routeIs('pedido-entrega.index') || request()->routeIs('pedido-retirada.index') ? 'show' : '' }}" data-bs-parent="#sidebar-nav">
             <li>

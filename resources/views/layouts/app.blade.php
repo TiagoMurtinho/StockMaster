@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <title>{{ config('app.name') }}</title>
+
     @include('layouts.head')
 </head>
 
@@ -23,6 +25,7 @@
 <main @if(!Request::is('/') && !Request::is('welcome')) id="main" @endif class="main @if(Request::is('/') || Request::is('welcome')) full-width @endif">
     <div class="mensagem-dinamica" style="display: none;"></div>
     @yield('content')
+    @include('pages.admin.user.modals.user-change-password-modal')
 </main>
 
 <footer>
