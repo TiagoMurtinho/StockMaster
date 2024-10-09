@@ -30,7 +30,7 @@
         </li><!-- End Notification Nav -->
 
         <li class="nav-item dropdown">
-            <a class="nav-link nav-icon" href="{{ url('/chatify') }}" data-bs-toggle="dropdown">
+            <a class="nav-link nav-icon" href="{{ url('/chatify') }}">
                 <i class="bi bi-chat-left-text"></i>
                 <span id="unseen-counter" class="badge bg-danger badge-number"></span>
             </a>

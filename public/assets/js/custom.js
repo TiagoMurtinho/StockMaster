@@ -1322,8 +1322,8 @@ function captureId() {
 }
 
 function loadNotifications() {
+
     function fetchNotifications() {
-        // URL da rota que busca as notificações
         const url = '/notificacoes';
 
         fetch(url)
@@ -1333,31 +1333,67 @@ function loadNotifications() {
                 const notificationCount = document.getElementById('notificationCount');
                 const notificationBadge = document.querySelector('.badge-number');
 
-                // Atualiza a lista de notificações
-                notificationItems.innerHTML = ''; // Limpa as notificações antigas
-                notificationCount.textContent = data.length; // Atualiza o contador
-                notificationBadge.textContent = data.length; // Atualiza o badge
+                notificationItems.innerHTML = '';
+                notificationCount.textContent = data.length;
 
-                // Adiciona as notificações no dropdown
+                if (data.length > 0) {
+                    notificationBadge.textContent = data.length;
+                    notificationBadge.style.display = 'inline-block';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+
                 data.forEach(function(notification) {
                     const notificationItem = document.createElement('li');
+
+                    const redirectionUrl = notification.tipo_documento_id === 1
+                        ? '/pedido-entrega'
+                        : '/pedido-retirada';
+
                     notificationItem.innerHTML = `
-                        <a class="dropdown-item text-center" href="#" data-notificacao-id="${notification.id}">
+                        <a class="dropdown-item text-center" href="${redirectionUrl}" data-notificacao-id="${notification.id}">
                             ${notification.message}
                         </a>
                     `;
                     notificationItems.appendChild(notificationItem);
                 });
+
+                setTimeout(function() {
+                    let notificationIds = [];
+                    notificationItems.querySelectorAll('a.dropdown-item').forEach(function(item) {
+                        notificationIds.push(item.getAttribute('data-notificacao-id'));
+                    });
+
+                    if (notificationIds.length > 0) {
+                        fetch('/notificacoes/marcar-lidas', {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ notification_ids: notificationIds })
+                        })
+                            .then(response => {
+                                if (response.ok) {
+
+                                    notificationBadge.textContent = '';
+                                    notificationBadge.style.display = 'none';
+                                    notificationItems.innerHTML = '';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Erro ao marcar notificações como lidas:', error);
+                            });
+                    }
+                }, 15000);
             })
             .catch(error => {
                 console.error('Erro ao carregar notificações:', error);
             });
     }
 
-    // Chama a função imediatamente ao carregar a página
     fetchNotifications();
 
-    // Atualiza as notificações a cada 5 segundos
     setInterval(fetchNotifications, 5000);
 }
 

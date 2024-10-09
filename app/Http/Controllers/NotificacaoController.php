@@ -18,7 +18,17 @@ class NotificacaoController extends Controller
         $notificacoes = Notificacao::whereHas('user', function($query) use ($userId) {
             $query->where('user_id', $userId)
                 ->where('is_read', false);
-        })->orderBy('created_at', 'desc')->get();
+        })
+            ->with(['documento' => function($query) {
+                $query->select('id', 'tipo_documento_id');
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $notificacoes->map(function ($notificacao) {
+            $notificacao->tipo_documento_id = $notificacao->documento->tipo_documento_id;
+            return $notificacao;
+        });
 
         return response()->json($notificacoes);
     }
