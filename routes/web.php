@@ -74,6 +74,20 @@ Route::middleware('custom')->group(function () {
     Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
     Route::get('/entrega/search', [PedidoEntregaController::class, 'search'])->name('entrega.search');
     Route::get('/retirada/search', [PedidoRetiradaController::class, 'search'])->name('retirada.search');
+    Route::get('/unseen-messages', function () {
+        $user = auth()->user(); // Usuário logado
+
+        if ($user) {
+            // Contar mensagens não lidas (campo 'seen' == 0)
+            $unseenCounter = \App\Models\ChMessage::where('to_id', $user->id)  // Verificar mensagens para o usuário logado
+            ->where('seen', 0)            // Verificar mensagens não lidas
+            ->count();
+
+            return response()->json(['unseenCounter' => $unseenCounter]); // Retornar o número de mensagens não lidas
+        }
+
+        return response()->json(['unseenCounter' => 0]); // Se não houver usuário, retornar 0
+    });
 });
 
 require __DIR__.'/auth.php';

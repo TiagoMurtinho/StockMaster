@@ -30,6 +30,7 @@ $(document).ready(function() {
         initUserSearch();
         initEntregaSearch();
         initRetiradaSearch();
+        initializeUnseenMessagesCounter();
 
         if (!captureInitialized) {
             captureId();
@@ -1321,59 +1322,43 @@ function captureId() {
 }
 
 function loadNotifications() {
-    $.ajax({
-        url: '/notificacoes',
-        method: 'GET',
-        success: function(data) {
-            var notificationItems = $('#notificationItems');
-            var notificationCount = $('#notificationCount');
-            var notificationBadge = $('.badge-number');
+    function fetchNotifications() {
+        // URL da rota que busca as notificações
+        const url = '/notificacoes';
 
-            notificationItems.empty();
-            notificationCount.text(data.length);
-            notificationBadge.text(data.length);
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const notificationItems = document.getElementById('notificationItems');
+                const notificationCount = document.getElementById('notificationCount');
+                const notificationBadge = document.querySelector('.badge-number');
 
-            data.forEach(function(notification) {
-                notificationItems.append(`
-                    <li>
+                // Atualiza a lista de notificações
+                notificationItems.innerHTML = ''; // Limpa as notificações antigas
+                notificationCount.textContent = data.length; // Atualiza o contador
+                notificationBadge.textContent = data.length; // Atualiza o badge
+
+                // Adiciona as notificações no dropdown
+                data.forEach(function(notification) {
+                    const notificationItem = document.createElement('li');
+                    notificationItem.innerHTML = `
                         <a class="dropdown-item text-center" href="#" data-notificacao-id="${notification.id}">
                             ${notification.message}
                         </a>
-                    </li>
-                `)
-            });
-
-            $('.nav-link.nav-icon').off('click').on('click', function() {
-                let notificationIds = [];
-
-                notificationItems.find('a.dropdown-item').each(function() {
-                    notificationIds.push($(this).data('notificacao-id'));
+                    `;
+                    notificationItems.appendChild(notificationItem);
                 });
-
-                if (notificationIds.length > 0) {
-                    $.ajax({
-                        url: '/notificacoes/marcar-lidas',
-                        method: 'PUT',
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        data: {
-                            notification_ids: notificationIds
-                        },
-                        success: function(response) {
-                            notificationBadge.text('');
-                        },
-                        error: function(xhr) {
-                            console.error('Erro ao marcar notificações como lidas:', xhr);
-                        }
-                    });
-                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar notificações:', error);
             });
-        },
-        error: function(xhr) {
-            console.error('Erro ao carregar notificações:', xhr);
-        }
-    });
+    }
+
+    // Chama a função imediatamente ao carregar a página
+    fetchNotifications();
+
+    // Atualiza as notificações a cada 5 segundos
+    setInterval(fetchNotifications, 5000);
 }
 
 function initializeClientSearch() {
@@ -1882,5 +1867,33 @@ function updateRetiradaTable(documentos) {
     } else {
         tbody.append('<tr><td colspan="5" class="text-center">Nenhum pedido encontrado.</td></tr>');
     }
+}
+
+function initializeUnseenMessagesCounter() {
+    function checkUnseenMessages() {
+        const url = '/unseen-messages';
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+
+                const unseenCounter = data.unseenCounter;
+
+                const counterElement = document.getElementById('unseen-counter');
+
+                if (unseenCounter > 0) {
+                    counterElement.innerHTML = `<b>${unseenCounter}</b>`;
+                } else {
+                    counterElement.innerHTML = '';
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar mensagens não lidas:', error);
+            });
+    }
+
+    setInterval(checkUnseenMessages, 5000);
+
+    window.onload = checkUnseenMessages;
 }
 
