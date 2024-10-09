@@ -1357,35 +1357,6 @@ function loadNotifications() {
                     `;
                     notificationItems.appendChild(notificationItem);
                 });
-
-                setTimeout(function() {
-                    let notificationIds = [];
-                    notificationItems.querySelectorAll('a.dropdown-item').forEach(function(item) {
-                        notificationIds.push(item.getAttribute('data-notificacao-id'));
-                    });
-
-                    if (notificationIds.length > 0) {
-                        fetch('/notificacoes/marcar-lidas', {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({ notification_ids: notificationIds })
-                        })
-                            .then(response => {
-                                if (response.ok) {
-
-                                    notificationBadge.textContent = '';
-                                    notificationBadge.style.display = 'none';
-                                    notificationItems.innerHTML = '';
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Erro ao marcar notificações como lidas:', error);
-                            });
-                    }
-                }, 15000);
             })
             .catch(error => {
                 console.error('Erro ao carregar notificações:', error);
@@ -1395,6 +1366,44 @@ function loadNotifications() {
     fetchNotifications();
 
     setInterval(fetchNotifications, 5000);
+
+    let notificationTimeout;
+
+    const notificationIcon = document.querySelector('.nav-link.nav-icon');
+
+    notificationIcon.addEventListener('click', function() {
+        const notificationItems = document.getElementById('notificationItems');
+        let notificationIds = [];
+
+        notificationItems.querySelectorAll('a.dropdown-item').forEach(function(item) {
+            notificationIds.push(item.getAttribute('data-notificacao-id'));
+        });
+
+        if (notificationIds.length > 0) {
+
+            notificationTimeout = setTimeout(function() {
+                fetch('/notificacoes/marcar-lidas', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ notification_ids: notificationIds })
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            const notificationBadge = document.querySelector('.badge-number');
+                            notificationBadge.textContent = '';
+                            notificationBadge.style.display = 'none';
+                            notificationItems.innerHTML = '';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao marcar notificações como lidas:', error);
+                    });
+            }, 10000);
+        }
+    });
 }
 
 function initializeClientSearch() {
