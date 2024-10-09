@@ -1644,7 +1644,7 @@ function initTaxaSearch() {
         }
 
         $.ajax({
-            url: '/taxas/search',  // A rota para a busca
+            url: '/taxas/search',
             method: 'GET',
             data: {
                 query: searchQuery
