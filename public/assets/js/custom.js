@@ -1745,6 +1745,8 @@ function updateDocumentoTable(documentos) {
     } else {
         tbody.append('<tr><td colspan="7" class="text-center">Nenhum documento encontrado.</td></tr>');
     }
+
+    initClickableRows();
 }
 
 function initUserSearch() {

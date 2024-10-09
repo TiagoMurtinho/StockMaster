@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        /*for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             DB::table('users')->insert([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
@@ -37,6 +37,6 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        }*/
+        }
     }
 }
