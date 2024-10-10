@@ -218,6 +218,7 @@ class PedidoRetiradaController extends Controller
         }
 
         $documentos = Documento::where('tipo_documento_id', 3)
+            ->where('estado', 'pendente')
             ->whereDate('previsao', $today)
             ->where(function ($query) use ($search) {
                 $query->where('numero', 'like', '%' . $search . '%')
@@ -225,13 +226,69 @@ class PedidoRetiradaController extends Controller
                         $q->where('nome', 'like', '%' . $search . '%');
                     });
             })
-            ->with('cliente')
+            ->with(['cliente', 'tipo_palete' => function ($query) {
+                // Carregar os campos da tabela pivot
+                $query->withPivot('quantidade', 'artigo_id', 'armazem_id', 'localizacao');
+            }])
             ->get();
 
-        if ($request->ajax()) {
-            return response()->json($documentos);
+        // Mesma lógica de agregação dos artigos e tipo de palete
+        $artigoIds = collect();
+        $tipoPaleteIds = collect();
+
+        foreach ($documentos as $documento) {
+            $artigoIds = $artigoIds->merge($documento->tipo_palete->pluck('pivot.artigo_id'));
+            $tipoPaleteIds = $tipoPaleteIds->merge($documento->tipo_palete->pluck('pivot.tipo_palete_id'));
         }
 
-        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos'));
+        $artigos = Artigo::whereIn('id', $artigoIds)->get()->keyBy('id');
+        $tipoPaletes = TipoPalete::whereIn('id', $tipoPaleteIds)->get()->keyBy('id');
+
+        $paletes = Palete::whereNull('data_saida')
+            ->whereIn('artigo_id', $artigoIds)
+            ->whereIn('tipo_palete_id', $tipoPaleteIds)
+            ->orderBy('data_entrada')
+            ->get();
+
+        // Mesma lógica de agrupamento de paletes por linha
+        $paletesPorLinha = [];
+
+        foreach ($documentos as $documento) {
+            foreach ($documento->tipo_palete as $tipoPalete) {
+                if (!isset($paletesPorLinha[$documento->id][$tipoPalete->id])) {
+                    $paletesPorLinha[$documento->id][$tipoPalete->id] = collect();
+                }
+
+                $quantidadeNecessaria = $tipoPalete->pivot->quantidade;
+
+                $paletesDisponiveis = $paletes
+                    ->where('artigo_id', $tipoPalete->pivot->artigo_id)
+                    ->where('tipo_palete_id', $tipoPalete->id)
+                    ->sortBy('data_entrada');
+
+                $paletesSelecionados = collect();
+                foreach ($paletesDisponiveis as $palete) {
+                    if ($paletesSelecionados->count() < $quantidadeNecessaria) {
+                        $paletesSelecionados->push($palete);
+                    }
+                }
+
+                if ($paletesSelecionados->isNotEmpty()) {
+                    $paletesPorLinha[$documento->id][$tipoPalete->id] = $paletesSelecionados;
+                }
+            }
+        }
+
+        if ($request->ajax()) {
+            // Retornar os documentos e os dados relacionados
+            return response()->json([
+                'documentos' => $documentos,
+                'artigos' => $artigos,
+                'tipo_paletes' => $tipoPaletes,
+                'paletesPorLinha' => $paletesPorLinha,
+            ]);
+        }
+
+        return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'artigos', 'tipoPaletes', 'paletesPorLinha'));
     }
 }

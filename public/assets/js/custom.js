@@ -31,6 +31,15 @@ $(document).ready(function() {
         initEntregaSearch();
         initRetiradaSearch();
         initializeUnseenMessagesCounter();
+        initNoClickPropagation();
+        initEditTipoPaleteModals();
+        initEditClienteModals();
+        initEditArmazemModals();
+        initEditArtigoModals();
+        initEditTaxaModals();
+        initEditUserModals();
+        initRececaoModals();
+        initRetiradaModals();
 
         if (!captureInitialized) {
             captureId();
@@ -758,12 +767,17 @@ function fillArmazemSelects() {
 }
 
 function initRececaoFormHandler() {
-    $('#modalRececaoForm').on('submit', function(e) {
+    // Atualizamos o seletor para buscar formulários dinâmicos
+    $(document).on('submit', 'form[id^="modalRececaoForm"]', function(e) {
         e.preventDefault();
 
         var $form = $(this);
-        var formData = $form.serialize();
+        var formData = $form.serialize();  // Serializa os dados do formulário
         var documentoIdAntigo = $form.find('input[name="documento_id"]').val();
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');  // Pega o CSRF token da meta tag
+
+        // Adiciona o CSRF token aos dados do formulário
+        formData += '&_token=' + csrfToken;  // Concatena o CSRF token aos dados já serializados
 
         $.ajax({
             type: 'POST',
@@ -771,14 +785,12 @@ function initRececaoFormHandler() {
             data: formData,
             success: function(response) {
                 if (response.success) {
-
                     $('#rececaoModal' + documentoIdAntigo).modal('hide');
                     removeRow(`tr[data-id="${documentoIdAntigo}"]`);
 
                     generateRececaoPDF(response.documento_id, response.paletes_criadas);
 
                     $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
-
                     $('.mensagem-dinamica').show();
 
                     initDynamicAlert();
@@ -787,7 +799,6 @@ function initRececaoFormHandler() {
                 }
             },
             error: function(xhr) {
-
                 var errors = xhr.responseJSON.errors;
                 var errorHtml = '<ul>';
                 for (var key in errors) {
@@ -862,7 +873,9 @@ function initClickableRows() {
             });
         });
     });
+}
 
+function initNoClickPropagation() {
     document.querySelectorAll('.no-click-propagation').forEach(button => {
         button.addEventListener('click', function(event) {
             event.stopPropagation();
@@ -1282,7 +1295,7 @@ function initDeleteHandler() {
             processData: false,
             contentType: false,
             headers: {
-                'X-HTTP-Method-Override': 'DELETE'
+                'X-HTTP-Method-Override': 'DELETE',
             },
             success: function(response) {
                 if (response.success) {
@@ -1290,6 +1303,12 @@ function initDeleteHandler() {
 
                     var rowSelector = 'tr[data-id="' + id + '"]';
                     removeRow(rowSelector);
+
+                    $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                    $('.mensagem-dinamica').show();
+
+                    initDynamicAlert();
                 } else {
                     console.log('Erro:', response.message || 'Erro desconhecido');
                 }
@@ -1435,10 +1454,12 @@ function updateClienteTable(clientes) {
     var tbody = $('#clienteTable tbody');
     tbody.empty();
 
+    $('body').find('.modal').remove();
+
     if (clientes.length > 0) {
         clientes.forEach(function(cliente) {
             var clienteRow = `
-                <tr data-bs-toggle="modal" data-bs-target="#editClienteModal${cliente.id}" class="clienteRow" data-id="${cliente.id}">
+                <tr class="clienteRow" data-id="${cliente.id}">
                     <td class="align-middle text-center">${cliente.nome}</td>
                     <td class="align-middle text-center">${cliente.morada}</td>
                     <td class="align-middle text-center">${cliente.codigo_postal}</td>
@@ -1453,13 +1474,100 @@ function updateClienteTable(clientes) {
                     </td>
                 </tr>
             `;
+
+            var editModal = `
+                <div class="modal fade" id="editClienteModal${cliente.id}" tabindex="-1" aria-labelledby="editClienteModalLabel${cliente.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editClienteModalLabel${cliente.id}">Editar Cliente</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-4 text-sm text-gray-600">
+                                    Descrição do cliente
+                                </div>
+
+                                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
+                                <form class="ajax-form formTabelaCliente" id="editClienteForm${cliente.id}" method="POST" action="/cliente/${cliente.id}">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <div class="mb-3">
+                                        <label for="editClienteModalNome${cliente.id}" class="form-label">Nome</label>
+                                        <input id="editClienteModalNome${cliente.id}" class="form-control" type="text" name="nome" value="${cliente.nome}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="editClienteModalMorada${cliente.id}" class="form-label">Morada</label>
+                                        <input id="editClienteModalMorada${cliente.id}" class="form-control" type="text" name="morada" value="${cliente.morada}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="editClienteModalCodigoPostal${cliente.id}" class="form-label">Código Postal</label>
+                                        <input id="editClienteModalCodigoPostal${cliente.id}" class="form-control" type="text" name="codigo_postal" value="${cliente.codigo_postal}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="editClienteModalNif${cliente.id}" class="form-label">NIF</label>
+                                        <input id="editClienteModalNif${cliente.id}" class="form-control" type="number" name="nif" value="${cliente.nif}">
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            var deleteModal = `
+                <div class="modal fade" id="deleteClienteModal${cliente.id}" tabindex="-1" aria-labelledby="deleteClienteModalLabel${cliente.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteClienteModalLabel${cliente.id}">Eliminar Cliente</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-danger">Tem certeza de que deseja eliminar o cliente ${cliente.nome}?</p>
+                                <form id="deleteClienteForm${cliente.id}" method="POST" action="/cliente/${cliente.id}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="id" id="clienteId${cliente.id}">
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteClienteForm${cliente.id}">Eliminar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
             tbody.append(clienteRow);
+            $('body').append(editModal);
+            $('body').append(deleteModal);
         });
+        initNoClickPropagation();
     } else {
         tbody.append('<tr><td colspan="6" class="text-center">Nenhum cliente encontrado.</td></tr>');
     }
 }
+function initEditClienteModals() {
+    $(document).on('click', '.clienteRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#editClienteModal' + id);
 
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
+}
 function initTipoPaleteSearch() {
 
     $('#tipoPaleteSearch').on('input', function () {
@@ -1491,17 +1599,17 @@ function updateTipoPaleteTable(tipoPaletes) {
     tbody.empty();
 
     if (tipoPaletes.length > 0) {
-        tipoPaletes.forEach(function(tipoPalete) {
-
+        tipoPaletes.forEach(function (tipoPalete) {
             var userName = tipoPalete.user ? tipoPalete.user.name : 'Desconhecido';
 
+            // Linha da tabela
             var tipoPaleteRow = `
-                <tr data-bs-toggle="modal" data-bs-target="#editTipoPaleteModal${tipoPalete.id}" class="tipoPaleteRow" data-id="${tipoPalete.id}">
+                <tr class="tipoPaleteRow" data-id="${tipoPalete.id}">
                     <td class="align-middle text-center">${tipoPalete.tipo}</td>
                     <td class="align-middle text-center">${tipoPalete.valor}</td>
                     <td class="align-middle text-center">${userName}</td>
                     <td class="align-middle">
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal${tipoPalete.id}">
+                        <a href="#" data-id="${tipoPalete.id}" data-bs-toggle="modal" data-bs-target="#deleteTipoPaleteModal${tipoPalete.id}">
                             <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
                                 Eliminar
                             </button>
@@ -1509,11 +1617,90 @@ function updateTipoPaleteTable(tipoPaletes) {
                     </td>
                 </tr>
             `;
+
+            var editModal = `
+                <div class="modal fade" id="editTipoPaleteModal${tipoPalete.id}" tabindex="-1" aria-labelledby="editTipoPaleteModalLabel${tipoPalete.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editTipoPaleteModalLabel${tipoPalete.id}">Editar Tipo de Palete</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-4 text-sm text-gray-600">
+                                    Descrição do tipo de palete
+                                </div>
+                                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+                                <form class="ajax-form formTabelaTipoPalete" id="editTipoPaleteForm${tipoPalete.id}" method="POST" action="/tipo-palete/${tipoPalete.id}">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <div class="mb-3">
+                                        <label for="editTipoPaleteModalTipo${tipoPalete.id}" class="form-label">Tipo</label>
+                                        <input id="editTipoPaleteModalTipo${tipoPalete.id}" class="form-control" type="text" name="tipo" value="${tipoPalete.tipo}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editTipoPaleteModalValor${tipoPalete.id}" class="form-label">Valor</label>
+                                        <input id="editTipoPaleteModalValor${tipoPalete.id}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="${tipoPalete.valor}">
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            var deleteModal = `
+                <div class="modal fade" id="deleteTipoPaleteModal${tipoPalete.id}" tabindex="-1" aria-labelledby="deleteTipoPaleteModalLabel${tipoPalete.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteTipoPaleteModalLabel${tipoPalete.id}">Excluir Tipo de Palete</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-danger">Tem certeza que deseja excluir o tipo de palete ${tipoPalete.tipo}?</p>
+                                <form id="deleteTipoPaleteForm${tipoPalete.id}" method="POST" action="/tipo-palete/${tipoPalete.id}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                     <input type="hidden" name="id" id="tipoPaleteId${tipoPalete.id}" value="${tipoPalete.id}">
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                         <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTipoPaleteForm${tipoPalete.id}">Excluir</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+
+            if ($('#deleteTipoPaleteModal' + tipoPalete.id).length === 0) {
+                $('body').append(deleteModal);
+            }
+
             tbody.append(tipoPaleteRow);
+            $('body').append(editModal);
         });
+        initNoClickPropagation();
     } else {
         tbody.append('<tr><td colspan="4" class="text-center">Nenhum tipo de palete encontrado.</td></tr>');
     }
+}
+
+function initEditTipoPaleteModals() {
+    $(document).on('click', '.tipoPaleteRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#editTipoPaleteModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initArmazemSearch() {
@@ -1548,25 +1735,108 @@ function updateArmazemTable(armazens) {
     if (armazens.length > 0) {
         armazens.forEach(function(armazem) {
             var armazemRow = `
-                    <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal${armazem.id}" class="armazemRow" data-id="${armazem.id}">
-                        <td class="align-middle text-center">${armazem.nome}</td>
-                        <td class="align-middle text-center">${armazem.capacidade}</td>
-                        <td class="align-middle text-center">${armazem.tipo_palete ? armazem.tipo_palete.tipo : 'Desconhecido'}</td>
-                        <td class="align-middle text-center">${armazem.user ? armazem.user.name : 'Desconhecido'}</td>
-                        <td class="align-middle">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal${armazem.id}">
-                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                    Eliminar
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                `;
+                <tr data-bs-toggle="modal" data-bs-target="#editArmazemModal${armazem.id}" class="armazemRow" data-id="${armazem.id}">
+                    <td class="align-middle text-center">${armazem.nome}</td>
+                    <td class="align-middle text-center">${armazem.capacidade}</td>
+                    <td class="align-middle text-center">${armazem.tipo_palete ? armazem.tipo_palete.tipo : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${armazem.user ? armazem.user.name : 'Desconhecido'}</td>
+                    <td class="align-middle">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArmazemModal${armazem.id}">
+                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                Eliminar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            `;
+
+            var editModal = `
+                <div class="modal fade" id="editArmazemModal${armazem.id}" tabindex="-1" aria-labelledby="editArmazemModalLabel${armazem.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editArmazemModalLabel${armazem.id}">Editar Armazém</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-4 text-sm text-gray-600">
+                                    Descrição do Armazém
+                                </div>
+                                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
+                                <form class="ajax-form formTabelaArmazem" method="POST" action="/armazem/${armazem.id}">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <div class="mb-3">
+                                        <label for="editArmazemModalNome${armazem.id}" class="form-label">Nome</label>
+                                        <input id="editArmazemModalNome${armazem.id}" class="form-control" type="text" name="nome" value="${armazem.nome}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editArmazemModalCapacidade${armazem.id}" class="form-label">Capacidade</label>
+                                        <input id="editArmazemModalCapacidade${armazem.id}" class="form-control" type="number" name="capacidade" value="${armazem.capacidade}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editArmazemModalTipoPalete" class="form-label">Tipo de Palete</label>
+                                        <select name="tipo_palete_id" id="editArmazemModalTipoPalete" class="form-select form-select-sm">
+                                            <option value="1" ${armazem.tipo_palete_id === 1 ? 'selected' : ''}>Tipo 1</option>
+                                            <option value="2" ${armazem.tipo_palete_id === 2 ? 'selected' : ''}>Tipo 2</option>
+                                        </select>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            var deleteModal = `
+                <div class="modal fade" id="deleteArmazemModal${armazem.id}" tabindex="-1" aria-labelledby="deleteArmazemModalLabel${armazem.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteArmazemModalLabel${armazem.id}">Excluir Armazém</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-danger">Tem certeza de que deseja excluir o armazém "${armazem.nome}"?</p>
+                                <form id="deleteArmazemForm${armazem.id}" method="POST" action="/armazem/${armazem.id}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="id" value="${armazem.id}" id="armazemId${armazem.id}">
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-danger ajax-delete-btn" data-form-id="deleteArmazemForm${armazem.id}">Excluir</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
             tbody.append(armazemRow);
+            $('body').append(editModal);
+            $('body').append(deleteModal);
         });
+        initNoClickPropagation();
     } else {
         tbody.append('<tr><td colspan="5" class="text-center">Nenhum armazém encontrado.</td></tr>');
     }
+}
+
+function initEditArmazemModals() {
+    $(document).on('click', '.armazemRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#editArmazemModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initArtigoSearch() {
@@ -1612,26 +1882,134 @@ function updateArtigoTable(artigos) {
 
     if (artigos.length > 0) {
         artigos.forEach(function(artigo) {
+
             var artigoRow = `
-                    <tr data-bs-toggle="modal" data-bs-target="#editArtigoModal${artigo.id}" class="artigoRow" data-id="${artigo.id}">
-                        <td class="align-middle text-center">${artigo.nome}</td>
-                        <td class="align-middle text-center">${artigo.referencia}</td>
-                        <td class="align-middle text-center">${artigo.cliente ? artigo.cliente.nome : 'Desconhecido'}</td>
-                        <td class="align-middle text-center">${artigo.user ? artigo.user.name : 'Desconhecido'}</td>
-                        <td class="align-middle">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal${artigo.id}">
-                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                    Eliminar
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                `;
+                <tr data-bs-toggle="modal" data-bs-target="#editArtigoModal${artigo.id}" class="artigoRow" data-id="${artigo.id}">
+                    <td class="align-middle text-center">${artigo.nome}</td>
+                    <td class="align-middle text-center">${artigo.referencia}</td>
+                    <td class="align-middle text-center">${artigo.cliente ? artigo.cliente.nome : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${artigo.user ? artigo.user.name : 'Desconhecido'}</td>
+                    <td class="align-middle">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteArtigoModal${artigo.id}">
+                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                Eliminar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            `;
+
+            var editModal = `
+                <div class="modal fade" id="editArtigoModal${artigo.id}" tabindex="-1" aria-labelledby="editArtigoModalLabel${artigo.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editArtigoModalLabel${artigo.id}">Editar Artigo</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="ajax-form formTabelaArtigo" method="POST" action="/artigo/${artigo.id}">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+                                    <div class="mb-3">
+                                        <label for="editArtigoModalNome${artigo.id}" class="form-label">Nome</label>
+                                        <input id="editArtigoModalNome${artigo.id}" class="form-control" type="text" name="nome" value="${artigo.nome}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editArtigoModalReferencia${artigo.id}" class="form-label">Referência</label>
+                                        <input id="editArtigoModalReferencia${artigo.id}" class="form-control" type="text" name="referencia" value="${artigo.referencia}">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="editArtigoModalCliente${artigo.id}" class="form-label">Cliente</label>
+                                        <select name="cliente_id" id="editArtigoModalCliente${artigo.id}" class="form-select form-select-sm">
+
+                                        </select>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            var deleteModal = `
+                <div class="modal fade" id="deleteArtigoModal${artigo.id}" tabindex="-1" aria-labelledby="deleteArtigoModalLabel${artigo.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteArtigoModalLabel${artigo.id}">Excluir Artigo</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-danger">Tem certeza que deseja excluir o artigo ${artigo.nome}?</p>
+                                <form id="deleteArtigoForm${artigo.id}" method="POST" action="/artigo/delete/${artigo.id}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Excluir</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
             tbody.append(artigoRow);
+            $('body').append(editModal);
+            $('body').append(deleteModal);
         });
+        initNoClickPropagation();
+        $('#artigoTable tbody').on('click', '.artigoRow', function() {
+            var artigoId = $(this).data('id');
+            var modalId = '#editArtigoModal' + artigoId;
+
+            $.ajax({
+                url: '/clientes',
+                method: 'GET',
+                success: function(data) {
+                    var select = $(modalId).find('select[name="cliente_id"]');
+                    select.empty();
+                    select.append('<option value="">Selecione o Cliente</option>');
+                    data.forEach(function(cliente) {
+                        select.append(`<option value="${cliente.id}">${cliente.nome}</option>`);
+                    });
+
+                    var artigo = artigos.find(function(a) { return a.id === artigoId; });
+                    if (artigo && artigo.cliente_id) {
+                        select.val(artigo.cliente_id);
+                    }
+                },
+                error: function() {
+                    alert('Erro ao carregar clientes.');
+                }
+            });
+        });
+
     } else {
         tbody.append('<tr><td colspan="5" class="text-center">Nenhum artigo encontrado.</td></tr>');
     }
+}
+
+function initEditArtigoModals() {
+    $(document).on('click', '.artigoRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#editArtigoModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initTaxaSearch() {
@@ -1679,11 +2057,86 @@ function updateTaxaTable(taxas) {
                         </td>
                     </tr>
                 `;
+
+            var editModal = `
+                <div class="modal fade" id="editTaxaModal${taxa.id}" tabindex="-1" aria-labelledby="editTaxaModalLabel${taxa.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editTaxaModalLabel${taxa.id}">Editar Taxa</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form class="ajax-form formTabelaTaxa" id="editTaxaForm${taxa.id}" method="POST" action="/taxa/${taxa.id}">
+                                    <input type="hidden" name="_method" value="PUT">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+                                    <div class="mb-3">
+                                        <label for="editTaxaModalNome${taxa.id}" class="form-label">Nome</label>
+                                        <input id="editTaxaModalNome${taxa.id}" class="form-control" type="text" name="nome" value="${taxa.nome}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="editTaxaModalValor${taxa.id}" class="form-label">Valor</label>
+                                        <input id="editTaxaModalValor${taxa.id}" class="form-control" type="number" name="valor" min="0" step="0.01" value="${taxa.valor}">
+                                    </div>
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            var deleteModal = `
+                <div class="modal fade" id="deleteTaxaModal${taxa.id}" tabindex="-1" aria-labelledby="deleteTaxaModalLabel${taxa.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteTaxaModalLabel${taxa.id}">Excluir Taxa</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="text-danger">Tem certeza de que deseja excluir a taxa <strong>${taxa.nome}</strong>?</p>
+                                <form id="deleteTaxaForm${taxa.id}" method="POST" action="/taxa/${taxa.id}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTaxaForm${taxa.id}">Excluir</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('body').append(editModal);
+            $('body').append(deleteModal);
             tbody.append(taxaRow);
         });
+        initNoClickPropagation();
     } else {
         tbody.append('<tr><td colspan="4" class="text-center">Nenhuma taxa encontrada.</td></tr>');
     }
+}
+
+function initEditTaxaModals() {
+    $(document).on('click', '.taxaRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#editTaxaModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initDocumentoSearch() {
@@ -1729,28 +2182,55 @@ function updateDocumentoTable(documentos) {
 
     if (documentos.length > 0) {
         documentos.forEach(function(documento) {
+
             var documentoRow = `
-                    <tr class="clickable-row documentoRow" data-id="${documento.id}">
-                        <td class="align-middle text-center">${documento.numero}</td>
-                        <td class="align-middle text-center">${documento.data}</td>
-                        <td class="align-middle text-center">${documento.tipo_documento ? documento.tipo_documento.nome : 'Desconhecido'}</td>
-                        <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
-                        <td class="align-middle text-center">${documento.user ? documento.user.name : 'Desconhecido'}</td>
-                        <td class="align-middle text-center">${documento.estado}</td>
-                        <td class="text-center">
-                            <a href="/documento/pdf/${documento.id}" class="btn btn-secondary btn-sm no-click-propagation">
-                                Gerar PDF
-                            </a>
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal${documento.id}">
-                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                    Eliminar
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                `;
+                <tr class="clickable-row documentoRow" data-id="${documento.id}">
+                    <td class="align-middle text-center">${documento.numero}</td>
+                    <td class="align-middle text-center">${documento.data}</td>
+                    <td class="align-middle text-center">${documento.tipo_documento ? documento.tipo_documento.nome : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${documento.user ? documento.user.name : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${documento.estado}</td>
+                    <td class="text-center">
+                        <a href="/documento/${documento.id}/pdf" class="btn btn-secondary btn-sm no-click-propagation">
+                            Gerar PDF
+                        </a>
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteDocumentoModal${documento.id}">
+                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                Eliminar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            `;
             tbody.append(documentoRow);
+
+            var deleteModal = `
+                <div class="modal fade" id="deleteDocumentoModal${documento.id}" tabindex="-1" aria-labelledby="deleteDocumentoModalLabel${documento.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteDocumentoModalLabel${documento.id}">Confirmar eliminação</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Tem a certeza que deseja eliminar este documento?
+                            </div>
+                            <div class="modal-footer">
+                                <form id="deleteDocumentoForm${documento.id}" action="/documento/${documento.id}" method="POST">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="id" value="${documento.id}">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteDocumentoForm${documento.id}">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('body').append(deleteModal);
         });
+        initNoClickPropagation();
     } else {
         tbody.append('<tr><td colspan="7" class="text-center">Nenhum documento encontrado.</td></tr>');
     }
@@ -1789,26 +2269,125 @@ function updateUserTable(users) {
 
     if (users.length > 0) {
         users.forEach(function(user) {
+
+            var userContacto = user.contacto || "";
+            var userSalario = (user.salario != null) ? user.salario : "";
+
             var userRow = `
-                    <tr data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}" class="userRow" data-id="${user.id}">
-                        <td class="align-middle text-center">${user.name}</td>
-                        <td class="align-middle text-center">${user.email}</td>
-                        <td class="align-middle text-center">${user.contacto}</td>
-                        <td class="align-middle text-center">${user.salario}</td>
-                        <td class="align-middle">
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal${user.id}">
-                                <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
-                                    Eliminar
-                                </button>
-                            </a>
-                        </td>
-                    </tr>
-                `;
+                <tr data-bs-toggle="modal" data-bs-target="#editUserModal${user.id}" class="userRow" data-id="${user.id}">
+                    <td class="align-middle text-center">${user.name}</td>
+                    <td class="align-middle text-center">${user.email}</td>
+                    <td class="align-middle text-center">${userContacto}</td>
+                    <td class="align-middle text-center">${userSalario}</td>
+                    <td class="align-middle">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#deleteUserModal${user.id}">
+                            <button class="btn btn-danger btn-sm ms-2 no-click-propagation">
+                                Eliminar
+                            </button>
+                        </a>
+                    </td>
+                </tr>
+            `;
             tbody.append(userRow);
+
+            if (!$('#editUserModal' + user.id).length) {
+                var editModal = `
+                    <div class="modal fade" id="editUserModal${user.id}" tabindex="-1" aria-labelledby="editUserModalLabel${user.id}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="editUserModalLabel${user.id}">Editar Usuário</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form class="ajax-form formTabelaUser" method="POST" action="/register/${user.id}">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        <div class="mb-3">
+                                            <label for="editUserModalNome${user.id}" class="form-label">Nome</label>
+                                            <input id="editUserModalNome${user.id}" class="form-control" type="text" name="name" value="${user.name}" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="editUserModalEmail${user.id}" class="form-label">Email</label>
+                                            <input id="editUserModalEmail${user.id}" class="form-control" type="email" name="email" value="${user.email}" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editUserModalPassword${user.id}" class="form-label">Senha</label>
+                                                <input id="editUserModalPassword${user.id}" class="form-control" type="password" name="password">
+                                                <small class="form-text text-muted">Deixe em branco se não quiser alterar a senha.</small>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editUserModalPasswordConfirmation${user.id}" class="form-label">Confirmar Senha</label>
+                                                <input id="editUserModalPasswordConfirmation${user.id}" class="form-control" type="password" name="password_confirmation">
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editUserModalContacto${user.id}" class="form-label">Contacto</label>
+                                                <input id="editUserModalContacto${user.id}" class="form-control" type="text" name="contacto" value="${userContacto}">
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editUserModalSalario${user.id}" class="form-label">Salário</label>
+                                                <input id="editUserModalSalario${user.id}" class="form-control" type="number" min="0" step="0.01" name="salario" value="${userSalario}">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end mt-4">
+                                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-primary">Atualizar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('body').append(editModal);
+            }
+
+            if (!$('#deleteUserModal' + user.id).length) {
+                var deleteModal = `
+                    <div class="modal fade" id="deleteUserModal${user.id}" tabindex="-1" aria-labelledby="deleteUserModalLabel${user.id}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteUserModalLabel${user.id}">Excluir Usuário</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="text-danger">Tem certeza que deseja excluir o usuário ${user.name}?</p>
+                                    <form id="deleteUserForm${user.id}" method="POST" action="/user/${user.id}">
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <input type="hidden" name="id" value="${user.id}">
+                                        <div class="d-flex justify-content-end mt-4">
+                                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteUserForm${user.id}">Excluir</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('body').append(deleteModal);
+            }
         });
+        initNoClickPropagation();
     } else {
         tbody.append('<tr><td colspan="5" class="text-center">Nenhum usuário encontrado.</td></tr>');
     }
+}
+
+function initEditUserModals() {
+    $(document).on('click', '.userRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#editUserModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initEntregaSearch() {
@@ -1840,6 +2419,8 @@ function updateEntregaTable(documentos) {
     var tbody = $('#entregaTable tbody');
     tbody.empty();
 
+    var armazens = JSON.parse($('#armazem-options').html());
+
     if (documentos.length > 0) {
         documentos.forEach(function(documento) {
             var totalQuantidade = 0;
@@ -1848,18 +2429,103 @@ function updateEntregaTable(documentos) {
             });
 
             var entregaRow = `
-                    <tr data-bs-toggle="modal" data-bs-target="#rececaoModal${documento.id}" class="entregaRow" data-id="${documento.id}">
-                        <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
-                        <td class="align-middle text-center">${documento.numero}</td>
-                        <td class="align-middle text-center">${documento.previsao}</td>
-                        <td class="align-middle text-center">${totalQuantidade} Paletes</td>
-                    </tr>
-                `;
+                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal${documento.id}" class="entregaRow" data-id="${documento.id}">
+                    <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
+                    <td class="align-middle text-center">${documento.numero}</td>
+                    <td class="align-middle text-center">${documento.previsao}</td>
+                    <td class="align-middle text-center">${totalQuantidade} Paletes</td>
+                </tr>
+            `;
             tbody.append(entregaRow);
+
+            var modalContent = `
+    <div class="modal fade" id="rececaoModal${documento.id}" tabindex="-1" aria-labelledby="rececaoModalLabel${documento.id}" aria-hidden="true">
+        <div class="modal-dialog modal-lg rececao-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rececaoModalLabel${documento.id}">Verificação de Paletes para o Pedido ${documento.numero}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
+                    <form id="modalRececaoForm${documento.id}" action="/palete" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="documento_id" value="${documento.id}">
+                        <input type="hidden" name="cliente_id" value="${documento.cliente_id}">
+
+                        <div class="mb-3">
+                            <label for="observacao${documento.id}" class="form-label">Observação (opcional)</label>
+                            <input type="text" name="observacao" id="observacao${documento.id}" class="form-control" placeholder="Escreva aqui as suas observações">
+                        </div>
+
+                        <div class="scrollable-palete-area">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Tipo de Palete</th>
+                                        <th scope="col">Palete #</th>
+                                        <th scope="col">Localização</th>
+                                        <th scope="col">Armazém</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${documento.tipo_palete.map(function(tipoPalete) {
+                return Array.from({ length: tipoPalete.pivot.quantidade }, function(_, i) {
+                    var armazemOptions = armazens.map(function(armazem) {
+                        return `<option value="${armazem.id}">${armazem.nome}</option>`;
+                    }).join('');
+
+                    return `
+                                                <tr>
+                                                    <td>${tipoPalete.tipo}</td>
+                                                    <td>${i + 1}</td>
+                                                    <td>
+                                                        <input type="text" name="localizacao[${tipoPalete.id}][]" class="form-control" placeholder="Localização">
+                                                    </td>
+                                                    <td>
+                                                        <select name="armazem_id[${tipoPalete.id}][]" class="form-control armazem-select" data-tipo-palete-id="${tipoPalete.id}">
+                                                            ${armazemOptions}
+                                                        </select>
+                                                    </td>
+                                                    <input type="hidden" name="tipo_palete_id[${tipoPalete.id}]" value="${tipoPalete.id}">
+                                                </tr>
+                                            `;
+                }).join('');
+            }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Confirmar Verificação</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+`;
+
+            $('body').append(modalContent);
         });
+
     } else {
         tbody.append('<tr><td colspan="4" class="text-center">Nenhum Pedido de Entrega encontrado.</td></tr>');
     }
+}
+
+function initRececaoModals() {
+    $(document).on('click', '.entregaRow', function () {
+        var id = $(this).data('id');
+        var modal = $('#rececaoModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initRetiradaSearch() {
@@ -1887,20 +2553,22 @@ function initRetiradaSearch() {
     });
 }
 
-function updateRetiradaTable(documentos) {
+function updateRetiradaTable(data) {
     var tbody = $('#retiradaTable tbody');
-    tbody.empty();
+    tbody.empty(); // Limpa a tabela
 
-    if (documentos.length > 0) {
-        documentos.forEach(function(documento) {
-
+    if (data.documentos.length > 0) {
+        data.documentos.forEach(function (documento) {
             var paleteQuantidade = 0;
+
+            // Calcula a quantidade de paletes para o documento
             if (Array.isArray(documento.tipo_palete)) {
-                paleteQuantidade = documento.tipo_palete.reduce(function(acc, tipoPalete) {
-                    return acc + tipoPalete.pivot.quantidade;
+                paleteQuantidade = documento.tipo_palete.reduce(function (acc, tipoPalete) {
+                    return acc + (tipoPalete.pivot && tipoPalete.pivot.quantidade ? tipoPalete.pivot.quantidade : 0);
                 }, 0);
             }
 
+            // Cria a linha da tabela
             var documentRow = `
                 <tr data-bs-toggle="modal" data-bs-target="#retiradaModal${documento.id}" class="retiradaRow" data-documento-id="${documento.id}">
                     <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
@@ -1910,10 +2578,108 @@ function updateRetiradaTable(documentos) {
                 </tr>
             `;
             tbody.append(documentRow);
+
+            // Cria o modal com as paletes associadas ao documento
+            var tipoPaleteRows = '';
+            if (Array.isArray(documento.tipo_palete)) {
+                tipoPaleteRows = documento.tipo_palete.map(function (tipoPalete) {
+                    var paletesRows = '';
+
+                    if (data.paletesPorLinha[documento.id] && data.paletesPorLinha[documento.id][tipoPalete.id]) {
+                        paletesRows = data.paletesPorLinha[documento.id][tipoPalete.id].map(function (palete) {
+                            var artigoNome = data.artigos[palete.artigo_id] ? data.artigos[palete.artigo_id].nome : 'Desconhecido';
+                            var tipoPaleteTipo = data.tipo_paletes[palete.tipo_palete_id] ? data.tipo_paletes[palete.tipo_palete_id].tipo : 'Desconhecido';
+
+                            return `
+                                <tr>
+                                    <td>
+                                        <label class="custom-checkbox">
+                                            <input type="checkbox" name="paletes_selecionadas[]" value="${palete.id}"
+                                                data-tipo-palete-id="${palete.tipo_palete_id}"
+                                                data-artigo-id="${palete.artigo_id}"
+                                                data-armazem-id="${palete.armazem_id}"
+                                                data-localizacao="${palete.localizacao}">
+                                            <span class="checkbox-box"></span>
+                                        </label>
+                                    </td>
+                                    <td>${palete.localizacao}</td>
+                                    <td>${artigoNome}</td>
+                                    <td>${palete.data_entrada}</td>
+                                    <td>${tipoPaleteTipo}</td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+
+                    return `
+                        ${paletesRows}
+                    `;
+                }).join('');
+            }
+
+            var modalRetirada = `
+                <div class="modal fade" id="retiradaModal${documento.id}" tabindex="-1" aria-labelledby="retiradaModalLabel${documento.id}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="retiradaModalLabel${documento.id}">Detalhes de Retirada</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5>Documento ${documento.numero}</h5>
+                                <p>Cliente: ${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</p>
+                                <p>Previsão de Saída: ${documento.previsao}</p>
+
+                                <div class="alert alert-danger d-none error-messages-paletes" role="alert"></div>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Selecionar:</th>
+                                            <th>Localização:</th>
+                                            <th>Artigo:</th>
+                                            <th>Data de Entrada:</th>
+                                            <th>Tipo de Palete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${tipoPaleteRows}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="continuarGuiaTransporteBtn btn btn-primary"
+                                        data-documento-id="${documento.id}"
+                                        data-documento-numero="${documento.numero}"
+                                        data-documento-cliente-id="${documento.cliente_id}"
+                                        data-linha-observacao="${documento.observacao}"
+                                        data-linha-previsao="${documento.previsao}"
+                                        data-linha-taxa-id="${documento.taxa_id}"
+                                        data-documento-morada="${documento.morada}">
+                                    Confirmar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            $('body').append(modalRetirada);
         });
-    } else {
-        tbody.append('<tr><td colspan="5" class="text-center">Nenhum pedido encontrado.</td></tr>');
     }
+}
+
+function initRetiradaModals() {
+    $(document).on('click', '.retiradaRow', function () {
+        var id = $(this).data('documento-id');
+        var modal = $('#retiradaModal' + id);
+
+        if (modal.length) {
+            modal.modal('show');
+        } else {
+            console.log('Modal não encontrado para o ID:', id);
+        }
+    });
 }
 
 function initializeUnseenMessagesCounter() {

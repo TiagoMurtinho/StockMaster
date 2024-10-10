@@ -13,10 +13,7 @@ use App\Http\Controllers\{ArmazemController,
     TipoPaleteController,
     UserController};
 
-use App\Models\{
-    Taxa,
-    TipoPalete,
-};
+use App\Models\{ChMessage, Cliente, Taxa, TipoPalete};
 
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +55,10 @@ Route::middleware('custom')->group(function () {
         return response()->json(Taxa::all());
     });
 
+    Route::get('clientes', function() {
+        return response()->json(Cliente::all());
+    });
+
     Route::delete('/user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
 
     Route::get('/documento/faturacao/{clienteId}', [DocumentoController::class, 'faturacao']);
@@ -75,18 +76,14 @@ Route::middleware('custom')->group(function () {
     Route::get('/entrega/search', [PedidoEntregaController::class, 'search'])->name('entrega.search');
     Route::get('/retirada/search', [PedidoRetiradaController::class, 'search'])->name('retirada.search');
     Route::get('/unseen-messages', function () {
-        $user = auth()->user(); // Usuário logado
-
+        $user = auth()->user();
         if ($user) {
-            // Contar mensagens não lidas (campo 'seen' == 0)
-            $unseenCounter = \App\Models\ChMessage::where('to_id', $user->id)  // Verificar mensagens para o usuário logado
-            ->where('seen', 0)            // Verificar mensagens não lidas
+            $unseenCounter = ChMessage::where('to_id', $user->id)
+            ->where('seen', 0)
             ->count();
-
-            return response()->json(['unseenCounter' => $unseenCounter]); // Retornar o número de mensagens não lidas
+            return response()->json(['unseenCounter' => $unseenCounter]);
         }
-
-        return response()->json(['unseenCounter' => 0]); // Se não houver usuário, retornar 0
+        return response()->json(['unseenCounter' => 0]);
     });
 });
 
