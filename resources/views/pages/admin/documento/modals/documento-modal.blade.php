@@ -8,6 +8,9 @@
             <div class="modal-body">
 
                 <input type="hidden" class="modal-documento-id" />
+                <input type="hidden" class="form-control modal-documento-estado" />
+
+                <div class="alert alert-danger d-none error-messages" role="alert"></div>
 
                 <div class="mb-3">
                     <div class="form-group">
@@ -44,6 +47,66 @@
                             <select class="form-select modal-documento-valor" id="taxaSelect">
                                 <option value="">{{ __('documento.taxa_select') }}</option>
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="rececaoData">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-data-entrada">{{ __('documento.data_entrada') }}</label>
+                                <input type="datetime-local" class="form-control modal-documento-data-entrada" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="guiaTransporteData">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-matricula">{{ __('documento.matricula') }}</label>
+                                <input type="text" class="form-control modal-documento-matricula" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-morada">{{ __('documento.morada') }}</label>
+                                <input type="text" class="form-control modal-documento-morada" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-previsao-descarga">{{ __('documento.previsao_descarga') }}</label>
+                                <input type="datetime-local" class="form-control modal-documento-previsao-descarga" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-data-saida">{{ __('documento.data_saida') }}</label>
+                                <input type="datetime-local" class="form-control modal-documento-data-saida" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="faturacaoData">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-total">{{ __('documento.total') }}</label>
+                                <input type="text" class="form-control modal-documento-total" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modal-documento-extra">{{ __('documento.extra') }}</label>
+                                <input type="text" class="form-control modal-documento-extra" />
+                            </div>
                         </div>
                     </div>
                 </div>

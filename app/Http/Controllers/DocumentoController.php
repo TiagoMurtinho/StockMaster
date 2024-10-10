@@ -266,6 +266,13 @@ class DocumentoController extends Controller
                 'documento.observacao' => 'nullable|string|max:255',
                 'documento.previsao' => 'nullable|date',
                 'documento.taxa_id' => 'nullable|integer',
+                'documento.matricula' => 'nullable|string|max:255',
+                'documento.morada' => 'nullable|string|max:255',
+                'documento.data_entrada' => 'nullable|date',
+                'documento.data_saida' => 'nullable|date',
+                'documento.previsao_descarga' => 'nullable|date',
+                'documento.extra' => 'nullable|string|max:255',
+                'documento.total' => 'nullable|numeric',
                 'documento_tipo_palete' => 'required|array',
                 'documento_tipo_palete.*.documento_id' => 'required|integer',
                 'documento_tipo_palete.*.tipo_palete' => 'required|string',
@@ -291,23 +298,36 @@ class DocumentoController extends Controller
             ]);
         }
 
+        if ($documento->estado === 'terminado') {
+            return response()->json([
+                'success' => false,
+                'message' => 'O documento está marcado como "terminado" e não pode ser alterado.',
+                'errors' => [
+                    'estado_documento' => ['O documento está marcado como "terminado" e não pode ser alterado.']
+                ]
+            ], 400);
+        }
+
         $documento->numero = $data['documento']['numero'];
         $documento->data = $data['documento']['data'];
         $documento->observacao = $data['documento']['observacao'] ?? $documento->observacao;
         $documento->previsao = $data['documento']['previsao'] ?? $documento->previsao;
         $documento->taxa_id = $data['documento']['taxa_id'] ?? $documento->taxa_id;
+        $documento->matricula = $data['documento']['matricula'] ?? $documento->matricula;
+        $documento->morada = $data['documento']['morada'] ?? $documento->morada;
+        $documento->data_entrada = $data['documento']['data_entrada'] ?? $documento->data_entrada;
+        $documento->data_saida = $data['documento']['data_saida'] ?? $documento->data_saida;
+        $documento->previsao_descarga = $data['documento']['previsao_descarga'] ?? $documento->previsao_descarga;
+        $documento->extra = $data['documento']['extra'] ?? $documento->extra;
+        $documento->total = $data['documento']['total'] ?? $documento->total;
         $documento->user_id = $userId;
         $documento->save();
 
         foreach ($data['documento_tipo_palete'] as $linhaData) {
-
             if (isset($linhaData['id'])) {
-
                 if (isset($linhaData['deleted']) && $linhaData['deleted'] === true) {
                     DocumentoTipoPalete::where('id', $linhaData['id'])->delete();
-
                 } else {
-
                     $linhaTipoPalete = DocumentoTipoPalete::find($linhaData['id']);
                     if ($linhaTipoPalete) {
                         $linhaTipoPalete->quantidade = $linhaData['quantidade'];

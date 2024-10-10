@@ -862,7 +862,23 @@ function initClickableRows() {
                 success: function (data) {
                     if (data.success) {
                         populateModal(data);
+
+                        const tipoDocumentoId = data.documento.tipo_documento_id;
+
+                        document.getElementById('rececaoData').style.display = 'none';
+                        document.getElementById('guiaTransporteData').style.display = 'none';
+                        document.getElementById('faturacaoData').style.display = 'none';
+
+                        if (tipoDocumentoId === 2) {
+                            document.getElementById('rececaoData').style.display = 'block';
+                        } else if (tipoDocumentoId === 4) {
+                            document.getElementById('guiaTransporteData').style.display = 'block';
+                        } else if (tipoDocumentoId === 5) {
+                            document.getElementById('faturacaoData').style.display = 'block';
+                        }
+
                         $('#documentoModal').modal('show');
+                        console.log(data);
                     } else {
                         console.error('Erro ao carregar dados:', data.message);
                     }
@@ -888,14 +904,40 @@ window.artigos = [];
 
 function populateModal(data) {
     const clienteId = data.documento.cliente_id;
+    const estado = data.documento.estado;
 
+    // Atualizar campos do modal
     document.querySelector('.modal-documento-numero').value = data.documento.numero || '';
     document.querySelector('.modal-documento-data').value = data.documento.data || '';
     document.querySelector('.modal-documento-id').value = data.documento.id || '';
     document.querySelector('.modal-documento-observacao').value = data.documento.observacao || '';
     document.querySelector('.modal-documento-previsao').value = data.documento.previsao || '';
     document.querySelector('.modal-documento-valor').value = data.documento.taxa_id || '';
+    document.querySelector('.modal-documento-matricula').value = data.documento.matricula || '';
+    document.querySelector('.modal-documento-morada').value = data.documento.morada || '';
+    document.querySelector('.modal-documento-previsao-descarga').value = data.documento.previsao_descarga || '';
+    document.querySelector('.modal-documento-data-entrada').value = data.documento.data_entrada || '';
+    document.querySelector('.modal-documento-data-saida').value = data.documento.data_saida || '';
+    document.querySelector('.modal-documento-extra').value = data.documento.extra || '';
+    document.querySelector('.modal-documento-total').value = data.documento.total || '';
+    document.querySelector('.modal-documento-estado').value = data.documento.estado || '';
 
+    // Reavaliar o estado do documento
+    const modalContentInputs = document.querySelectorAll('.modal-content input, .modal-content textarea, .modal-content select');
+
+    // Habilitar todos os inputs antes de aplicar a condição
+    modalContentInputs.forEach(input => {
+        input.removeAttribute('disabled');
+    });
+
+    if (estado === 'terminado') {
+        // Desabilitar inputs se o estado for "terminado"
+        modalContentInputs.forEach(input => {
+            input.setAttribute('disabled', 'disabled');
+        });
+    }
+
+    // Carregar linhas e artigos
     if (data.linhas && data.linhas.length > 0) {
         const primeiraLinha = data.linhas[0];
 
@@ -940,7 +982,7 @@ function populateModal(data) {
         .then(response => response.json())
         .then(artigosResponse => {
             window.artigos = artigosResponse;
-            preencherLinhasModal(data.linhas, window.tiposPalete, window.artigos);
+            preencherLinhasModal(data.linhas, window.tiposPalete, window.artigos, estado === 'terminado');
         })
         .catch(error => {
             console.error('Erro ao buscar tipos de palete ou artigos:', error);
@@ -966,7 +1008,7 @@ function removePalete() {
     });
 }
 
-function preencherLinhasModal(linhas, tiposPalete, artigos) {
+function preencherLinhasModal(linhas, tiposPalete, artigos, isTerminado) {
     const linhaContainer = document.querySelector('.modal-linhas');
     linhaContainer.innerHTML = '';
 
@@ -1002,19 +1044,38 @@ function preencherLinhasModal(linhas, tiposPalete, artigos) {
                 <a type="button" class="remove-palete">
                     <i class="bi bi-trash"></i>
                 </a>
-                <input type="hidden" name="pivot_id[]" class="modal-linha-pivot-id" value="${linha.pivot_id || ''}" />
+                <input type="hidden" name="pivot_id[]" class="modal-linha-id" value="${linha.pivot_id || ''}" />
                 <input type="hidden" name="deleted[]" value="0" />
             </td>
         `;
 
         linhaContainer.appendChild(linhaElement);
+
+        if (isTerminado) {
+            const selects = linhaElement.querySelectorAll('select');
+            const inputs = linhaElement.querySelectorAll('input');
+            const removeButton = linhaElement.querySelector('.remove-palete');
+
+            selects.forEach(select => select.setAttribute('disabled', 'disabled'));
+            inputs.forEach(input => input.setAttribute('disabled', 'disabled'));
+            if (removeButton) {
+                removeButton.setAttribute('disabled', 'disabled');
+                removeButton.style.pointerEvents = 'none';
+            }
+        }
     });
 }
 
 function initPaleteRowEvents() {
     document.addEventListener('click', function(event) {
+        const isTerminado = document.querySelector('.modal-documento-estado').value === 'terminado';
+
         if (event.target && event.target.classList.contains('add-palete-row')) {
-            adicionarNovaLinha();
+            if (!isTerminado) {
+                adicionarNovaLinha();
+            } else {
+                console.log('O documento está terminado. Não é possível adicionar novas linhas.');
+            }
         } else if (event.target && event.target.closest('.remove-palete-row')) {
             const row = event.target.closest('tr.palete-row');
             if (row) {
@@ -1051,7 +1112,7 @@ function adicionarNovaLinha() {
                 </select>
             </td>
             <td class="col-md-1 d-flex align-items-end">
-                <a type="button" class="remove-palete">
+                <a type="button" class="remove-palete-row">
                     <i class="bi bi-trash"></i>
                 </a>
             </td>
@@ -1074,7 +1135,14 @@ function saveChanges() {
         data: document.querySelector('.modal-documento-data').value,
         observacao: document.querySelector('.modal-documento-observacao').value,
         previsao: document.querySelector('.modal-documento-previsao').value,
-        taxa_id: document.querySelector('.modal-documento-valor').value
+        taxa_id: document.querySelector('.modal-documento-valor').value,
+        matricula: document.querySelector('.modal-documento-matricula').value,
+        morada: document.querySelector('.modal-documento-morada').value,
+        data_entrada: document.querySelector('.modal-documento-data-entrada').value,
+        data_saida: document.querySelector('.modal-documento-data-saida').value,
+        previsao_descarga: document.querySelector('.modal-documento-previsao-descarga').value,
+        extra: document.querySelector('.modal-documento-extra').value,
+        total: document.querySelector('.modal-documento-total').value
     };
 
     const documento_tipo_palete = [];
@@ -1111,13 +1179,28 @@ function saveChanges() {
         success: function (response) {
             if (response.success) {
                 $('#documentoModal').modal('hide');
+                $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+
+                $('.mensagem-dinamica').show();
+
+                initDynamicAlert();
             } else {
                 console.error('Erro ao salvar dados:', response.message);
             }
         },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error('Erro ao salvar dados:', textStatus, errorThrown);
-            console.log('Response:', jqXHR.responseText);
+        error: function(xhr) {
+            var errors = xhr.responseJSON.errors;
+            var errorHtml = '<ul>';
+            for (var key in errors) {
+                if (errors.hasOwnProperty(key)) {
+
+                    errors[key].forEach(function(error) {
+                        errorHtml += '<li>' + error + '</li>';
+                    });
+                }
+            }
+            errorHtml += '</ul>';
+            $('.error-messages').html(errorHtml).removeClass('d-none');
         }
     });
 }
@@ -1194,7 +1277,6 @@ function initGuiaTransporteModalEvents() {
                     .then(response => {
                         if (!response.ok) {
                             return response.json().then(err => {
-                                // Exibir erros se existirem
                                 var errors = err.errors;
                                 var errorHtml = '<ul>';
                                 for (var key in errors) {
