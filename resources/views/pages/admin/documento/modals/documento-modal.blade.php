@@ -9,6 +9,7 @@
 
                 <input type="hidden" class="modal-documento-id" />
                 <input type="hidden" class="form-control modal-documento-estado" />
+                <input type="hidden" class="form-control modal-documento-tipo-documento" />
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
 
@@ -121,7 +122,7 @@
                         </tr>
                         </thead>
                         <tbody class="modal-linhas">
-
+                        <input type="hidden" name="pivot_id[]" class="modal-linha-id" value="${linha.id || ''}" />
                         </tbody>
                     </table>
                 </div>

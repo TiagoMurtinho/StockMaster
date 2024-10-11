@@ -12,6 +12,7 @@ class DocumentoTipoPalete extends Model
     protected $table = 'documento_tipo_palete';
 
     protected $fillable = [
+        'id',
         'documento_id',
         'tipo_palete_id',
         'artigo_id',

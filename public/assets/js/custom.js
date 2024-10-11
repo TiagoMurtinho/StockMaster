@@ -1012,6 +1012,7 @@ function populateModal(data) {
     }
 
     if (data.linhas && data.linhas.length > 0) {
+        console.log("Linhas recebidas:", data.linhas);
         const primeiraLinha = data.linhas[0];
 
         const linhaIdInput = document.querySelector('.modal-linha-id');
@@ -1194,6 +1195,36 @@ function adicionarNovaLinha() {
     linhaContainer.insertAdjacentHTML('beforeend', novaLinha);
 
 }
+
+function updateTableRow(documento) {
+
+    const $row = $(`.documentoRow[data-id="${documento.id}"]`);
+
+    if ($row.length === 0) {
+        console.error('Nenhuma linha encontrada com o ID:', documento.id);
+        return;
+    }
+
+    const fieldMap = {
+        '.numero-cell': documento.numero,
+        '.data-cell': documento.data,
+        '.observacao-cell': documento.observacao || '',
+        '.previsao-cell': documento.previsao || '',
+        '.taxa-cell': documento.taxa_id || '',
+        '.matricula-cell': documento.matricula || '',
+        '.morada-cell': documento.morada || '',
+        '.data-entrada-cell': documento.data_entrada || '',
+        '.data-saida-cell': documento.data_saida || '',
+        '.previsao-descarga-cell': documento.previsao_descarga || '',
+        '.total-cell': documento.total || ''
+    };
+
+    for (let fieldClass in fieldMap) {
+        const value = fieldMap[fieldClass];
+        $row.find(fieldClass).text(value);
+    }
+}
+
 function saveChanges() {
     const documentoId = document.querySelector('.modal-documento-id').value;
 
@@ -1231,7 +1262,7 @@ function saveChanges() {
     document.querySelectorAll('.modal-linhas tr').forEach(row => {
         const inputs = row.querySelectorAll('input, select, textarea');
 
-        const pivotIdField = row.querySelector('.modal-linha-pivot-id');
+        const pivotIdField = row.querySelector('.modal-linha-id');
         const pivotId = pivotIdField ? pivotIdField.value : null;
 
         const deletedInput = row.querySelector('input[name="deleted[]"]');
@@ -1259,12 +1290,15 @@ function saveChanges() {
         contentType: 'application/json',
         success: function (response) {
             if (response.success) {
+                console.log('Resposta recebida:', response);
                 $('#documentoModal').modal('hide');
                 $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
 
                 $('.mensagem-dinamica').show();
 
                 initDynamicAlert();
+
+                updateTableRow(response.documento);
             } else {
                 console.error('Erro ao salvar dados:', response.message);
             }
@@ -1332,7 +1366,6 @@ function initGuiaTransporteModalEvents() {
                 var $submitButtonText = $submitButton.find('.submit-btn-text');
                 var $submitLoader = $submitButton.find('.submit-btn-spinner');
 
-                // Exibe o spinner e desabilita o botão
                 $submitLoader.removeClass('d-none');
                 $submitButton.prop('disabled', true);
                 $submitButtonText.addClass('d-none');
@@ -1794,7 +1827,6 @@ function updateTipoPaleteTable(tipoPaletes) {
         tipoPaletes.forEach(function (tipoPalete) {
             var userName = tipoPalete.user ? tipoPalete.user.name : 'Desconhecido';
 
-            // Linha da tabela
             var tipoPaleteRow = `
                 <tr class="tipoPaleteRow" data-id="${tipoPalete.id}">
                     <td class="align-middle text-center">${tipoPalete.tipo}</td>
@@ -1870,7 +1902,6 @@ function updateTipoPaleteTable(tipoPaletes) {
                     </div>
                 </div>
             `;
-
 
             if ($('#deleteTipoPaleteModal' + tipoPalete.id).length === 0) {
                 $('body').append(deleteModal);
@@ -2684,12 +2715,12 @@ function updateEntregaTable(documentos) {
                                 </thead>
                                 <tbody>
                                     ${documento.tipo_palete.map(function(tipoPalete) {
-                return Array.from({ length: tipoPalete.pivot.quantidade }, function(_, i) {
-                    var armazemOptions = armazens.map(function(armazem) {
-                        return `<option value="${armazem.id}">${armazem.nome}</option>`;
-                    }).join('');
+                                        return Array.from({ length: tipoPalete.pivot.quantidade }, function(_, i) {
+                                        var armazemOptions = armazens.map(function(armazem) {
+                                        return `<option value="${armazem.id}">${armazem.nome}</option>`;
+                                    }).join('');
 
-                    return `
+                                        return `
                                                 <tr>
                                                     <td>${tipoPalete.tipo}</td>
                                                     <td>${i + 1}</td>
@@ -2704,8 +2735,8 @@ function updateEntregaTable(documentos) {
                                                     <input type="hidden" name="tipo_palete_id[${tipoPalete.id}]" value="${tipoPalete.id}">
                                                 </tr>
                                             `;
-                }).join('');
-            }).join('')}
+                                        }).join('');
+                                        }).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -2768,20 +2799,18 @@ function initRetiradaSearch() {
 
 function updateRetiradaTable(data) {
     var tbody = $('#retiradaTable tbody');
-    tbody.empty(); // Limpa a tabela
+    tbody.empty();
 
     if (data.documentos.length > 0) {
         data.documentos.forEach(function (documento) {
             var paleteQuantidade = 0;
 
-            // Calcula a quantidade de paletes para o documento
             if (Array.isArray(documento.tipo_palete)) {
                 paleteQuantidade = documento.tipo_palete.reduce(function (acc, tipoPalete) {
                     return acc + (tipoPalete.pivot && tipoPalete.pivot.quantidade ? tipoPalete.pivot.quantidade : 0);
                 }, 0);
             }
 
-            // Cria a linha da tabela
             var documentRow = `
                 <tr data-bs-toggle="modal" data-bs-target="#retiradaModal${documento.id}" class="retiradaRow" data-documento-id="${documento.id}">
                     <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
@@ -2792,7 +2821,6 @@ function updateRetiradaTable(data) {
             `;
             tbody.append(documentRow);
 
-            // Cria o modal com as paletes associadas ao documento
             var tipoPaleteRows = '';
             if (Array.isArray(documento.tipo_palete)) {
                 tipoPaleteRows = documento.tipo_palete.map(function (tipoPalete) {

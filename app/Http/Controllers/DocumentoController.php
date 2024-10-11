@@ -289,6 +289,8 @@ class DocumentoController extends Controller
             ], 400);
         }
 
+        Log::info('Dados recebidos para atualização do documento', $data);
+
         $documento = Documento::find($id);
 
         if (!$documento) {
@@ -346,9 +348,12 @@ class DocumentoController extends Controller
             }
         }
 
+        $documento->load('tipo_documento');
+
         return response()->json([
             'success' => true,
             'message' => 'Documento atualizado com sucesso!',
+            'documento' => $documento,
         ]);
     }
 

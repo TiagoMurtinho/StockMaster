@@ -30,12 +30,12 @@
                             @foreach($documentos as $documento)
 
                                 <tr class="clickable-row documentoRow" data-id="{{ $documento->id }}">
-                                    <td class="align-middle text-center">{{ $documento->numero }}</td>
-                                    <td class="align-middle text-center">{{ $documento->data }}</td>
-                                    <td class="align-middle text-center">{{ $documento->tipo_documento->nome}}</td>
-                                    <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
-                                    <td class="align-middle text-center">{{ $documento->user->name }}</td>
-                                    <td class="align-middle text-center">{{ $documento->estado }}</td>
+                                    <td class="align-middle text-center numero-cell">{{ $documento->numero }}</td>
+                                    <td class="align-middle text-center data-cell">{{ $documento->data }}</td>
+                                    <td class="align-middle text-center tipo-documento-cell">{{ $documento->tipo_documento->nome}}</td>
+                                    <td class="align-middle text-center cliente-cell">{{ $documento->cliente->nome }}</td>
+                                    <td class="align-middle text-center user-cell">{{ $documento->user->name }}</td>
+                                    <td class="align-middle text-center estado-cell">{{ $documento->estado }}</td>
                                     <td class="text-center">
                                         <a href="{{ route('documento.pdf', $documento->id) }}"
                                            class="btn btn-secondary btn-sm ms-2 no-click-propagation">
