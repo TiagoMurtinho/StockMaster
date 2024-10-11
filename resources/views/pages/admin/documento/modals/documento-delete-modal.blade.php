@@ -14,7 +14,10 @@
                     @method('DELETE')
                     <input type="hidden" name="id" value="{{ $documento->id }}" id="documentoId{{ $documento->id }}">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('documento.cancelar')}}</button>
-                    <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteDocumentoForm{{ $documento->id }}">{{__('documento.delete')}}</button>
+                    <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteDocumentoForm{{ $documento->id }}">
+                        <span class="ajax-delete-btn-text"> {{__('documento.delete')}}</span>
+                        <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </form>
             </div>
         </div>

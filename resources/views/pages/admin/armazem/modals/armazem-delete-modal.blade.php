@@ -13,7 +13,10 @@
                     <input type="hidden" name="id" value="{{ $armazem->id }}" id="armazemId{{ $armazem->id }}">
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('armazem.cancel') }}</button>
-                        <button type="button" class="btn btn-danger ajax-delete-btn" data-form-id="deleteArmazemForm{{ $armazem->id }}">{{ __('armazem.delete') }}</button>
+                        <button type="button" class="btn btn-danger ajax-delete-btn" data-form-id="deleteArmazemForm{{ $armazem->id }}">
+                            <span class="ajax-delete-btn-text">{{ __('armazem.delete') }}</span>
+                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </div>

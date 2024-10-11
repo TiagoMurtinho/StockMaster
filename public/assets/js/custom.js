@@ -1506,6 +1506,13 @@ function initDeleteHandler() {
 
         event.preventDefault();
 
+        var $button = $(this);
+        var $spinner = $button.find('.ajax-delete-btn-spinner');
+        var $buttonText = $button.find('.ajax-delete-btn-text');
+
+        $spinner.removeClass('d-none');
+        $buttonText.addClass('d-none');
+
         var formData = new FormData($form[0]);
 
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
@@ -1537,6 +1544,10 @@ function initDeleteHandler() {
             },
             error: function(xhr) {
                 console.log('Error:', xhr.responseText);
+            },
+            complete: function() {
+                $spinner.addClass('d-none');
+                $buttonText.removeClass('d-none');
             }
         });
     });
@@ -1763,7 +1774,10 @@ function updateClienteTable(clientes) {
                                     <input type="hidden" name="id" id="clienteId${cliente.id}">
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteClienteForm${cliente.id}">Eliminar</button>
+                                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteClienteForm${cliente.id}">
+                                            <span class="ajax-delete-btn-text">Eliminar</span>
+                                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -1894,7 +1908,10 @@ function updateTipoPaleteTable(tipoPaletes) {
                                      <input type="hidden" name="id" id="tipoPaleteId${tipoPalete.id}" value="${tipoPalete.id}">
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                         <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTipoPaleteForm${tipoPalete.id}">Excluir</button>
+                                         <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTipoPaleteForm${tipoPalete.id}">
+                                            <span class="ajax-delete-btn-text">Eliminar</span>
+                                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                         </button>
                                     </div>
                                 </form>
                             </div>
@@ -2036,7 +2053,10 @@ function updateArmazemTable(armazens) {
                                     <input type="hidden" name="id" value="${armazem.id}" id="armazemId${armazem.id}">
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="button" class="btn btn-danger ajax-delete-btn" data-form-id="deleteArmazemForm${armazem.id}">Excluir</button>
+                                        <button type="button" class="btn btn-danger ajax-delete-btn" data-form-id="deleteArmazemForm${armazem.id}">
+                                            <span class="ajax-delete-btn-text">Eliminar</span>
+                                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -2186,7 +2206,10 @@ function updateArtigoTable(artigos) {
                                     <input type="hidden" name="_method" value="DELETE">
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-danger">Excluir</button>
+                                        <button type="submit" class="btn btn-danger" data-form-id="deleteArtigoForm${artigo.id}">
+                                            <span class="ajax-delete-btn-text">Eliminar</span>
+                                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -2342,7 +2365,10 @@ function updateTaxaTable(taxas) {
 
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTaxaForm${taxa.id}">Excluir</button>
+                                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTaxaForm${taxa.id}">
+                                            <span class="ajax-delete-btn-text">Eliminar</span>
+                                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -2456,7 +2482,10 @@ function updateDocumentoTable(documentos) {
                                     <input type="hidden" name="_method" value="DELETE">
                                     <input type="hidden" name="id" value="${documento.id}">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                    <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteDocumentoForm${documento.id}">Eliminar</button>
+                                    <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteDocumentoForm${documento.id}">
+                                        <span class="ajax-delete-btn-text">Eliminar</span>
+                                        <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -2598,7 +2627,10 @@ function updateUserTable(users) {
                                         <input type="hidden" name="id" value="${user.id}">
                                         <div class="d-flex justify-content-end mt-4">
                                             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteUserForm${user.id}">Excluir</button>
+                                            <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteUserForm${user.id}">
+                                                <span class="ajax-delete-btn-text">Eliminar</span>
+                                                <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            </button>
                                         </div>
                                     </form>
                                 </div>

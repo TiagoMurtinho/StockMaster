@@ -13,7 +13,10 @@
                     <input type="hidden" name="id" id="taxaId{{ $taxa->id }}">
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('taxa.cancel') }}</button>
-                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTaxaForm{{ $taxa->id }}">{{ __('taxa.delete') }}</button>
+                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTaxaForm{{ $taxa->id }}">
+                            <span class="ajax-delete-btn-text">{{ __('taxa.delete') }}</span>
+                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </div>

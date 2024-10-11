@@ -13,7 +13,10 @@
                     <input type="hidden" name="id" id="tipoPaleteId{{ $tipoPalete->id }}">
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('tipo-palete.cancel') }}</button>
-                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTipoPaleteForm{{ $tipoPalete->id }}">{{ __('tipo-palete.delete') }}</button>
+                        <button type="submit" class="btn btn-danger ajax-delete-btn" data-form-id="deleteTipoPaleteForm{{ $tipoPalete->id }}">
+                            <span class="ajax-delete-btn-text">{{ __('tipo-palete.delete') }}</span>
+                            <span class="ajax-delete-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </div>
