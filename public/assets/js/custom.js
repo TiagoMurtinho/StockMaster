@@ -328,15 +328,12 @@ function initFormHandling() {
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
         $('.error-messages').html('').addClass('d-none');
 
-        // Selecionar o botão e o loader dentro do formulário
         var $submitButton = $form.find('.submit-btn');
         var $submitButtonText = $form.find('.submit-btn-text');
         var $submitLoader = $form.find('.submit-btn-spinner');
 
-        // Exibir o loader (bola giratória)
         $submitLoader.removeClass('d-none');
 
-        // Desabilitar o botão e esconder o texto
         $submitButton.prop('disabled', true);
         $submitButtonText.addClass('d-none');
 
@@ -364,7 +361,7 @@ function initFormHandling() {
                 }
                 $submitButton.prop('disabled', false);
                 $submitButtonText.removeClass('d-none');
-                $submitLoader.addClass('d-none'); // Esconder o loader
+                $submitLoader.addClass('d-none');
             },
             error: function(xhr) {
                 var errors = xhr.responseJSON.errors;
@@ -474,8 +471,18 @@ function initContinuarModal() {
 function criarDocumentoSemLinha() {
 
     var extraValue = $('#extra').val();
-
     var totalValue = $('#total').val();
+
+    var $form = $('#documentoForm');
+    $('.error-messages').html('').addClass('d-none');
+    var $submitButton = $form.find('.submit-btn');
+    var $submitButtonText = $form.find('.submit-btn-text');
+    var $submitLoader = $form.find('.submit-btn-spinner');
+
+    $submitLoader.removeClass('d-none');
+
+    $submitButton.prop('disabled', true);
+    $submitButtonText.addClass('d-none');
 
     $.ajax({
         url: '/documento',
@@ -492,6 +499,17 @@ function criarDocumentoSemLinha() {
         success: function(response) {
             atualizarTabelaDocumentos(response.documento);
             window.location.href = '/documento/' + response.documento_id + '/pdf';
+
+            $('.mensagem-dinamica').html('<div class="alert alert-success alert-dismissible fade show" role="alert">' + response.message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+            $('.mensagem-dinamica').show();
+
+            initDynamicAlert();
+
+            $form[0].reset();
+
+            $submitButton.prop('disabled', false);
+            $submitButtonText.removeClass('d-none');
+            $submitLoader.addClass('d-none');
         },
         error: function(xhr) {
 
@@ -507,6 +525,10 @@ function criarDocumentoSemLinha() {
             }
             errorHtml += '</ul>';
             $('.error-messages').html(errorHtml).removeClass('d-none');
+
+            $submitButton.prop('disabled', false);
+            $submitButtonText.removeClass('d-none');
+            $submitLoader.addClass('d-none');
         }
     });
 }
@@ -634,6 +656,18 @@ function initRemovePaleteRow() {
 
 function initCriarDocumentoBtn() {
     $('#criarDocumentoBtn').off('click').on('click', function() {
+
+        var $form = $('#documentoForm');
+        var $form2 = $('#linhaDocumentoForm');
+
+        var $submitButton = $('#criarDocumentoBtn');
+        var $submitButtonText = $submitButton.find('.submit-btn-text');
+        var $submitLoader = $submitButton.find('.submit-btn-spinner');
+
+        $submitLoader.removeClass('d-none');
+        $submitButton.prop('disabled', true);
+        $submitButtonText.addClass('d-none');
+
         var tipoPaleteIds = [];
         var quantidades = [];
         var artigoIds = [];
@@ -677,6 +711,13 @@ function initCriarDocumentoBtn() {
                 $('.mensagem-dinamica').show();
 
                 initDynamicAlert();
+
+                $form[0].reset();
+                $form2[0].reset();
+
+                $submitButton.prop('disabled', false);
+                $submitButtonText.removeClass('d-none');
+                $submitLoader.addClass('d-none');
             },
             error: function(xhr) {
                 if (xhr.status === 422) {
@@ -715,6 +756,9 @@ function initCriarDocumentoBtn() {
                         $('.error-messages').html(errorHtml).removeClass('d-none');
                     }
                 }
+                $submitButton.prop('disabled', false);
+                $submitButtonText.removeClass('d-none');
+                $submitLoader.addClass('d-none');
             }
         });
     });
@@ -799,6 +843,14 @@ function initRececaoFormHandler() {
 
         formData += '&_token=' + csrfToken;
 
+        var $submitButton = $form.find('.submit-btn');
+        var $submitButtonText = $submitButton.find('.submit-btn-text');
+        var $submitLoader = $submitButton.find('.submit-btn-spinner');
+
+        $submitLoader.removeClass('d-none');
+        $submitButton.prop('disabled', true);
+        $submitButtonText.addClass('d-none');
+
         $.ajax({
             type: 'POST',
             url: $form.attr('action'),
@@ -830,6 +882,11 @@ function initRececaoFormHandler() {
                 }
                 errorHtml += '</ul>';
                 $('.error-messages').html(errorHtml).removeClass('d-none');
+            },
+            complete: function() {
+                $submitButton.prop('disabled', false);
+                $submitButtonText.removeClass('d-none');
+                $submitLoader.addClass('d-none');
             }
         });
     });
@@ -926,7 +983,6 @@ function populateModal(data) {
     const clienteId = data.documento.cliente_id;
     const estado = data.documento.estado;
 
-    // Atualizar campos do modal
     document.querySelector('.modal-documento-numero').value = data.documento.numero || '';
     document.querySelector('.modal-documento-data').value = data.documento.data || '';
     document.querySelector('.modal-documento-id').value = data.documento.id || '';
@@ -1141,6 +1197,14 @@ function adicionarNovaLinha() {
 function saveChanges() {
     const documentoId = document.querySelector('.modal-documento-id').value;
 
+    const $submitButton = $('.submit-btn');
+    const $submitButtonText = $submitButton.find('.submit-btn-text');
+    const $submitLoader = $submitButton.find('.submit-btn-spinner');
+
+    $submitLoader.removeClass('d-none');
+    $submitButton.prop('disabled', true);
+    $submitButtonText.addClass('d-none');
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -1204,6 +1268,10 @@ function saveChanges() {
             } else {
                 console.error('Erro ao salvar dados:', response.message);
             }
+
+            $submitButton.prop('disabled', false);
+            $submitButtonText.removeClass('d-none');
+            $submitLoader.addClass('d-none');
         },
         error: function(xhr) {
             var errors = xhr.responseJSON.errors;
@@ -1218,6 +1286,10 @@ function saveChanges() {
             }
             errorHtml += '</ul>';
             $('.error-messages').html(errorHtml).removeClass('d-none');
+
+            $submitButton.prop('disabled', false);
+            $submitButtonText.removeClass('d-none');
+            $submitLoader.addClass('d-none');
         }
     });
 }
@@ -1255,6 +1327,16 @@ function initGuiaTransporteModalEvents() {
             const guiaForm = document.getElementById('documentoForm');
 
             document.getElementById('confirmarEnvio').onclick = function() {
+
+                var $submitButton = $('#confirmarEnvio');
+                var $submitButtonText = $submitButton.find('.submit-btn-text');
+                var $submitLoader = $submitButton.find('.submit-btn-spinner');
+
+                // Exibe o spinner e desabilita o botão
+                $submitLoader.removeClass('d-none');
+                $submitButton.prop('disabled', true);
+                $submitButtonText.addClass('d-none');
+
                 let paletesDados = [];
                 const selectedPaletes = document.querySelectorAll('input[name="paletes_selecionadas[]"]:checked');
 
@@ -1276,6 +1358,10 @@ function initGuiaTransporteModalEvents() {
 
                     var errorHtml = '<ul><li>Por favor, selecione pelo menos uma palete.</li></ul>';
                     $('.error-messages-paletes').html(errorHtml).removeClass('d-none');
+
+                    $submitButton.prop('disabled', false);
+                    $submitButtonText.removeClass('d-none');
+                    $submitLoader.addClass('d-none');
 
                     return;
                 }
@@ -1369,6 +1455,10 @@ function initGuiaTransporteModalEvents() {
                     })
                     .catch(error => {
                         console.error('Erro:', error);
+
+                        $submitButton.prop('disabled', false);
+                        $submitButtonText.removeClass('d-none');
+                        $submitLoader.addClass('d-none');
                     });
             };
         }

@@ -52,7 +52,10 @@
                                 </table>
                             </div>
                             <div class="text-end">
-                                <button type="submit" class="btn btn-primary">{{ __('Confirmar Verificação') }}</button>
+                                <button type="submit" class="btn btn-primary submit-btn">
+                                    <span class="submit-btn-text">{{ __('Confirmar Verificação') }}</span>
+                                    <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                </button>
                             </div>
                         </form>
                     </div>

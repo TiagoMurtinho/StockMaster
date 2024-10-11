@@ -40,7 +40,10 @@
                     </div>
                     <div>
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.cancelar') }}</button>
-                        <button type="button" class="btn btn-primary" id="confirmarEnvio">{{ __('retirada.confirmar') }}</button>
+                        <button type="button" class="btn btn-primary submit-btn" id="confirmarEnvio">
+                            <span class="submit-btn-text">{{ __('retirada.confirmar') }}</span>
+                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </div>
             </form>

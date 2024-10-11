@@ -134,7 +134,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('documento.fechar') }}</button>
-                <button type="button" class="btn btn-primary" onclick="saveChanges()">{{ __('documento.salvar') }}</button>
+                <button type="button" class="btn btn-primary submit-btn" onclick="saveChanges()">
+                    <span class="submit-btn-text">{{ __('documento.salvar') }}</span>
+                    <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
             </div>
         </div>
     </div>

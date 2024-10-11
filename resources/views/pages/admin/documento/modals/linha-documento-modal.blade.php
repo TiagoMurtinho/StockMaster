@@ -55,7 +55,10 @@
                 </div>
                 <div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{__('documento.cancelar')}}</button>
-                    <button type="button" id="criarDocumentoBtn" class="btn btn-primary">{{__('documento.continuar')}}</button>
+                    <button type="button" id="criarDocumentoBtn" class="btn btn-primary submit-btn">
+                        <span class="submit-btn-text">{{__('documento.continuar')}}</span>
+                        <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </div>
         </div>
