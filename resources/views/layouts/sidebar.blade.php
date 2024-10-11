@@ -6,7 +6,7 @@
             <span>{{__('sidebar.home')}}</span>
         </a>
     </li>
-
+    @role('Admin')
     <li class="nav-item">
         <a id="adminDropdown" class="nav-link collapsed{{ request()->routeIs('tipo-palete.index') || request()->routeIs('cliente.index') || request()->routeIs('armazem.index') || request()->routeIs('artigo.index') || request()->routeIs('taxa.index') || request()->routeIs('documento.index') || request()->routeIs('user.index') ? ' active' : '' }}" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">
             <i class="bi bi-menu-button-wide"></i><span>{{__('sidebar.admin')}}</span><i class="bi bi-chevron-down ms-auto"></i>
@@ -49,7 +49,7 @@
             </li>
         </ul>
     </li>
-
+    @endrole
     <li class="nav-item">
         <a id="pedidosDropdown" class="nav-link collapsed{{ request()->routeIs('pedido-entrega.index') || request()->routeIs('pedido-retirada.index') ? ' active' : '' }}" data-bs-target="#pedidos-nav" data-bs-toggle="collapse" href="#">
             <i class="bi bi-menu-button-wide"></i><span>{{__('sidebar.orders')}}</span><i class="bi bi-chevron-down ms-auto"></i>

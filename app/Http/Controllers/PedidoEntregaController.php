@@ -89,6 +89,7 @@ class PedidoEntregaController extends Controller
         }
 
         $documentos = Documento::where('tipo_documento_id', 1)
+            ->where('estado', 'pendente')
         ->where(function($query) use ($search) {
             $query->whereHas('cliente', function($q) use ($search) {
                 $q->where('nome', 'like', '%' . $search . '%');

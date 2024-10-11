@@ -28,7 +28,10 @@
 
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('taxa.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ __('taxa.add') }}</button>
+                        <button type="submit" class="btn btn-primary submit-btn">
+                            <span class="submit-btn-text">{{ __('taxa.add') }}</span>
+                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </div>

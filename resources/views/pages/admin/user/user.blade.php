@@ -43,6 +43,7 @@
                                     </td>
                                 </tr>
                                 @include('pages.admin.user.modals.user-delete-modal')
+                                @include('pages.admin.user.modals.user-edit-modal')
                             @endforeach
                             </tbody>
                         </table>
@@ -54,6 +55,6 @@
 
 
     @include('pages.admin.user.modals.user-add-modal')
-    @include('pages.admin.user.modals.user-edit-modal')
+
 
 @endsection

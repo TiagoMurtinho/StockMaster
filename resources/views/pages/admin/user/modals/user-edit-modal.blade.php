@@ -18,43 +18,46 @@
                     @method('PUT')
 
                     <div class="mb-3">
-                        <label for="editUserModalNome" class="form-label">{{ __('user.add_nome') }}</label>
-                        <input id="editUserModalNome" class="form-control" type="text" name="nome" value="{{ $user->nome }}" required>
+                        <label for="editUserModalNome{{ $user->id }}" class="form-label">{{ __('user.add_nome') }}</label>
+                        <input id="editUserModalNome{{ $user->id }}" class="form-control" type="text" name="name" value="{{ $user->name }}" required>
                     </div>
 
                     <div class="mb-3">
-                        <label for="editUserModalEmail" class="form-label">{{ __('user.add_email') }}</label>
-                        <input id="editUserModalEmail" class="form-control" type="email" name="email" value="{{ $user->email }}" required>
+                        <label for="editUserModalEmail{{ $user->id }}" class="form-label">{{ __('user.add_email') }}</label>
+                        <input id="editUserModalEmail{{ $user->id }}" class="form-control" type="email" name="email" value="{{ $user->email }}" required>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalPassword" class="form-label">{{ __('user.add_password') }}</label>
-                            <input id="editUserModalPassword" class="form-control" type="password" name="password">
+                            <label for="editUserModalPassword{{ $user->id }}" class="form-label">{{ __('user.add_password') }}</label>
+                            <input id="editUserModalPassword{{ $user->id }}" class="form-control" type="password" name="password">
                             <small class="form-text text-muted">Deixe em branco se não quiser alterar a senha.</small>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalPasswordConfirmation" class="form-label">{{ __('user.confirm_password') }}</label>
-                            <input id="editUserModalPasswordConfirmation" class="form-control" type="password" name="password_confirmation">
+                            <label for="editUserModalPasswordConfirmation{{ $user->id }}" class="form-label">{{ __('user.confirm_password') }}</label>
+                            <input id="editUserModalPasswordConfirmation{{ $user->id }}" class="form-control" type="password" name="password_confirmation">
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalContacto" class="form-label">{{ __('user.add_contacto') }}</label>
-                            <input id="editUserModalContacto" class="form-control" type="text" name="contacto" value="{{ $user->contacto }}">
+                            <label for="editUserModalContacto{{ $user->id }}" class="form-label">{{ __('user.add_contacto') }}</label>
+                            <input id="editUserModalContacto{{ $user->id }}" class="form-control" type="text" name="contacto" value="{{ $user->contacto }}">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="editUserModalSalario" class="form-label">{{ __('user.add_salario') }}</label>
-                            <input id="editUserModalSalario" class="form-control" type="number" min="0" step="0.01" name="salario" value="{{ $user->salario }}">
+                            <label for="editUserModalSalario{{ $user->id }}" class="form-label">{{ __('user.add_salario') }}</label>
+                            <input id="editUserModalSalario{{ $user->id }}" class="form-control" type="number" min="0" step="0.01" name="salario" value="{{ $user->salario }}">
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">
                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">{{ __('user.cancel') }}</button>
-                        <button type="submit" class="btn btn-primary">{{ __('user.update') }}</button>
+                        <button type="submit" class="btn btn-primary submit-btn">
+                            <span class="submit-btn-text">{{ __('user.update') }}</span>
+                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
                     </div>
                 </form>
             </div>

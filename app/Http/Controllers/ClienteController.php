@@ -60,7 +60,7 @@ class ClienteController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tipo de palete criado com sucesso!',
+            'message' => 'Cliente criado com sucesso!',
             'data' => $cliente
         ]);
     }
@@ -112,7 +112,7 @@ class ClienteController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tipo de palete criado com sucesso!',
+            'message' => 'Cliente alterado com sucesso!',
             'data' => $cliente
         ]);
     }

@@ -7,6 +7,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Faker\Factory as Faker;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -17,17 +18,19 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        DB::table('users')->insert([
-            'name' => 'teste',
-            'email' => 'teste@gmail.com',
+        $user = User::create([
+            'name' => 'teste2',
+            'email' => 'teste2@gmail.com',
             'contacto' => '123456789',
             'salario' => 3000,
             'password' => bcrypt('12345678'),
-            'created_at' => now(),
-            'updated_at' => now(),
         ]);
 
-        for ($i = 0; $i < 50; $i++) {
+        $role = Role::firstOrCreate(['name' => 'Admin']);
+
+        $user->assignRole($role);
+
+       /* for ($i = 0; $i < 50; $i++) {
             DB::table('users')->insert([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
@@ -37,6 +40,6 @@ class UserSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
-        }
+        }*/
     }
 }

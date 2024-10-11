@@ -328,6 +328,19 @@ function initFormHandling() {
         formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
         $('.error-messages').html('').addClass('d-none');
 
+        // Selecionar o botão e o loader dentro do formulário
+        var $submitButton = $form.find('.submit-btn');
+        var $submitButtonText = $form.find('.submit-btn-text');
+        var $submitLoader = $form.find('.submit-btn-spinner');
+
+        // Exibir o loader (bola giratória)
+        $submitLoader.removeClass('d-none');
+
+        // Desabilitar o botão e esconder o texto
+        $submitButton.prop('disabled', true);
+        $submitButtonText.addClass('d-none');
+
+
         $.ajax({
             url: $form.attr('action'),
             type: 'POST',
@@ -346,10 +359,14 @@ function initFormHandling() {
                     $('.mensagem-dinamica').show();
 
                     initDynamicAlert();
+
+                    $form[0].reset();
                 }
+                $submitButton.prop('disabled', false);
+                $submitButtonText.removeClass('d-none');
+                $submitLoader.addClass('d-none'); // Esconder o loader
             },
             error: function(xhr) {
-
                 var errors = xhr.responseJSON.errors;
                 var errorHtml = '<ul>';
                 for (var key in errors) {
@@ -361,6 +378,10 @@ function initFormHandling() {
                 }
                 errorHtml += '</ul>';
                 $('.error-messages').html(errorHtml).removeClass('d-none');
+
+                $submitButton.prop('disabled', false);
+                $submitButtonText.removeClass('d-none');
+                $submitLoader.addClass('d-none');
             }
         });
     });
@@ -767,17 +788,16 @@ function fillArmazemSelects() {
 }
 
 function initRececaoFormHandler() {
-    // Atualizamos o seletor para buscar formulários dinâmicos
+
     $(document).on('submit', 'form[id^="modalRececaoForm"]', function(e) {
         e.preventDefault();
 
         var $form = $(this);
-        var formData = $form.serialize();  // Serializa os dados do formulário
+        var formData = $form.serialize();
         var documentoIdAntigo = $form.find('input[name="documento_id"]').val();
-        var csrfToken = $('meta[name="csrf-token"]').attr('content');  // Pega o CSRF token da meta tag
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-        // Adiciona o CSRF token aos dados do formulário
-        formData += '&_token=' + csrfToken;  // Concatena o CSRF token aos dados já serializados
+        formData += '&_token=' + csrfToken;
 
         $.ajax({
             type: 'POST',
@@ -922,22 +942,19 @@ function populateModal(data) {
     document.querySelector('.modal-documento-total').value = data.documento.total || '';
     document.querySelector('.modal-documento-estado').value = data.documento.estado || '';
 
-    // Reavaliar o estado do documento
     const modalContentInputs = document.querySelectorAll('.modal-content input, .modal-content textarea, .modal-content select');
 
-    // Habilitar todos os inputs antes de aplicar a condição
     modalContentInputs.forEach(input => {
         input.removeAttribute('disabled');
     });
 
     if (estado === 'terminado') {
-        // Desabilitar inputs se o estado for "terminado"
+
         modalContentInputs.forEach(input => {
             input.setAttribute('disabled', 'disabled');
         });
     }
 
-    // Carregar linhas e artigos
     if (data.linhas && data.linhas.length > 0) {
         const primeiraLinha = data.linhas[0];
 
@@ -1596,7 +1613,10 @@ function updateClienteTable(clientes) {
 
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                        <button type="submit" class="btn btn-primary submit-btn">
+                                            <span class="submit-btn-text">Salvar</span>
+                                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -1725,7 +1745,10 @@ function updateTipoPaleteTable(tipoPaletes) {
                                     </div>
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                         <button type="submit" class="btn btn-primary submit-btn">
+                                            <span class="submit-btn-text">Salvar</span>
+                                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -1865,7 +1888,10 @@ function updateArmazemTable(armazens) {
                                     </div>
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                         <button type="submit" class="btn btn-primary submit-btn">
+                                            <span class="submit-btn-text">Salvar</span>
+                                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -2012,7 +2038,10 @@ function updateArtigoTable(artigos) {
 
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                         <button type="submit" class="btn btn-primary submit-btn">
+                                            <span class="submit-btn-text">Salvar</span>
+                                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -2164,7 +2193,10 @@ function updateTaxaTable(taxas) {
 
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary">Salvar</button>
+                                        <button type="submit" class="btn btn-primary submit-btn">
+                                            <span class="submit-btn-text">Salvar</span>
+                                            <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -2415,7 +2447,10 @@ function updateUserTable(users) {
                                         </div>
                                         <div class="d-flex justify-content-end mt-4">
                                             <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
-                                            <button type="submit" class="btn btn-primary">Atualizar</button>
+                                            <button type="submit" class="btn btn-primary submit-btn">
+                                                <span class="submit-btn-text">Salvar</span>
+                                                <span class="submit-btn-spinner spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -2473,6 +2508,7 @@ function initEditUserModals() {
 }
 
 function initEntregaSearch() {
+    var currentRequestId = 0;
     $('#entregaSearch').on('input', function() {
         var searchQuery = $(this).val();
 
@@ -2481,6 +2517,9 @@ function initEntregaSearch() {
             return;
         }
 
+        currentRequestId++;
+        var requestId = currentRequestId;
+
         $.ajax({
             url: '/entrega/search',
             method: 'GET',
@@ -2488,7 +2527,9 @@ function initEntregaSearch() {
                 query: searchQuery
             },
             success: function(response) {
-                updateEntregaTable(response);
+                if (requestId === currentRequestId) {
+                    updateEntregaTable(response);
+                }
             },
             error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de entregas: ', error);
