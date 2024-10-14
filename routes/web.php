@@ -45,6 +45,7 @@ Route::middleware('custom')->group(function () {
     Route::get('/artigos/{clienteId}', [DocumentoController::class, 'getArtigosPorCliente']);
     Route::get('/documento/{id}', [DocumentoController::class, 'show'])->name('documento.show');
     Route::put('/documento/{id}', [DocumentoController::class, 'update']);
+    Route::get('/documento/{id}/tipos-palete', [DocumentoController::class, 'getTiposPalete']);
     Route::post('/paletes/retirar', [PaleteController::class, 'retirar'])->name('paletes.retirar');
 
     Route::get('tipo-paletes', function() {

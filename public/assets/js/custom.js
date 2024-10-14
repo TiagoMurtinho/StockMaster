@@ -40,6 +40,8 @@ $(document).ready(function() {
         initEditUserModals();
         initRececaoModals();
         initRetiradaModals();
+        initRececaoModal();
+        initArtigoModals();
 
         if (!captureInitialized) {
             captureId();
@@ -857,7 +859,7 @@ function initRececaoFormHandler() {
             data: formData,
             success: function(response) {
                 if (response.success) {
-                    $('#rececaoModal' + documentoIdAntigo).modal('hide');
+                    $('#rececaoModal').modal('hide');
                     removeRow(`tr[data-id="${documentoIdAntigo}"]`);
 
                     generateRececaoPDF(response.documento_id, response.paletes_criadas);
@@ -1142,7 +1144,9 @@ function preencherLinhasModal(linhas, tiposPalete, artigos, isTerminado) {
 
 function initPaleteRowEvents() {
     document.addEventListener('click', function(event) {
-        const isTerminado = document.querySelector('.modal-documento-estado').value === 'terminado';
+
+        const estadoElemento = document.querySelector('.modal-documento-estado');
+        const isTerminado = estadoElemento ? estadoElemento.value === 'terminado' : false;
 
         if (event.target && event.target.classList.contains('add-palete-row')) {
             if (!isTerminado) {
@@ -1659,11 +1663,28 @@ function loadNotifications() {
 }
 
 function initializeClientSearch() {
+    $('#clienteSearch').on('keydown', function(event) {
+
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#clienteSearch').on('input', function() {
         var searchQuery = $(this).val();
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -1809,11 +1830,27 @@ function initEditClienteModals() {
 }
 function initTipoPaleteSearch() {
 
-    $('#tipoPaleteSearch').on('input', function () {
+    $('#tipoPaleteSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
+    $('#tipoPaleteSearch').on('input', function() {
         var searchQuery = $(this).val();
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -1823,10 +1860,10 @@ function initTipoPaleteSearch() {
             data: {
                 query: searchQuery
             },
-            success: function (response) {
+            success: function(response) {
                 updateTipoPaleteTable(response);
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de tipos de paletes: ', error);
             }
         });
@@ -1947,11 +1984,28 @@ function initEditTipoPaleteModals() {
 }
 
 function initArmazemSearch() {
+
+    $('#armazemSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#armazemSearch').on('input', function() {
         var searchQuery = $(this).val();
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -1961,10 +2015,10 @@ function initArmazemSearch() {
             data: {
                 query: searchQuery
             },
-            success: function (response) {
+            success: function(response) {
                 updateArmazemTable(response);
             },
-            error: function (xhr, status, error) {
+            error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de armazéns: ', error);
             }
         });
@@ -2091,6 +2145,16 @@ function initEditArmazemModals() {
 function initArtigoSearch() {
     var currentRequestId = 0;
 
+    $('#artigoSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#artigoSearch').on('input', function() {
         var searchQuery = $(this).val();
 
@@ -2099,6 +2163,12 @@ function initArtigoSearch() {
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -2268,11 +2338,28 @@ function initEditArtigoModals() {
 }
 
 function initTaxaSearch() {
+
+    $('#taxaSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#taxaSearch').on('input', function() {
         var searchQuery = $(this).val();
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -2403,11 +2490,27 @@ function initEditTaxaModals() {
 function initDocumentoSearch() {
     var currentRequestId = 0;
 
+    $('#documentoSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#documentoSearch').on('input', function() {
         var searchQuery = $(this).val();
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -2503,6 +2606,18 @@ function updateDocumentoTable(documentos) {
 }
 
 function initUserSearch() {
+    var currentRequestId = 0;
+
+    $('#userSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#userSearch').on('input', function() {
         var searchQuery = $(this).val();
 
@@ -2511,14 +2626,26 @@ function initUserSearch() {
             return;
         }
 
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
+            return;
+        }
+
+        currentRequestId++;
+        var requestId = currentRequestId;
+
         $.ajax({
             url: '/users/search',
             method: 'GET',
             data: {
                 query: searchQuery
             },
+            cache: false,
             success: function(response) {
-                updateUserTable(response);
+                if (requestId === currentRequestId) {
+                    updateUserTable(response);
+                }
             },
             error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de usuários: ', error);
@@ -2662,11 +2789,28 @@ function initEditUserModals() {
 
 function initEntregaSearch() {
     var currentRequestId = 0;
+
+    $('#entregaSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#entregaSearch').on('input', function() {
         var searchQuery = $(this).val();
 
         if (searchQuery.trim() === "") {
             location.reload();
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
             return;
         }
 
@@ -2705,7 +2849,7 @@ function updateEntregaTable(documentos) {
             });
 
             var entregaRow = `
-                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal${documento.id}" class="entregaRow" data-id="${documento.id}">
+                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal" class="entregaRow" data-id="${documento.id}" data-cliente-id="${documento.cliente_id}" data-documento-numero="${documento.numero}">
                     <td class="align-middle text-center">${documento.cliente ? documento.cliente.nome : 'Desconhecido'}</td>
                     <td class="align-middle text-center">${documento.numero}</td>
                     <td class="align-middle text-center">${documento.previsao}</td>
@@ -2713,79 +2857,7 @@ function updateEntregaTable(documentos) {
                 </tr>
             `;
             tbody.append(entregaRow);
-
-            var modalContent = `
-    <div class="modal fade" id="rececaoModal${documento.id}" tabindex="-1" aria-labelledby="rececaoModalLabel${documento.id}" aria-hidden="true">
-        <div class="modal-dialog modal-lg rececao-modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rececaoModalLabel${documento.id}">Verificação de Paletes para o Pedido ${documento.numero}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-danger d-none error-messages" role="alert"></div>
-
-                    <form id="modalRececaoForm${documento.id}" action="/palete" method="POST">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="documento_id" value="${documento.id}">
-                        <input type="hidden" name="cliente_id" value="${documento.cliente_id}">
-
-                        <div class="mb-3">
-                            <label for="observacao${documento.id}" class="form-label">Observação (opcional)</label>
-                            <input type="text" name="observacao" id="observacao${documento.id}" class="form-control" placeholder="Escreva aqui as suas observações">
-                        </div>
-
-                        <div class="scrollable-palete-area">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Tipo de Palete</th>
-                                        <th scope="col">Palete #</th>
-                                        <th scope="col">Localização</th>
-                                        <th scope="col">Armazém</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${documento.tipo_palete.map(function(tipoPalete) {
-                                        return Array.from({ length: tipoPalete.pivot.quantidade }, function(_, i) {
-                                        var armazemOptions = armazens.map(function(armazem) {
-                                        return `<option value="${armazem.id}">${armazem.nome}</option>`;
-                                    }).join('');
-
-                                        return `
-                                                <tr>
-                                                    <td>${tipoPalete.tipo}</td>
-                                                    <td>${i + 1}</td>
-                                                    <td>
-                                                        <input type="text" name="localizacao[${tipoPalete.id}][]" class="form-control" placeholder="Localização">
-                                                    </td>
-                                                    <td>
-                                                        <select name="armazem_id[${tipoPalete.id}][]" class="form-control armazem-select" data-tipo-palete-id="${tipoPalete.id}">
-                                                            ${armazemOptions}
-                                                        </select>
-                                                    </td>
-                                                    <input type="hidden" name="tipo_palete_id[${tipoPalete.id}]" value="${tipoPalete.id}">
-                                                </tr>
-                                            `;
-                                        }).join('');
-                                        }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">Confirmar Verificação</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-`;
-
-            $('body').append(modalContent);
         });
-
     } else {
         tbody.append('<tr><td colspan="4" class="text-center">Nenhum Pedido de Entrega encontrado.</td></tr>');
     }
@@ -2793,18 +2865,26 @@ function updateEntregaTable(documentos) {
 
 function initRececaoModals() {
     $(document).on('click', '.entregaRow', function () {
-        var id = $(this).data('id');
-        var modal = $('#rececaoModal' + id);
 
-        if (modal.length) {
-            modal.modal('show');
-        } else {
-            console.log('Modal não encontrado para o ID:', id);
-        }
+        var modal = $('#rececaoModal');
+
+        modal.modal('show');
     });
 }
 
 function initRetiradaSearch() {
+    var currentRequestId = 0;
+
+    $('#retiradaSearch').on('keydown', function(event) {
+        if (event.key === 'Enter' ||
+            event.key === 'Control' ||
+            event.key === 'Shift' ||
+            event.key === 'Escape') {
+            event.preventDefault();
+            return;
+        }
+    });
+
     $('#retiradaSearch').on('input', function() {
         var searchQuery = $(this).val();
 
@@ -2813,6 +2893,15 @@ function initRetiradaSearch() {
             return;
         }
 
+        if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
+            alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
+            $(this).val('');
+            return;
+        }
+
+        currentRequestId++;
+        var requestId = currentRequestId;
+
         $.ajax({
             url: '/retirada/search',
             method: 'GET',
@@ -2820,7 +2909,9 @@ function initRetiradaSearch() {
                 query: searchQuery
             },
             success: function(response) {
-                updateRetiradaTable(response);
+                if (requestId === currentRequestId) {
+                    updateRetiradaTable(response);
+                }
             },
             error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de retiradas: ', error);
@@ -2981,5 +3072,97 @@ function initializeUnseenMessagesCounter() {
     setInterval(checkUnseenMessages, 5000);
 
     window.onload = checkUnseenMessages;
+}
+
+function initRececaoModal() {
+    $('#rececaoModal').on('show.bs.modal', function(event) {
+        var row = $(event.relatedTarget);
+        var documentoId = row.data('id');
+        var clienteId = row.data('cliente-id');
+        var documentoNumero = row.data('documento-numero');
+
+        $(this).find('.modal-title').text('Verificação de Paletes para o Pedido ' + documentoNumero);
+
+        $('#documento_id').val(documentoId);
+        $('#cliente_id').val(clienteId);
+
+        $('#rececao-body').empty();
+
+        $.ajax({
+            url: '/documento/' + documentoId + '/tipos-palete',
+            method: 'GET',
+            success: function(response) {
+
+                response.forEach(function(tipoPalete) {
+
+                    var quantidade = tipoPalete.pivot.quantidade;
+
+                    for (var i = 1; i <= quantidade; i++) {
+                        $('#rececao-body').append(`
+                                <tr>
+                                    <td>${tipoPalete.tipo}</td>
+                                    <td>${i}</td>
+                                    <td><input type="text" name="localizacao[${tipoPalete.id}][]" class="form-control" placeholder="Localização"></td>
+                                    <td>
+                                        <select name="armazem_id[${tipoPalete.id}][]" class="form-control armazem-select" data-tipo-palete-id="${tipoPalete.id}">
+                                            <!-- Opções de armazém serão carregadas aqui -->
+                                        </select>
+                                    </td>
+                                    <input type="hidden" name="tipo_palete_id[${tipoPalete.id}]" value="${tipoPalete.id}">
+                                </tr>
+                            `);
+                    }
+                });
+                fillArmazemSelects();
+            },
+            error: function(xhr, status, error) {
+                console.log('Erro ao carregar tipos de palete:', error);
+            }
+        });
+    });
+}
+
+function initArtigoModals() {
+    $('#addArtigoModal').on('show.bs.modal', function() {
+        let select = $('#addArtigoModalCliente');
+        select.empty();
+        select.append('<option value="">Selecione o cliente</option>');
+
+        $.ajax({
+            url: '/clientes',
+            method: 'GET',
+            success: function(data) {
+                data.forEach(cliente => {
+                    select.append(`<option value="${cliente.id}">${cliente.nome}</option>`);
+                });
+            },
+            error: function() {
+                alert('Erro ao carregar os clientes.');
+            }
+        });
+    });
+
+    $('[id^="editArtigoModal"]').on('show.bs.modal', function() {
+        let modalId = $(this).attr('id');
+        let artigoId = modalId.replace('editArtigoModal', '');
+        let select = $(`#editArtigoModalCliente${artigoId}`);
+        select.empty();
+        select.append('<option value="">Selecione o cliente</option>');
+        let clienteId = $(this).data('cliente-id');
+
+        $.ajax({
+            url: '/clientes',
+            method: 'GET',
+            success: function(data) {
+                data.forEach(cliente => {
+
+                    select.append(`<option value="${cliente.id}" ${cliente.id == clienteId ? 'selected' : ''}>${cliente.nome}</option>`);
+                });
+            },
+            error: function() {
+                alert('Erro ao carregar os clientes.');
+            }
+        });
+    });
 }
 

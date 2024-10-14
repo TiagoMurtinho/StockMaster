@@ -88,6 +88,10 @@ class PedidoEntregaController extends Controller
             return redirect()->route('pedido-entrega.index');
         }
 
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
+        }
+
         $documentos = Documento::where('tipo_documento_id', 1)
             ->where('estado', 'pendente')
         ->where(function($query) use ($search) {

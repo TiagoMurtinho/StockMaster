@@ -22,7 +22,7 @@
                             </thead>
                             <tbody>
                             @foreach($documentos as $documento)
-                                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal{{ $documento->id }}" class="entregaRow" data-id="{{ $documento->id }}">
+                                <tr data-bs-toggle="modal" data-bs-target="#rececaoModal" class="entregaRow" data-id="{{ $documento->id }}" data-cliente-id="{{ $documento->cliente_id }}" data-documento-numero="{{ $documento->numero }}">
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">

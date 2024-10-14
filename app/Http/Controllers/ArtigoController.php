@@ -16,10 +16,9 @@ class ArtigoController extends Controller
      */
     public function index()
     {
-        $clientes = Cliente::all();
         $users = User::all();
-        $artigos = Artigo::with('user', 'cliente')->paginate(10);
-        return view('pages.admin.artigo.artigo', compact('artigos', 'users', 'clientes'));
+        $artigos = Artigo::with('user')->paginate(10);
+        return view('pages.admin.artigo.artigo', compact('artigos', 'users'));
     }
 
     /**
@@ -36,8 +35,8 @@ class ArtigoController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:100',
-            'referencia' => 'required|string|max:45',
+            'nome' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'referencia' => ['required', 'string', 'max:45', 'regex:/^[A-Z0-9]*$/'],
             'cliente_id' => 'required|exists:cliente,id'
         ]);
 
@@ -85,8 +84,8 @@ class ArtigoController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:100',
-            'referencia' => 'required|string|max:45',
+            'nome' => ['required', 'string', 'max:100', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'referencia' => ['required', 'string', 'max:45', 'regex:/^[A-Z0-9]*$/'],
             'cliente_id' => 'required|exists:cliente,id'
         ]);
 
@@ -142,6 +141,10 @@ class ArtigoController extends Controller
 
         if (empty($search)) {
             return redirect()->route('artigo.index');
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
         }
 
         $artigos = Artigo::where('nome', 'like', '%' . $search . '%')

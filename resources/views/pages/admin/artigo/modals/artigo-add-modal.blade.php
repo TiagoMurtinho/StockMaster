@@ -29,9 +29,7 @@
                     <div class="mb-3">
                         <label for="addArtigoModalCliente" class="form-label">{{ __('artigo.add_cliente') }}</label>
                         <select name="cliente_id" id="addArtigoModalCliente" class="form-select form-select-sm">
-                            @foreach($clientes as $cliente)
-                                <option value="{{ $cliente->id }}">{{ $cliente->nome }}</option>
-                            @endforeach
+                            <option value="">{{ __('artigo.select_cliente') }}</option> <!-- Placeholder -->
                         </select>
                     </div>
 

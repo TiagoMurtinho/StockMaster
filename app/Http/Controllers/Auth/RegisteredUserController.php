@@ -29,11 +29,11 @@ class RegisteredUserController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:45'],
+            'name' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'contacto' => ['nullable', 'string', 'max:45'],
-            'salario' => ['nullable', 'numeric'],
+            'contacto' => ['nullable', 'string', 'max:45', 'regex:/^\+?[0-9]*$/'],
+            'salario' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $user = User::create([
@@ -57,11 +57,11 @@ class RegisteredUserController extends Controller
     {
 
         $request->validate([
-            'name' => ['required', 'string', 'max:45'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.",email,$id"],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'contacto' => ['nullable', 'string', 'max:45'],
-            'salario' => ['nullable', 'numeric'],
+            'name' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'contacto' => ['nullable', 'string', 'max:45', 'regex:/^\+?[0-9]*$/'],
+            'salario' => ['nullable', 'numeric', 'min:0'],
         ]);
 
         $user = User::findOrFail($id);

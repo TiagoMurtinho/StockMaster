@@ -34,7 +34,7 @@ class TaxaController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:45',
+            'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'valor' => 'required|numeric',
         ]);
 
@@ -81,7 +81,7 @@ class TaxaController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:45',
+            'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'valor' => 'required|numeric',
         ]);
 
@@ -143,6 +143,10 @@ class TaxaController extends Controller
 
         if (empty($search)) {
             return redirect()->route('taxa.index');
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
         }
 
         $taxas = Taxa::where('nome', 'like', '%' . $search . '%')

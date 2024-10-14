@@ -36,9 +36,9 @@ class ClienteController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:45',
-            'morada' => 'required|string|max:255',
-            'codigo_postal' => 'required|string|max:8',
+            'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'morada' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'codigo_postal' => ['required', 'string', 'max:8', 'regex:/^[0-9]{4}-[0-9]{3}$/'],
             'nif' => 'required|numeric',
         ]);
 
@@ -87,9 +87,9 @@ class ClienteController extends Controller
     public function update(Request $request, string $id)
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:45',
-            'morada' => 'required|string|max:255',
-            'codigo_postal' => 'required|string|max:8',
+            'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'morada' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'codigo_postal' => ['required', 'string', 'max:8', 'regex:/^[0-9]{4}-[0-9]{3}$/'],
             'nif' => 'required|numeric',
         ]);
 
@@ -146,6 +146,10 @@ class ClienteController extends Controller
 
         if (empty($search)) {
             return redirect()->route('cliente.index');
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
         }
 
         $clientes = Cliente::with('user')

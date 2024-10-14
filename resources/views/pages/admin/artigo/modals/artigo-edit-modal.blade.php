@@ -1,5 +1,5 @@
 @foreach($artigos as $artigo)
-    <div class="modal fade" id="editArtigoModal{{ $artigo->id }}" tabindex="-1" aria-labelledby="editArtigoModalLabel{{ $artigo->id }}" aria-hidden="true">
+    <div class="modal fade" id="editArtigoModal{{ $artigo->id }}" tabindex="-1" aria-labelledby="editArtigoModalLabel{{ $artigo->id }}" aria-hidden="true" data-cliente-id="{{ $artigo->cliente_id }}">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -30,15 +30,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="editArtigoModalCliente" class="form-label">{{ __('artigo.add_cliente') }}</label>
-                            <select name="cliente_id" id="editArtigoModalCliente" class="form-select form-select-sm">
-                                @foreach($clientes as $cliente)
-                                    <option value="{{ $cliente->id }}"
-                                        {{ $cliente->id == $artigo->cliente_id ? 'selected' : '' }}>
-                                        {{ $cliente->nome }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="editArtigoModalCliente{{ $artigo->id }}" class="form-label">Cliente</label>
+                            <select name="cliente_id" id="editArtigoModalCliente{{ $artigo->id }}" class="form-select form-select"></select>
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">

@@ -36,7 +36,7 @@ class TipoPaleteController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'tipo' => 'required|string|max:45',
+            'tipo' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'valor' => 'required|numeric',
         ]);
 
@@ -84,7 +84,7 @@ class TipoPaleteController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            'tipo' => 'required|string|max:45',
+            'tipo' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'valor' => 'required|numeric',
         ]);
 
@@ -147,6 +147,10 @@ class TipoPaleteController extends Controller
 
         if (empty($search)) {
             return redirect()->route('tipo-palete.index');
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
         }
 
         $tipoPaletes = TipoPalete::where('tipo', 'like', '%' . $search . '%')

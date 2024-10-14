@@ -27,7 +27,6 @@ class PedidoRetiradaController extends Controller
             ->where('tipo_documento_id', 3)
             ->where('estado', 'pendente')
             ->whereDate('previsao', today())
-            ->orderBy('data_entrada', 'asc')
             ->paginate(10);
 
         $artigoIds = collect();
@@ -217,6 +216,10 @@ class PedidoRetiradaController extends Controller
             return redirect()->route('pedido-retirada.index');
         }
 
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
+        }
+
         $documentos = Documento::where('tipo_documento_id', 3)
             ->where('estado', 'pendente')
             ->whereDate('previsao', $today)
@@ -227,12 +230,10 @@ class PedidoRetiradaController extends Controller
                     });
             })
             ->with(['cliente', 'tipo_palete' => function ($query) {
-                // Carregar os campos da tabela pivot
                 $query->withPivot('quantidade', 'artigo_id', 'armazem_id', 'localizacao');
             }])
             ->get();
 
-        // Mesma lógica de agregação dos artigos e tipo de palete
         $artigoIds = collect();
         $tipoPaleteIds = collect();
 
@@ -250,7 +251,6 @@ class PedidoRetiradaController extends Controller
             ->orderBy('data_entrada')
             ->get();
 
-        // Mesma lógica de agrupamento de paletes por linha
         $paletesPorLinha = [];
 
         foreach ($documentos as $documento) {
@@ -280,7 +280,6 @@ class PedidoRetiradaController extends Controller
         }
 
         if ($request->ajax()) {
-            // Retornar os documentos e os dados relacionados
             return response()->json([
                 'documentos' => $documentos,
                 'artigos' => $artigos,

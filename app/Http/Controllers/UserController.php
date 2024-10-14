@@ -87,6 +87,10 @@ class UserController extends Controller
             return redirect()->route('user.index');
         }
 
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
+        }
+
         $users = User::where('name', 'like', '%' . $search . '%')
             ->get();
 

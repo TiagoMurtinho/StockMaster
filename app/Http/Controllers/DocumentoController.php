@@ -22,6 +22,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class DocumentoController extends Controller
 {
@@ -37,6 +38,15 @@ class DocumentoController extends Controller
         $tipoPaletes = TipoPalete::all();
         $taxas = Taxa::all();
         return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'taxas'));
+    }
+
+    public function getTiposPalete($id)
+    {
+        // Obtém o documento e carrega os tipos de palete associados
+        $documento = Documento::with('tipo_palete')->findOrFail($id);
+
+        // Retorna os tipos de palete
+        return response()->json($documento->tipo_palete);
     }
 
 
@@ -60,18 +70,18 @@ class DocumentoController extends Controller
         try {
 
             $rules = [
-                'documento.numero' => 'required|numeric',
-                'documento.matricula' => 'nullable|string|max:45',
-                'documento.morada' => 'nullable|string|max:255',
-                'documento.total' => 'nullable|numeric',
-                'documento.observacao' => 'nullable|string|max:255',
-                'documento.extra' => 'nullable|numeric',
+                'documento.numero' => 'required|numeric|min:0',
+                'documento.matricula' => ['nullable', 'string', 'max:45', 'regex:/^[A-Z0-9]{2}-[A-Z0-9]{2}-[A-Z0-9]{2}$/'],
+                'documento.morada' =>  ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ,]*$/'],
+                'documento.total' => 'nullable|numeric|min:0',
+                'documento.observacao' =>  ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 .,]*$/'],
+                'documento.extra' => 'nullable|numeric|min:0',
                 'documento.tipo_documento_id' => 'required|exists:tipo_documento,id',
                 'documento.cliente_id' => 'required|exists:cliente,id',
             ];
 
             if ($request->input('documento.tipo_documento_id') != 5) {
-                $rules['documento.previsao'] = 'required|date';
+                $rules['documento.previsao'] = 'required|date|after_or_equal:today';
                 $rules['documento.taxa_id'] = 'required|integer|exists:taxa,id';
                 $rules['linhas'] = 'required|array';
                 $rules['linhas.*.tipo_palete_id'] = 'required|integer|exists:tipo_palete,id';
@@ -261,31 +271,31 @@ class DocumentoController extends Controller
         try {
             $data = $request->validate([
                 'documento' => 'required|array',
-                'documento.numero' => 'required|string',
+                'documento.numero' => 'required|numeric|min:0',
                 'documento.data' => 'required|date',
-                'documento.observacao' => 'nullable|string|max:255',
-                'documento.previsao' => 'nullable|date',
-                'documento.taxa_id' => 'nullable|integer',
-                'documento.matricula' => 'nullable|string|max:255',
-                'documento.morada' => 'nullable|string|max:255',
+                'documento.observacao' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 .,]*$/'],
+                'documento.previsao' => 'required|date',
+                'documento.taxa_id' => 'required|integer|exists:taxa,id',
+                'documento.matricula' => ['nullable', 'string', 'max:45', 'regex:/^[A-Z0-9]{2}-[A-Z0-9]{2}-[A-Z0-9]{2}$/'],
+                'documento.morada' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]*$/'],
                 'documento.data_entrada' => 'nullable|date',
                 'documento.data_saida' => 'nullable|date',
                 'documento.previsao_descarga' => 'nullable|date',
-                'documento.extra' => 'nullable|string|max:255',
-                'documento.total' => 'nullable|numeric',
+                'documento.extra' => 'nullable|numeric|min:0',
+                'documento.total' => 'nullable|numeric|min:0',
                 'documento_tipo_palete' => 'required|array',
                 'documento_tipo_palete.*.documento_id' => 'required|integer',
-                'documento_tipo_palete.*.tipo_palete' => 'required|string',
-                'documento_tipo_palete.*.quantidade' => 'required|integer',
-                'documento_tipo_palete.*.artigo' => 'required|string',
+                'documento_tipo_palete.*.tipo_palete' => 'required|integer',
+                'documento_tipo_palete.*.quantidade' => 'required|integer|min:1',
+                'documento_tipo_palete.*.artigo' => 'required|integer|exists:artigo,id',
                 'documento_tipo_palete.*.deleted' => 'boolean',
                 'documento_tipo_palete.*.id' => 'nullable|integer',
             ]);
-        } catch (\Exception $e) {
+        } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Dados inválidos.',
-                'errors' => $e->errors()
+                'errors' => $e->validator->errors()
             ], 400);
         }
 
@@ -482,6 +492,10 @@ class DocumentoController extends Controller
 
         if (empty($search)) {
             return redirect()->route('documento.index');
+        }
+
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
         }
 
         $documentos = Documento::where('numero', 'like', '%' . $search . '%')

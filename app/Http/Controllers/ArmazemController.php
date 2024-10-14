@@ -39,7 +39,7 @@ class ArmazemController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:45',
+            'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'capacidade' => 'required|numeric',
             'tipo_palete_id' => 'required|exists:tipo_palete,id'
         ]);
@@ -88,7 +88,7 @@ class ArmazemController extends Controller
     public function update(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'nome' => 'required|string|max:45',
+            'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
             'capacidade' => 'required|numeric',
             'tipo_palete_id' => 'required|exists:tipo_palete,id'
         ]);
@@ -147,6 +147,10 @@ class ArmazemController extends Controller
             return redirect()->route('armazem.index');
         }
 
+        if (!preg_match('/^[a-zA-Z0-9\s]*$/', $search)) {
+            return response()->json(['error' => 'Pesquisa inválida. Apenas letras, números e espaços são permitidos.'], 400);
+        }
+
         $armazens = Armazem::where('nome', 'like', '%' . $search . '%')
             ->orWhereHas('tipo_palete', function ($query) use ($search) {
                 $query->where('tipo', 'like', '%' . $search . '%');
@@ -155,7 +159,7 @@ class ArmazemController extends Controller
             ->get();
 
         if ($request->ajax()) {
-        return response()->json($armazens);
+            return response()->json($armazens);
         }
 
         return view('pages.admin.armazem.armazem', compact('armazens'));
