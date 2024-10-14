@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('retirada.retirada') }}</h5>
-                    <input type="text" id="retiradaSearch" class="form-control ms-3" placeholder="Pesquisar por numero ou cliente" style="width: 280px;">
+                    <input type="text" id="retiradaSearch" class="form-control ms-3 searchQuerys" placeholder="Pesquisar por numero ou cliente" style="width: 280px;">
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

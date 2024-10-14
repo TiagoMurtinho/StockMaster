@@ -1680,7 +1680,7 @@ function initializeClientSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -1711,6 +1711,7 @@ function initializeClientSearch() {
             },
             success: function(response) {
                 updateClienteTable(response);
+                hidePaginationIfNecessary();
             },
             error: function(xhr, status, error) {
                 console.log('Erro ao realizar a pesquisa:', error);
@@ -1864,7 +1865,7 @@ function initTipoPaleteSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -1894,6 +1895,7 @@ function initTipoPaleteSearch() {
             },
             success: function(response) {
                 updateTipoPaleteTable(response);
+                hidePaginationIfNecessary();
             },
             error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de tipos de paletes: ', error);
@@ -2036,7 +2038,7 @@ function initArmazemSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -2066,6 +2068,7 @@ function initArmazemSearch() {
             },
             success: function(response) {
                 updateArmazemTable(response);
+                hidePaginationIfNecessary();
             },
             error: function(xhr, status, error) {
                 console.log('Erro na pesquisa de armazéns: ', error);
@@ -2213,7 +2216,7 @@ function initArtigoSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -2248,6 +2251,7 @@ function initArtigoSearch() {
             success: function(response) {
                 if (requestId === currentRequestId) {
                     updateArtigoTable(response);
+                    hidePaginationIfNecessary();
                 }
             },
             error: function(xhr, status, error) {
@@ -2430,7 +2434,7 @@ function initTaxaSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -2460,6 +2464,7 @@ function initTaxaSearch() {
             },
             success: function (response) {
                 updateTaxaTable(response);
+                hidePaginationIfNecessary();
             },
             error: function (xhr, status, error) {
                 console.log('Erro na pesquisa de taxas: ', error);
@@ -2639,6 +2644,7 @@ function initDocumentoSearch() {
             success: function(response) {
                 if (requestId === currentRequestId) {
                     updateDocumentoTable(response);
+                    hidePaginationIfNecessary();
                 }
             },
             error: function(xhr, status, error) {
@@ -2738,7 +2744,7 @@ function initUserSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -2773,6 +2779,7 @@ function initUserSearch() {
             success: function(response) {
                 if (requestId === currentRequestId) {
                     updateUserTable(response);
+                    hidePaginationIfNecessary();
                 }
             },
             error: function(xhr, status, error) {
@@ -2943,7 +2950,7 @@ function initEntregaSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -2977,6 +2984,7 @@ function initEntregaSearch() {
             success: function(response) {
                 if (requestId === currentRequestId) {
                     updateEntregaTable(response);
+                    hidePaginationIfNecessary();
                 }
             },
             error: function(xhr, status, error) {
@@ -3044,7 +3052,7 @@ function initRetiradaSearch() {
             return;
         }
 
-        if (searchQuery.trim().length < 2) {
+        if (searchQuery.trim().length < 3) {
             return;
         }
 
@@ -3078,6 +3086,7 @@ function initRetiradaSearch() {
             success: function(response) {
                 if (requestId === currentRequestId) {
                     updateRetiradaTable(response);
+                    hidePaginationIfNecessary();
                 }
             },
             error: function(xhr, status, error) {
@@ -3092,6 +3101,7 @@ function updateRetiradaTable(data) {
     tbody.empty();
 
     if (data.documentos.length > 0) {
+
         data.documentos.forEach(function (documento) {
             var paleteQuantidade = 0;
 
@@ -3142,9 +3152,7 @@ function updateRetiradaTable(data) {
                         }).join('');
                     }
 
-                    return `
-                        ${paletesRows}
-                    `;
+                    return `${paletesRows}`;
                 }).join('');
             }
 
@@ -3197,6 +3205,8 @@ function updateRetiradaTable(data) {
 
             $('body').append(modalRetirada);
         });
+    } else {
+        tbody.append('<tr><td colspan="4" class="text-center">Nenhum Pedido de Entrega encontrado.</td></tr>');
     }
 }
 
@@ -3331,5 +3341,22 @@ function initArtigoModals() {
             }
         });
     });
+}
+
+function hidePaginationIfNecessary() {
+    var searchQuery = $('.searchQuerys').val().trim(); // Obtém o valor atual da pesquisa
+    var $pagination = $('.pagination'); // Seleciona o elemento de paginação
+    var $resultsInfo = $('.small.text-muted');
+
+    // Verifica se a pesquisa está ativa
+    if (searchQuery.length > 0) {
+        console.log('Escondendo paginação...');
+        $pagination.hide(); // Esconde a paginação se houver uma consulta ativa
+        $resultsInfo.hide();
+    } else {
+        console.log('Mostrando paginação...');
+        $pagination.show(); // Mostra a paginação se não houver consulta
+        $resultsInfo.show();
+    }
 }
 

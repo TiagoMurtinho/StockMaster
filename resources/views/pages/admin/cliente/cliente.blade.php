@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('cliente.cliente') }}</h5>
-                    <input type="text" id="clienteSearch" class="form-control ms-3" placeholder="Pesquisar por nome ou NIF" style="width: 300px;">
+                    <input type="text" id="clienteSearch" class="form-control ms-3 searchQuerys" placeholder="Pesquisar por nome ou NIF" style="width: 300px;">
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#addClienteModal">
                         {{__('cliente.novo_cliente')}}
@@ -47,7 +47,9 @@
                             @endforeach
                             </tbody>
                         </table>
+                     {{--   <div class="pagination">--}}
                         {{ $clientes->links('vendor.pagination.bootstrap-5') }}
+                      {{--  </div>--}}
                     </div>
                 </div>
             </div>

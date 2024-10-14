@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('user.user') }}</h5>
-                    <input type="text" id="userSearch" class="form-control form-control ms-3" placeholder="Pesquisar por nome" style="max-width: 250px;">
+                    <input type="text" id="userSearch" class="form-control form-control ms-3 searchQuerys" placeholder="Pesquisar por nome" style="max-width: 250px;">
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#addUserModal">
                         {{__('user.novo_user')}}

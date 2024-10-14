@@ -6,7 +6,7 @@
             <div class="card">
                 <div class="card-header d-flex align-items-center">
                     <h5 class="mb-0 ms-2">{{ __('documento.documentos') }}</h5>
-                    <input type="text" id="documentoSearch" class="form-control ms-3" placeholder="Pesquisar por numero cliente ou tipo" style="width: 320px;">
+                    <input type="text" id="documentoSearch" class="form-control ms-3 searchQuerys" placeholder="Pesquisar por numero cliente ou tipo" style="width: 320px;">
                     <button type="button" class="btn btn-primary rounded-pill ms-auto" data-bs-toggle="modal"
                             data-bs-target="#modalAddDocumento">
                         {{__('documento.new')}}
