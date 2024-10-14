@@ -57,5 +57,5 @@ return [
     'delete' => 'Eliminar',
     'confirm_delete' => 'Confirmar Exclusão',
     'sure_delete' => 'Tem certeza que deseja excluir este documento ?',
-
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];

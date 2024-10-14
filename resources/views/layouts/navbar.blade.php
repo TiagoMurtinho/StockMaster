@@ -1,6 +1,6 @@
 <div class="d-flex align-items-center justify-content-between">
     <a href="#" class="logo d-flex align-items-start">
-        <img src="assets/img/logo-stockmaster.png" alt="StockMaster">
+        <img src="{{asset('assets/img/logo-stockmaster.png')}}" alt="StockMaster">
     </a>
     <i class="bi bi-list toggle-sidebar-btn"></i>
 </div>

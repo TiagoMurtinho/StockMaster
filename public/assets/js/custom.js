@@ -957,7 +957,6 @@ function initClickableRows() {
                         }
 
                         $('#documentoModal').modal('show');
-                        console.log(data);
                     } else {
                         console.error('Erro ao carregar dados:', data.message);
                     }
@@ -1014,7 +1013,6 @@ function populateModal(data) {
     }
 
     if (data.linhas && data.linhas.length > 0) {
-        console.log("Linhas recebidas:", data.linhas);
         const primeiraLinha = data.linhas[0];
 
         const linhaIdInput = document.querySelector('.modal-linha-id');
@@ -1682,11 +1680,28 @@ function initializeClientSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#clienteTable tbody');
+        $tableBody.html(`
+        <tr>
+            <td colspan="3" class="loader">
+                <div class="loader-content">
+                    <span class="loader-spinner"></span>
+                       <p>Carregando...</p>
+                </div>
+            </td>
+        </tr>
+    `);
+
 
         $.ajax({
             url: '/clientes/search',
@@ -1739,7 +1754,8 @@ function updateClienteTable(clientes) {
                             </div>
                             <div class="modal-body">
                                 <div class="mb-4 text-sm text-gray-600">
-                                    Descrição do cliente
+                                    Campos obrigatórios assinalados com *<br>
+                                    Não são permitidos caracteres especiais
                                 </div>
 
                                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -1747,22 +1763,22 @@ function updateClienteTable(clientes) {
                                 <form class="ajax-form formTabelaCliente" id="editClienteForm${cliente.id}" method="POST" action="/cliente/${cliente.id}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <div class="mb-3">
-                                        <label for="editClienteModalNome${cliente.id}" class="form-label">Nome</label>
+                                        <label for="editClienteModalNome${cliente.id}" class="form-label">Nome*</label>
                                         <input id="editClienteModalNome${cliente.id}" class="form-control" type="text" name="nome" value="${cliente.nome}">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="editClienteModalMorada${cliente.id}" class="form-label">Morada</label>
+                                        <label for="editClienteModalMorada${cliente.id}" class="form-label">Morada*</label>
                                         <input id="editClienteModalMorada${cliente.id}" class="form-control" type="text" name="morada" value="${cliente.morada}">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="editClienteModalCodigoPostal${cliente.id}" class="form-label">Código Postal</label>
+                                        <label for="editClienteModalCodigoPostal${cliente.id}" class="form-label">Código Postal*</label>
                                         <input id="editClienteModalCodigoPostal${cliente.id}" class="form-control" type="text" name="codigo_postal" value="${cliente.codigo_postal}">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="editClienteModalNif${cliente.id}" class="form-label">NIF</label>
+                                        <label for="editClienteModalNif${cliente.id}" class="form-label">NIF*</label>
                                         <input id="editClienteModalNif${cliente.id}" class="form-control" type="number" name="nif" value="${cliente.nif}">
                                     </div>
 
@@ -1848,11 +1864,27 @@ function initTipoPaleteSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#tipoPaleteTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         $.ajax({
             url: '/tipoPalete/search',
@@ -1903,17 +1935,18 @@ function updateTipoPaleteTable(tipoPaletes) {
                             </div>
                             <div class="modal-body">
                                 <div class="mb-4 text-sm text-gray-600">
-                                    Descrição do tipo de palete
+                                    Campos obrigatórios assinalados com *<br>
+                                    Não são permitidos caracteres especiais
                                 </div>
                                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
                                 <form class="ajax-form formTabelaTipoPalete" id="editTipoPaleteForm${tipoPalete.id}" method="POST" action="/tipo-palete/${tipoPalete.id}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <div class="mb-3">
-                                        <label for="editTipoPaleteModalTipo${tipoPalete.id}" class="form-label">Tipo</label>
+                                        <label for="editTipoPaleteModalTipo${tipoPalete.id}" class="form-label">Tipo*</label>
                                         <input id="editTipoPaleteModalTipo${tipoPalete.id}" class="form-control" type="text" name="tipo" value="${tipoPalete.tipo}">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editTipoPaleteModalValor${tipoPalete.id}" class="form-label">Valor</label>
+                                        <label for="editTipoPaleteModalValor${tipoPalete.id}" class="form-label">Valor*</label>
                                         <input id="editTipoPaleteModalValor${tipoPalete.id}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="${tipoPalete.valor}">
                                     </div>
                                     <div class="d-flex justify-content-end mt-4">
@@ -2003,11 +2036,27 @@ function initArmazemSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#armazemTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         $.ajax({
             url: '/armazens/search',
@@ -2057,23 +2106,24 @@ function updateArmazemTable(armazens) {
                             </div>
                             <div class="modal-body">
                                 <div class="mb-4 text-sm text-gray-600">
-                                    Descrição do Armazém
+                                    Campos obrigatórios assinalados com *<br>
+                                    Não são permitidos caracteres especiais
                                 </div>
                                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
 
                                 <form class="ajax-form formTabelaArmazem" method="POST" action="/armazem/${armazem.id}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <div class="mb-3">
-                                        <label for="editArmazemModalNome${armazem.id}" class="form-label">Nome</label>
+                                        <label for="editArmazemModalNome${armazem.id}" class="form-label">Nome*</label>
                                         <input id="editArmazemModalNome${armazem.id}" class="form-control" type="text" name="nome" value="${armazem.nome}">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editArmazemModalCapacidade${armazem.id}" class="form-label">Capacidade</label>
+                                        <label for="editArmazemModalCapacidade${armazem.id}" class="form-label">Capacidade*</label>
                                         <input id="editArmazemModalCapacidade${armazem.id}" class="form-control" type="number" name="capacidade" value="${armazem.capacidade}">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editArmazemModalTipoPalete" class="form-label">Tipo de Palete</label>
-                                        <select name="tipo_palete_id" id="editArmazemModalTipoPalete" class="form-select form-select-sm">
+                                        <label for="editArmazemModalTipoPalete" class="form-label">Tipo de Palete*</label>
+                                        <select name="tipo_palete_id" id="editArmazemModalTipoPalete" class="form-select form-select">
                                             <option value="1" ${armazem.tipo_palete_id === 1 ? 'selected' : ''}>Tipo 1</option>
                                             <option value="2" ${armazem.tipo_palete_id === 2 ? 'selected' : ''}>Tipo 2</option>
                                         </select>
@@ -2158,19 +2208,35 @@ function initArtigoSearch() {
     $('#artigoSearch').on('input', function() {
         var searchQuery = $(this).val();
 
-        currentRequestId++;
-        var requestId = currentRequestId;
-
         if (searchQuery.trim() === "") {
             location.reload();
             return;
         }
+
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
+        currentRequestId++;
+        var requestId = currentRequestId;
 
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#artigoTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         $.ajax({
             url: '/Artigo/search',
@@ -2227,22 +2293,29 @@ function updateArtigoTable(artigos) {
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+
+                                <div class="mb-4 text-sm text-gray-600">
+                                    Campos obrigatórios assinalados com *<br>
+                                    Não são permitidos caracteres especiais
+                                </div>
+                                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                                 <form class="ajax-form formTabelaArtigo" method="POST" action="/artigo/${artigo.id}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                                     <div class="mb-3">
-                                        <label for="editArtigoModalNome${artigo.id}" class="form-label">Nome</label>
+                                        <label for="editArtigoModalNome${artigo.id}" class="form-label">Nome*</label>
                                         <input id="editArtigoModalNome${artigo.id}" class="form-control" type="text" name="nome" value="${artigo.nome}">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editArtigoModalReferencia${artigo.id}" class="form-label">Referência</label>
+                                        <label for="editArtigoModalReferencia${artigo.id}" class="form-label">Referência*</label>
                                         <input id="editArtigoModalReferencia${artigo.id}" class="form-control" type="text" name="referencia" value="${artigo.referencia}">
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="editArtigoModalCliente${artigo.id}" class="form-label">Cliente</label>
-                                        <select name="cliente_id" id="editArtigoModalCliente${artigo.id}" class="form-select form-select-sm">
+                                        <label for="editArtigoModalCliente${artigo.id}" class="form-label">Cliente*</label>
+                                        <select name="cliente_id" id="editArtigoModalCliente${artigo.id}" class="form-select form-select">
 
                                         </select>
                                     </div>
@@ -2357,11 +2430,27 @@ function initTaxaSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#taxaTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         $.ajax({
             url: '/taxas/search',
@@ -2409,16 +2498,23 @@ function updateTaxaTable(taxas) {
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+
+                                <div class="mb-4 text-sm text-gray-600">
+                                    Campos obrigatórios assinalados com *<br>
+                                    Não são permitidos caracteres especiais
+                                </div>
+                                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                                 <form class="ajax-form formTabelaTaxa" id="editTaxaForm${taxa.id}" method="POST" action="/taxa/${taxa.id}">
                                     <input type="hidden" name="_method" value="PUT">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                                     <div class="mb-3">
-                                        <label for="editTaxaModalNome${taxa.id}" class="form-label">Nome</label>
+                                        <label for="editTaxaModalNome${taxa.id}" class="form-label">Nome*</label>
                                         <input id="editTaxaModalNome${taxa.id}" class="form-control" type="text" name="nome" value="${taxa.nome}">
                                     </div>
                                     <div class="mb-3">
-                                        <label for="editTaxaModalValor${taxa.id}" class="form-label">Valor</label>
+                                        <label for="editTaxaModalValor${taxa.id}" class="form-label">Valor*</label>
                                         <input id="editTaxaModalValor${taxa.id}" class="form-control" type="number" name="valor" min="0" step="0.01" value="${taxa.valor}">
                                     </div>
 
@@ -2508,11 +2604,27 @@ function initDocumentoSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 3) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#documentoTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         currentRequestId++;
         var requestId = currentRequestId;
@@ -2626,11 +2738,27 @@ function initUserSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#userTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         currentRequestId++;
         var requestId = currentRequestId;
@@ -2691,24 +2819,31 @@ function updateUserTable(users) {
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
+
+                                <div class="mb-4 text-sm text-gray-600">
+                                    Campos obrigatórios assinalados com *<br>
+                                    Não são permitidos caracteres especiais
+                                </div>
+                                <div class="alert alert-danger d-none error-messages" role="alert"></div>
+
                                     <form class="ajax-form formTabelaUser" method="POST" action="/register/${user.id}">
                                         <input type="hidden" name="_method" value="PUT">
                                         <div class="mb-3">
-                                            <label for="editUserModalNome${user.id}" class="form-label">Nome</label>
-                                            <input id="editUserModalNome${user.id}" class="form-control" type="text" name="name" value="${user.name}" required>
+                                            <label for="editUserModalNome${user.id}" class="form-label">Nome*</label>
+                                            <input id="editUserModalNome${user.id}" class="form-control" type="text" name="name" value="${user.name}">
                                         </div>
                                         <div class="mb-3">
-                                            <label for="editUserModalEmail${user.id}" class="form-label">Email</label>
-                                            <input id="editUserModalEmail${user.id}" class="form-control" type="email" name="email" value="${user.email}" required>
+                                            <label for="editUserModalEmail${user.id}" class="form-label">Email*</label>
+                                            <input id="editUserModalEmail${user.id}" class="form-control" type="email" name="email" value="${user.email}">
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
-                                                <label for="editUserModalPassword${user.id}" class="form-label">Senha</label>
+                                                <label for="editUserModalPassword${user.id}" class="form-label">Palavra-Passe*</label>
                                                 <input id="editUserModalPassword${user.id}" class="form-control" type="password" name="password">
                                                 <small class="form-text text-muted">Deixe em branco se não quiser alterar a senha.</small>
                                             </div>
                                             <div class="col-md-6 mb-3">
-                                                <label for="editUserModalPasswordConfirmation${user.id}" class="form-label">Confirmar Senha</label>
+                                                <label for="editUserModalPasswordConfirmation${user.id}" class="form-label">Confirmar Palavra-Passe*</label>
                                                 <input id="editUserModalPasswordConfirmation${user.id}" class="form-control" type="password" name="password_confirmation">
                                             </div>
                                         </div>
@@ -2808,11 +2943,27 @@ function initEntregaSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#entregaTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         currentRequestId++;
         var requestId = currentRequestId;
@@ -2893,11 +3044,27 @@ function initRetiradaSearch() {
             return;
         }
 
+        if (searchQuery.trim().length < 2) {
+            return;
+        }
+
         if (!/^[a-zA-Z0-9\s]*$/.test(searchQuery)) {
             alert('Pesquisa inválida. Apenas letras, números e espaços são permitidos.');
             $(this).val('');
             return;
         }
+
+        var $tableBody = $('#retiradaTable tbody');
+        $tableBody.html(`
+            <tr>
+                <td colspan="3" class="loader">
+                    <div class="loader-content">
+                        <span class="loader-spinner"></span>
+                        <p>Carregando...</p>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         currentRequestId++;
         var requestId = currentRequestId;

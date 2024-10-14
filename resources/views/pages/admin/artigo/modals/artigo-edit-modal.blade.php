@@ -9,7 +9,8 @@
                 <div class="modal-body">
 
                     <div class="mb-4 text-sm text-gray-600">
-                        {{ __('artigo.description') }}
+                        {{ __('artigo.description') }}<br>
+                        {{ __('artigo.caracter') }}
                     </div>
 
                     <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -21,12 +22,12 @@
 
                         <div class="mb-3">
                             <label for="editArtigoModalNome{{ $artigo->id }}" class="form-label">{{ __('artigo.add_nome') }}</label>
-                            <input id="editArtigoModalNome{{ $artigo->id }}" class="form-control" type="text" name="nome" value="{{ $artigo->nome }}">
+                            <input id="editArtigoModalNome{{ $artigo->id }}" class="form-control" type="text" name="nome" value="{{ $artigo->nome }}" placeholder="{{ __('Letras de a-z') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="editArtigoModalReferencia{{ $artigo->id }}" class="form-label">{{ __('artigo.add_referencia') }}</label>
-                            <input id="editArtigoModalReferencia{{ $artigo->id }}" class="form-control" type="text" name="referencia" value="{{ $artigo->referencia }}">
+                            <input id="editArtigoModalReferencia{{ $artigo->id }}" class="form-control" type="text" name="referencia" value="{{ $artigo->referencia }}" placeholder="{{ __('Letras de A-Z com letra maiuscula') }}">
                         </div>
 
                         <div class="mb-3">

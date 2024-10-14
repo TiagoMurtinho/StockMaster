@@ -8,7 +8,8 @@
             <div class="modal-body">
 
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('taxa.description') }}
+                    {{ __('taxa.description') }}<br>
+                    {{ __('taxa.caracter') }}
                 </div>
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -18,12 +19,12 @@
 
                     <div class="mb-3">
                         <label for="addTaxaModalTipo" class="form-label">{{ __('taxa.add_nome') }}</label>
-                        <input id="addTaxaModalTipo" class="form-control" type="text" name="nome">
+                        <input id="addTaxaModalTipo" class="form-control" type="text" name="nome" placeholder="{{ __('Letras de a-z') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addTaxaModalValor" class="form-label">{{ __('taxa.add_valor') }}</label>
-                        <input id="addTaxaModalValor" class="form-control" type="number" min="0" step="0.01" name="valor">
+                        <input id="addTaxaModalValor" class="form-control" type="number" min="0" step="0.01" name="valor" placeholder="{{ __('Campo numérico') }}">
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">

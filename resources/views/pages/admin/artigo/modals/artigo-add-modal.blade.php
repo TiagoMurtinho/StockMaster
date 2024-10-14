@@ -8,7 +8,8 @@
             <div class="modal-body">
 
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('artigo.description') }}
+                    {{ __('artigo.description') }}<br>
+                    {{ __('artigo.caracter') }}
                 </div>
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -18,18 +19,18 @@
 
                     <div class="mb-3">
                         <label for="addArtigoModalNome" class="form-label">{{ __('artigo.add_nome') }}</label>
-                        <input id="addArtigoModalNome" class="form-control" type="text" name="nome">
+                        <input id="addArtigoModalNome" class="form-control" type="text" name="nome" placeholder="{{ __('Letras de a-z') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addArtigoModalReferencia" class="form-label">{{ __('artigo.add_referencia') }}</label>
-                        <input id="addArtigoModalReferencia" class="form-control" type="text" name="referencia">
+                        <input id="addArtigoModalReferencia" class="form-control" type="text" name="referencia" placeholder="{{ __('Letras de A-Z com letra maiuscula') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addArtigoModalCliente" class="form-label">{{ __('artigo.add_cliente') }}</label>
-                        <select name="cliente_id" id="addArtigoModalCliente" class="form-select form-select-sm">
-                            <option value="">{{ __('artigo.select_cliente') }}</option> <!-- Placeholder -->
+                        <select name="cliente_id" id="addArtigoModalCliente" class="form-select form-select">
+                            <option value="">{{ __('artigo.select_cliente') }}</option>
                         </select>
                     </div>
 

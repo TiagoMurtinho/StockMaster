@@ -17,6 +17,7 @@ return [
     'confirmed' => 'A confirmação do campo :attribute não corresponde.',
     'array' => 'O campo :attribute deve ser um array.',
     'regex' => 'O formato do campo :attribute é inválido.',
+    'unique' => 'O campo :attribute já está em uso.',
     'custom' => [
         'documento.numero' => [
             'required' => 'O número do documento é obrigatório.',

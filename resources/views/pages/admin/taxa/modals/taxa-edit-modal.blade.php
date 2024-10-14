@@ -9,7 +9,8 @@
                 <div class="modal-body">
 
                     <div class="mb-4 text-sm text-gray-600">
-                        {{ __('taxa.description') }}
+                        {{ __('taxa.description') }}<br>
+                        {{ __('taxa.caracter') }}
                     </div>
 
                     <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -19,11 +20,11 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="editTaxaModalNome{{ $taxa->id }}" class="form-label">{{ __('taxa.add_nome') }}</label>
-                            <input id="editTaxaModalTipo{{ $taxa->id }}" class="form-control" type="text" name="nome" value="{{ $taxa->nome }}">
+                            <input id="editTaxaModalTipo{{ $taxa->id }}" class="form-control" type="text" name="nome" value="{{ $taxa->nome }}" placeholder="{{ __('Letras de a-z') }}">
                         </div>
                         <div class="mb-3">
                             <label for="editTaxaModalValor{{ $taxa->id }}" class="form-label">{{ __('taxa.add_valor') }}</label>
-                            <input id="editTaxaModalValor{{ $taxa->id }}" class="form-control" type="number" min="0" step="0.01" name="valor" value="{{ $taxa->valor }}">
+                            <input id="editTaxaModalValor{{ $taxa->id }}" class="form-control" type="number" min="0" step="0.01" name="valor" value="{{ $taxa->valor }}" placeholder="{{ __('Campo numérico') }}">
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">

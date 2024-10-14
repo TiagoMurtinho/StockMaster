@@ -8,7 +8,8 @@
             <div class="modal-body">
 
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('user.description') }}
+                    {{ __('user.description') }}<br>
+                    {{ __('user.caracter') }}
                 </div>
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -19,12 +20,12 @@
 
                     <div class="mb-3">
                         <label for="editUserModalNome{{ $user->id }}" class="form-label">{{ __('user.add_nome') }}</label>
-                        <input id="editUserModalNome{{ $user->id }}" class="form-control" type="text" name="name" value="{{ $user->name }}" required>
+                        <input id="editUserModalNome{{ $user->id }}" class="form-control" type="text" name="name" value="{{ $user->name }}" placeholder="{{ __('Letras de a-z') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="editUserModalEmail{{ $user->id }}" class="form-label">{{ __('user.add_email') }}</label>
-                        <input id="editUserModalEmail{{ $user->id }}" class="form-control" type="email" name="email" value="{{ $user->email }}" required>
+                        <input id="editUserModalEmail{{ $user->id }}" class="form-control" type="email" name="email" value="{{ $user->email }}" placeholder="{{ __('Email num formato válido') }}">
                     </div>
 
                     <div class="row">
@@ -43,12 +44,12 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="editUserModalContacto{{ $user->id }}" class="form-label">{{ __('user.add_contacto') }}</label>
-                            <input id="editUserModalContacto{{ $user->id }}" class="form-control" type="text" name="contacto" value="{{ $user->contacto }}">
+                            <input id="editUserModalContacto{{ $user->id }}" class="form-control" type="text" name="contacto" value="{{ $user->contacto }}" placeholder="{{ __('Contacto num formato válido') }}">
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label for="editUserModalSalario{{ $user->id }}" class="form-label">{{ __('user.add_salario') }}</label>
-                            <input id="editUserModalSalario{{ $user->id }}" class="form-control" type="number" min="0" step="0.01" name="salario" value="{{ $user->salario }}">
+                            <input id="editUserModalSalario{{ $user->id }}" class="form-control" type="number" min="0" step="0.01" name="salario" value="{{ $user->salario }}" placeholder="{{ __('Campo numérico') }}">
                         </div>
                     </div>
 

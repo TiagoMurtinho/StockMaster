@@ -16,7 +16,7 @@
                 <div class="mb-3">
                     <div class="form-group">
                         <label for="modal-documento-observacao">{{ __('documento.observacao') }}</label>
-                        <textarea class="form-control modal-documento-observacao" rows="3"></textarea>
+                        <textarea class="form-control modal-documento-observacao" rows="3" placeholder="{{ __('Letras de a-z, números de 0-9 vírgulas e pontos finais.') }}"></textarea>
                     </div>
                 </div>
 
@@ -24,7 +24,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="modal-documento-numero">{{ __('documento.numero') }}</label>
-                            <input type="text" class="form-control modal-documento-numero" />
+                            <input type="text" class="form-control modal-documento-numero" placeholder="{{ __('Campo numérico') }}"/>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -68,13 +68,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="modal-documento-matricula">{{ __('documento.matricula') }}</label>
-                                <input type="text" class="form-control modal-documento-matricula" />
+                                <input type="text" class="form-control modal-documento-matricula" placeholder="{{ __('No formato XX-XX-XX') }}"/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="modal-documento-morada">{{ __('documento.morada') }}</label>
-                                <input type="text" class="form-control modal-documento-morada" />
+                                <input type="text" class="form-control modal-documento-morada" placeholder="{{ __('Letras de a-z, numeros de 0-9 e vírgulas') }}"/>
                             </div>
                         </div>
                     </div>
@@ -100,13 +100,13 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="modal-documento-total">{{ __('documento.total') }}</label>
-                                <input type="text" class="form-control modal-documento-total" />
+                                <input type="text" class="form-control modal-documento-total" placeholder="{{ __('Campo numérico') }}"/>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="modal-documento-extra">{{ __('documento.extra') }}</label>
-                                <input type="text" class="form-control modal-documento-extra" />
+                                <input type="text" class="form-control modal-documento-extra" placeholder="{{ __('Campo numérico') }}"/>
                             </div>
                         </div>
                     </div>

@@ -18,5 +18,7 @@ return [
     'delete_armazem' => 'Eliminar Armazém',
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
     'delete' => 'Eliminar',
-    'novo_armazem' => 'Adicionar Armazém'
+    'novo_armazem' => 'Adicionar Armazém',
+    'select' => 'Selecione um tipo de palete',
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];

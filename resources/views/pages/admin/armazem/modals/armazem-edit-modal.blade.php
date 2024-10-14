@@ -9,7 +9,8 @@
                 <div class="modal-body">
 
                     <div class="mb-4 text-sm text-gray-600">
-                        {{ __('armazem.description') }}
+                        {{ __('armazem.description') }}<br>
+                        {{ __('armazem.caracter') }}
                     </div>
 
                     <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -21,17 +22,17 @@
 
                         <div class="mb-3">
                             <label for="editArmazemModalNome{{ $armazem->id }}" class="form-label">{{ __('armazem.add_nome') }}</label>
-                            <input id="editArmazemModalNome{{ $armazem->id }}" class="form-control" type="text" name="nome" value="{{ $armazem->nome }}">
+                            <input id="editArmazemModalNome{{ $armazem->id }}" class="form-control" type="text" name="nome" value="{{ $armazem->nome }}" placeholder="{{ __('Letras de a-z') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="editArmazemModalCapacidade{{ $armazem->id }}" class="form-label">{{ __('armazem.add_capacidade') }}</label>
-                            <input id="editArmazemModalCapacidade{{ $armazem->id }}" class="form-control" type="number" name="capacidade" value="{{ $armazem->capacidade }}">
+                            <input id="editArmazemModalCapacidade{{ $armazem->id }}" class="form-control" type="number" name="capacidade" value="{{ $armazem->capacidade }}" placeholder="{{ __('Campo numérico') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="editArmazemModalTipoPalete" class="form-label">{{ __('armazem.add_tipo_palete') }}</label>
-                            <select name="tipo_palete_id" id="editArmazemModalTipoPalete" class="form-select form-select-sm">
+                            <select name="tipo_palete_id" id="editArmazemModalTipoPalete" class="form-select form-select">
                                 @foreach($tipoPaletes as $tipoPalete)
                                     <option value="{{ $tipoPalete->id }}"
                                         {{ $tipoPalete->id == $armazem->tipo_palete_id ? 'selected' : '' }}>

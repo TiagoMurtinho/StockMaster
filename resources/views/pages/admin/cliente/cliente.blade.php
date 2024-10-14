@@ -14,7 +14,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="clienteTable" class="table table-hover table-transparent align-middle">
+                        <table id="clienteTable" class="table table-hover table-transparent align-middle loader-table">
                             <thead>
                             <tr>
                                 <th scope="col" class="text-center">{{ __('cliente.nome') }}</th>

@@ -8,7 +8,8 @@
             <div class="modal-body">
 
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('cliente.description') }}
+                    {{ __('cliente.description') }}<br>
+                    {{ __('cliente.caracter') }}
                 </div>
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -18,22 +19,22 @@
 
                     <div class="mb-3">
                         <label for="addClienteModalNome" class="form-label">{{ __('cliente.add_nome') }}</label>
-                        <input id="addClienteModalNome" class="form-control" type="text" name="nome">
+                        <input id="addClienteModalNome" class="form-control" type="text" name="nome" placeholder="{{ __('Letras de a-z') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addClienteModalMorada" class="form-label">{{ __('cliente.add_morada') }}</label>
-                        <input id="addClienteModalMorada" class="form-control" type="text" name="morada">
+                        <input id="addClienteModalMorada" class="form-control" type="text" name="morada"  placeholder="{{ __('Letras de a-z, numeros de 0-9 e vírgulas') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addClienteModalCodigoPostal" class="form-label">{{ __('cliente.add_codigo_postal') }}</label>
-                        <input id="addClienteModalCodigoPostal" class="form-control" type="text" name="codigo_postal">
+                        <input id="addClienteModalCodigoPostal" class="form-control" type="text" name="codigo_postal"  placeholder="{{ __('Codigo Postal no formato XXXX-XXX') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addTipoPaleteModalNif" class="form-label">{{ __('cliente.add_nif') }}</label>
-                        <input id="addTipoPaleteModalNif" class="form-control" type="number" name="nif">
+                        <input id="addTipoPaleteModalNif" class="form-control" type="number" name="nif" placeholder="{{ __('Campo numérico') }}">
                     </div>
 
                     <div class="d-flex justify-content-end mt-4">

@@ -8,7 +8,8 @@
 
             <div class="modal-body">
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('documento.description') }}
+                    {{ __('documento.description') }}<br>
+                    {{ __('documento.caracter') }}
                 </div>
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -44,7 +45,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="numero" class="form-label">{{ __('documento.add_numero') }}</label>
-                            <input type="number" class="form-control" id="numero" name="numero" required>
+                            <input type="number" class="form-control" id="numero" name="numero" required placeholder="{{ __('Campo numérico') }}">
                         </div>
                     </div>
 
@@ -60,7 +61,7 @@
                         </div>
                         <div class="col-md-6" id="moradaOculta">
                             <label for="morada" class="form-label">{{ __('documento.add_morada') }}</label>
-                            <input type="text" class="form-control" id="morada" name="morada">
+                            <input type="text" class="form-control" id="morada" name="morada" placeholder="{{ __('Letras de a-z, numeros de 0-9 e vírgulas') }}">
                         </div>
                     </div>
 
@@ -68,11 +69,11 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="total" class="form-label">{{ __('documento.add_total') }}</label>
-                                <input type="number" min="0" step="0.01" class="form-control" id="total" name="total" required>
+                                <input type="number" min="0" step="0.01" class="form-control" id="total" name="total" required placeholder="{{ __('Campo numérico') }}">
                             </div>
                             <div class="col-md-6">
                                 <label for="extra" class="form-label">{{ __('documento.add_extra') }}</label>
-                                <input type="number" min="0" step="0.01" class="form-control" id="extra" name="extra">
+                                <input type="number" min="0" step="0.01" class="form-control" id="extra" name="extra" placeholder="{{ __('Campo numérico') }}">
                             </div>
                         </div>
                     </div>
@@ -91,7 +92,7 @@
                     <div class="row mb-3">
                         <div class="mb-3">
                             <label for="observacao" class="form-label">{{ __('documento.add_observacao') }}</label>
-                            <textarea class="form-control" id="observacao" name="observacao" rows="3"></textarea>
+                            <textarea class="form-control" id="observacao" name="observacao" rows="3" placeholder="{{ __('Letras de a-z, números de 0-9 vírgulas e pontos finais.') }}"></textarea>
                         </div>
                     </div>
 

@@ -21,22 +21,22 @@
 
                         <div class="mb-3">
                             <label for="editClienteModalNome{{ $cliente->id }}" class="form-label">{{ __('cliente.add_nome') }}</label>
-                            <input id="editClienteModalNome{{ $cliente->id }}" class="form-control" type="text" name="nome" value="{{ $cliente->nome }}">
+                            <input id="editClienteModalNome{{ $cliente->id }}" class="form-control" type="text" name="nome" value="{{ $cliente->nome }}" placeholder="{{ __('Letras de a-z') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="editClienteModalMorada{{ $cliente->id }}" class="form-label">{{ __('cliente.add_morada') }}</label>
-                            <input id="editClienteModalMorada{{ $cliente->id }}" class="form-control" type="text" name="morada" value="{{ $cliente->morada }}">
+                            <input id="editClienteModalMorada{{ $cliente->id }}" class="form-control" type="text" name="morada" value="{{ $cliente->morada }}" placeholder="{{ __('Letras de a-z, numeros de 0-9 e vírgulas') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="editClienteModalCodigoPostal{{ $cliente->id }}" class="form-label">{{ __('cliente.add_codigo_postal') }}</label>
-                            <input id="editClienteModalCodigoPostal{{ $cliente->id }}" class="form-control" type="text" name="codigo_postal" value="{{ $cliente->codigo_postal }}">
+                            <input id="editClienteModalCodigoPostal{{ $cliente->id }}" class="form-control" type="text" name="codigo_postal" value="{{ $cliente->codigo_postal }}" placeholder="{{ __('Codigo Postal no formato XXXX-XXX') }}">
                         </div>
 
                         <div class="mb-3">
                             <label for="editClienteModalNif{{ $cliente->id }}" class="form-label">{{ __('cliente.add_nif') }}</label>
-                            <input id="editClienteModalNif{{ $cliente->id }}" class="form-control" type="number" name="nif" value="{{ $cliente->nif }}">
+                            <input id="editClienteModalNif{{ $cliente->id }}" class="form-control" type="number" name="nif" value="{{ $cliente->nif }}" placeholder="{{ __('Campo numérico') }}">
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">

@@ -25,7 +25,7 @@
                                     </div>
                                     <div class="col-md-3">
                                         <label for="quantidade" class="form-label">{{__('documento.quantidade')}}</label>
-                                        <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required>
+                                        <input type="number" step="1" min="0" class="form-control" name="quantidade[]" required placeholder="{{ __('Campo numérico') }}">
                                     </div>
                                     <div class="col-md-4">
                                         <label for="artigo_id" class="form-label">{{ __('documento.artigo') }}</label>

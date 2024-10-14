@@ -16,5 +16,6 @@ return [
     'delete_tipo_palete' => 'Eliminar Tipo de Palete',
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
     'delete' => 'Eliminar',
-    'adicionar_tipo_palete' => 'Adicionar Tipo de Palete'
+    'adicionar_tipo_palete' => 'Adicionar Tipo de Palete',
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];

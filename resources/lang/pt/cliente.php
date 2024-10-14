@@ -20,5 +20,6 @@ return [
     'delete' => 'Eliminar',
     'save' => 'Guardar',
     'edit_cliente' => 'Editar Cliente',
-    'novo_cliente' => 'Adicionar Cliente'
+    'novo_cliente' => 'Adicionar Cliente',
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];

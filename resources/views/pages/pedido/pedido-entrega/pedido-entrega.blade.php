@@ -10,7 +10,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="entregaTable" class="table table-hover table-transparent align-middle">
+                        <table id="entregaTable" class="table table-hover table-transparent align-middle loader-table">
                             <thead>
                             <tr>
                                 <th scope="col" class="text-center">{{ __('entrega.cliente') }}</th>

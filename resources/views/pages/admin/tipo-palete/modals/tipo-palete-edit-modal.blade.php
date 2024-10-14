@@ -9,7 +9,8 @@
                 <div class="modal-body">
 
                     <div class="mb-4 text-sm text-gray-600">
-                        {{ __('tipo-palete.description') }}
+                        {{ __('tipo-palete.description') }}<br>
+                        {{ __('tipo-palete.caracter') }}
                     </div>
 
                     <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -19,11 +20,11 @@
                         @method('PUT')
                         <div class="mb-3">
                             <label for="editTipoPaleteModalTipo{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.add_tipo') }}</label>
-                            <input id="editTipoPaleteModalTipo{{ $tipoPalete->id }}" class="form-control" type="text" name="tipo" value="{{ $tipoPalete->tipo }}">
+                            <input id="editTipoPaleteModalTipo{{ $tipoPalete->id }}" class="form-control" type="text" name="tipo" value="{{ $tipoPalete->tipo }}" placeholder="{{ __('Letras de a-z') }}">
                         </div>
                         <div class="mb-3">
                             <label for="editTipoPaleteModalValor{{ $tipoPalete->id }}" class="form-label">{{ __('tipo-palete.add_valor') }}</label>
-                            <input id="editTipoPaleteModalValor{{ $tipoPalete->id }}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="{{ $tipoPalete->valor }}">
+                            <input id="editTipoPaleteModalValor{{ $tipoPalete->id }}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="{{ $tipoPalete->valor }}" placeholder="{{ __('Campo numérico') }}">
                         </div>
 
                         <div class="d-flex justify-content-end mt-4">

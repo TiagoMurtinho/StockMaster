@@ -19,4 +19,5 @@ return [
     'add_artigo' => 'Adicionar Artigo',
     'delete_artigo' => 'Eliminar Artigo',
     'confirm_delete' => 'Tem a certeza que pretende eliminar: ',
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];

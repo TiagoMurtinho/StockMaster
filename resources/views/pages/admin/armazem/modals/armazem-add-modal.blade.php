@@ -8,7 +8,8 @@
             <div class="modal-body">
 
                 <div class="mb-4 text-sm text-gray-600">
-                    {{ __('armazem.description') }}
+                    {{ __('armazem.description') }}<br>
+                    {{ __('armazem.caracter') }}
                 </div>
 
                 <div class="alert alert-danger d-none error-messages" role="alert"></div>
@@ -18,17 +19,18 @@
 
                     <div class="mb-3">
                         <label for="addArmazemModalNome" class="form-label">{{ __('armazem.add_nome') }}</label>
-                        <input id="addArmazemModalNome" class="form-control" type="text" name="nome">
+                        <input id="addArmazemModalNome" class="form-control" type="text" name="nome" placeholder="{{ __('Letras de a-z') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addArmazemModalCapacidade" class="form-label">{{ __('armazem.add_capacidade') }}</label>
-                        <input id="addArmazemModalCapacidade" class="form-control" type="number" name="capacidade">
+                        <input id="addArmazemModalCapacidade" class="form-control" type="number" name="capacidade" placeholder="{{ __('Campo numérico') }}">
                     </div>
 
                     <div class="mb-3">
                         <label for="addArmazemModalTipoPalete" class="form-label">{{ __('armazem.add_tipo_palete') }}</label>
-                        <select name="tipo_palete_id" id="addArmazemModalTipoPalete" class="form-select form-select-sm">
+                        <select name="tipo_palete_id" id="addArmazemModalTipoPalete" class="form-select form-select">
+                            <option value="" disabled selected hidden>{{ __('armazem.select') }}</option>
                             @foreach($tipoPaletes as $tipoPalete)
                                 <option value="{{ $tipoPalete->id }}">{{ $tipoPalete->tipo }}</option>
                             @endforeach

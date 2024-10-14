@@ -23,5 +23,6 @@ return [
     'add_password' => 'Palavra-Passe*',
     'confirm_password' => 'Confirmar Palavra-Passe*',
     'alterar_senha' => 'Alterar Palavra-Passe',
-    'senha_atual' => 'Palavra-Passe atual*'
+    'senha_atual' => 'Palavra-Passe atual*',
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];

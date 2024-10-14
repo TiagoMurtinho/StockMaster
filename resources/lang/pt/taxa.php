@@ -14,5 +14,6 @@ return [
     'edit_taxa' => 'Editar Taxa',
     'save' => 'Editar',
     'delete' => 'Eliminar',
-    'nova_taxa' => 'Adicionar Taxa'
+    'nova_taxa' => 'Adicionar Taxa',
+    'caracter' => 'Não são permitidos caracteres especiais'
 ];
