@@ -1765,22 +1765,22 @@ function updateClienteTable(clientes) {
                                     <input type="hidden" name="_method" value="PUT">
                                     <div class="mb-3">
                                         <label for="editClienteModalNome${cliente.id}" class="form-label">Nome*</label>
-                                        <input id="editClienteModalNome${cliente.id}" class="form-control" type="text" name="nome" value="${cliente.nome}">
+                                        <input id="editClienteModalNome${cliente.id}" class="form-control" type="text" name="nome" value="${cliente.nome}" placeholder="Letras de a-z">
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="editClienteModalMorada${cliente.id}" class="form-label">Morada*</label>
-                                        <input id="editClienteModalMorada${cliente.id}" class="form-control" type="text" name="morada" value="${cliente.morada}">
+                                        <input id="editClienteModalMorada${cliente.id}" class="form-control" type="text" name="morada" value="${cliente.morada}" placeholder="Letras de a-z, numeros de 0-9 e vírgulas">
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="editClienteModalCodigoPostal${cliente.id}" class="form-label">Código Postal*</label>
-                                        <input id="editClienteModalCodigoPostal${cliente.id}" class="form-control" type="text" name="codigo_postal" value="${cliente.codigo_postal}">
+                                        <input id="editClienteModalCodigoPostal${cliente.id}" class="form-control" type="text" name="codigo_postal" value="${cliente.codigo_postal}" placeholder="Codigo Postal no formato XXXX-XXX">
                                     </div>
 
                                     <div class="mb-3">
                                         <label for="editClienteModalNif${cliente.id}" class="form-label">NIF*</label>
-                                        <input id="editClienteModalNif${cliente.id}" class="form-control" type="number" name="nif" value="${cliente.nif}">
+                                        <input id="editClienteModalNif${cliente.id}" class="form-control" type="number" name="nif" value="${cliente.nif}" placeholder="Campo numérico">
                                     </div>
 
                                     <div class="d-flex justify-content-end mt-4">
@@ -1945,11 +1945,11 @@ function updateTipoPaleteTable(tipoPaletes) {
                                     <input type="hidden" name="_method" value="PUT">
                                     <div class="mb-3">
                                         <label for="editTipoPaleteModalTipo${tipoPalete.id}" class="form-label">Tipo*</label>
-                                        <input id="editTipoPaleteModalTipo${tipoPalete.id}" class="form-control" type="text" name="tipo" value="${tipoPalete.tipo}">
+                                        <input id="editTipoPaleteModalTipo${tipoPalete.id}" class="form-control" type="text" name="tipo" value="${tipoPalete.tipo}" placeholder="Letras de a-z">
                                     </div>
                                     <div class="mb-3">
                                         <label for="editTipoPaleteModalValor${tipoPalete.id}" class="form-label">Valor*</label>
-                                        <input id="editTipoPaleteModalValor${tipoPalete.id}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="${tipoPalete.valor}">
+                                        <input id="editTipoPaleteModalValor${tipoPalete.id}" class="form-control" type="number" min="0" max="1000" step="0.01" name="valor" value="${tipoPalete.valor}" placeholder="Campo numérico">
                                     </div>
                                     <div class="d-flex justify-content-end mt-4">
                                         <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
@@ -2118,11 +2118,11 @@ function updateArmazemTable(armazens) {
                                     <input type="hidden" name="_method" value="PUT">
                                     <div class="mb-3">
                                         <label for="editArmazemModalNome${armazem.id}" class="form-label">Nome*</label>
-                                        <input id="editArmazemModalNome${armazem.id}" class="form-control" type="text" name="nome" value="${armazem.nome}">
+                                        <input id="editArmazemModalNome${armazem.id}" class="form-control" type="text" name="nome" value="${armazem.nome}" placeholder="Letras de a-z">
                                     </div>
                                     <div class="mb-3">
                                         <label for="editArmazemModalCapacidade${armazem.id}" class="form-label">Capacidade*</label>
-                                        <input id="editArmazemModalCapacidade${armazem.id}" class="form-control" type="number" name="capacidade" value="${armazem.capacidade}">
+                                        <input id="editArmazemModalCapacidade${armazem.id}" class="form-control" type="number" name="capacidade" value="${armazem.capacidade}" placeholder="Campo numérico">
                                     </div>
                                     <div class="mb-3">
                                         <label for="editArmazemModalTipoPalete" class="form-label">Tipo de Palete*</label>
@@ -2310,11 +2310,11 @@ function updateArtigoTable(artigos) {
 
                                     <div class="mb-3">
                                         <label for="editArtigoModalNome${artigo.id}" class="form-label">Nome*</label>
-                                        <input id="editArtigoModalNome${artigo.id}" class="form-control" type="text" name="nome" value="${artigo.nome}">
+                                        <input id="editArtigoModalNome${artigo.id}" class="form-control" type="text" name="nome" value="${artigo.nome}" placeholder="Letras de a-z">
                                     </div>
                                     <div class="mb-3">
                                         <label for="editArtigoModalReferencia${artigo.id}" class="form-label">Referência*</label>
-                                        <input id="editArtigoModalReferencia${artigo.id}" class="form-control" type="text" name="referencia" value="${artigo.referencia}">
+                                        <input id="editArtigoModalReferencia${artigo.id}" class="form-control" type="text" name="referencia" value="${artigo.referencia}" placeholder="Letras de A-Z com letra maiuscula">
                                     </div>
 
                                     <div class="mb-3">
@@ -2516,11 +2516,11 @@ function updateTaxaTable(taxas) {
 
                                     <div class="mb-3">
                                         <label for="editTaxaModalNome${taxa.id}" class="form-label">Nome*</label>
-                                        <input id="editTaxaModalNome${taxa.id}" class="form-control" type="text" name="nome" value="${taxa.nome}">
+                                        <input id="editTaxaModalNome${taxa.id}" class="form-control" type="text" name="nome" value="${taxa.nome}" placeholder="Letras de a-z">
                                     </div>
                                     <div class="mb-3">
                                         <label for="editTaxaModalValor${taxa.id}" class="form-label">Valor*</label>
-                                        <input id="editTaxaModalValor${taxa.id}" class="form-control" type="number" name="valor" min="0" step="0.01" value="${taxa.valor}">
+                                        <input id="editTaxaModalValor${taxa.id}" class="form-control" type="number" name="valor" min="0" step="0.01" value="${taxa.valor}" placeholder="Campo numérico">
                                     </div>
 
                                     <div class="d-flex justify-content-end mt-4">
@@ -2837,11 +2837,11 @@ function updateUserTable(users) {
                                         <input type="hidden" name="_method" value="PUT">
                                         <div class="mb-3">
                                             <label for="editUserModalNome${user.id}" class="form-label">Nome*</label>
-                                            <input id="editUserModalNome${user.id}" class="form-control" type="text" name="name" value="${user.name}">
+                                            <input id="editUserModalNome${user.id}" class="form-control" type="text" name="name" value="${user.name}" placeholder="Letras de a-z">
                                         </div>
                                         <div class="mb-3">
                                             <label for="editUserModalEmail${user.id}" class="form-label">Email*</label>
-                                            <input id="editUserModalEmail${user.id}" class="form-control" type="email" name="email" value="${user.email}">
+                                            <input id="editUserModalEmail${user.id}" class="form-control" type="email" name="email" value="${user.email}" placeholder="Email num formato válido">
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
@@ -2857,11 +2857,11 @@ function updateUserTable(users) {
                                         <div class="row">
                                             <div class="col-md-6 mb-3">
                                                 <label for="editUserModalContacto${user.id}" class="form-label">Contacto</label>
-                                                <input id="editUserModalContacto${user.id}" class="form-control" type="text" name="contacto" value="${userContacto}">
+                                                <input id="editUserModalContacto${user.id}" class="form-control" type="text" name="contacto" value="${userContacto}" placeholder="Contacto num formato válido">
                                             </div>
                                             <div class="col-md-6 mb-3">
                                                 <label for="editUserModalSalario${user.id}" class="form-label">Salário</label>
-                                                <input id="editUserModalSalario${user.id}" class="form-control" type="number" min="0" step="0.01" name="salario" value="${userSalario}">
+                                                <input id="editUserModalSalario${user.id}" class="form-control" type="number" min="0" step="0.01" name="salario" value="${userSalario}" placeholder="Campo numérico">
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-end mt-4">
@@ -3344,18 +3344,17 @@ function initArtigoModals() {
 }
 
 function hidePaginationIfNecessary() {
-    var searchQuery = $('.searchQuerys').val().trim(); // Obtém o valor atual da pesquisa
-    var $pagination = $('.pagination'); // Seleciona o elemento de paginação
+    var searchQuery = $('.searchQuerys').val().trim();
+    var $pagination = $('.pagination');
     var $resultsInfo = $('.small.text-muted');
 
-    // Verifica se a pesquisa está ativa
     if (searchQuery.length > 0) {
         console.log('Escondendo paginação...');
-        $pagination.hide(); // Esconde a paginação se houver uma consulta ativa
+        $pagination.hide();
         $resultsInfo.hide();
     } else {
         console.log('Mostrando paginação...');
-        $pagination.show(); // Mostra a paginação se não houver consulta
+        $pagination.show();
         $resultsInfo.show();
     }
 }
