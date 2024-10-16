@@ -27,7 +27,7 @@
                             </tr>
                             </thead>
                             <tbody id="rececao-body">
-                            <!-- Paletes serão carregados aqui via AJAX -->
+                            <!-- Paletes são carregadas aqui via AJAX -->
                             </tbody>
                         </table>
                     </div>

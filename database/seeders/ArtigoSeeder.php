@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Artigo;
 use Faker\Factory as Faker;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 

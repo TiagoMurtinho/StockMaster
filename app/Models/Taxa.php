@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Taxa extends Model
 {
@@ -20,11 +19,6 @@ class Taxa extends Model
         'valor',
         'user_id'
     ];
-
-    public function linha_documento(): HasMany
-    {
-        return $this->hasMany(LinhaDocumento::class, 'taxa_id');
-    }
 
     public function user(): BelongsTo
     {

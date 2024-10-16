@@ -47,9 +47,7 @@
                             @endforeach
                             </tbody>
                         </table>
-                     {{--   <div class="pagination">--}}
                         {{ $clientes->links('vendor.pagination.bootstrap-5') }}
-                      {{--  </div>--}}
                     </div>
                 </div>
             </div>

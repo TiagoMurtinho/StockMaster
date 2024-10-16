@@ -3,6 +3,7 @@
 use App\Http\Controllers\{ArmazemController,
     ArtigoController,
     ClienteController,
+    DeviceController,
     DocumentoController,
     NotificacaoController,
     PaleteController,
@@ -17,19 +18,15 @@ use App\Models\{ChMessage, Cliente, Taxa, TipoPalete};
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [DeviceController::class, 'generateDeviceId'])->middleware('throttle:home');
 
-Route::get('/home', function () {
-    return view('pages.home.home');
-})->middleware(['custom'])->name('home');
-
-Route::middleware('custom')->group(function () {
+Route::middleware(['throttle:global', 'custom'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    Route::get('/home', function () {
+        return view('pages.home.home');
+    })->name('home');
     Route::resource('tipo-palete', TipoPaleteController::class);
     Route::resource('cliente', ClienteController::class);
     Route::resource('armazem', ArmazemController::class);

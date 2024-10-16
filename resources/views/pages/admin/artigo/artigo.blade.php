@@ -52,5 +52,4 @@
     @include('pages.admin.artigo.modals.artigo-edit-modal')
     @include('pages.admin.artigo.modals.artigo-add-modal')
 
-
 @endsection

@@ -19,16 +19,13 @@
                             </thead>
                             <tbody>
                             @foreach($tipoDocumentos as $tipoDocumento)
-
                                 <tr>
                                     <td class="align-middle text-center">{{ $tipoDocumento->nome }}</td>
                                     <td></td>
                                 </tr>
-
                             @endforeach
                             </tbody>
                         </table>
-
                     </div>
                 </div>
             </div>

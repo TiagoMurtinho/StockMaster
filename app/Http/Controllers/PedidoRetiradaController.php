@@ -6,22 +6,21 @@ use App\Models\Armazem;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
-use App\Models\LinhaDocumento;
 use App\Models\DocumentoTipoPalete;
 use App\Models\Palete;
 use App\Models\TipoDocumento;
 use App\Models\TipoPalete;
 use Carbon\Carbon;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class PedidoRetiradaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Factory|View|Application
     {
         $documentos = Documento::with(['tipo_palete'])
             ->where('tipo_documento_id', 3)
@@ -82,18 +81,8 @@ class PedidoRetiradaController extends Controller
 
         return view('pages.pedido.pedido-retirada.pedido-retirada', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'armazens', 'paletes', 'paletesPorLinha', 'artigos'));
     }
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
 
         try {
@@ -175,39 +164,7 @@ class PedidoRetiradaController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
-    {
-
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function search(Request $request)
+    public function search(Request $request): Application|Factory|View|JsonResponse|RedirectResponse
     {
         $search = $request->input('query');
         $today = Carbon::today();

@@ -6,7 +6,6 @@ use App\Models\Armazem;
 use App\Models\Artigo;
 use App\Models\Cliente;
 use App\Models\Documento;
-use App\Models\LinhaDocumento;
 use App\Models\DocumentoTipoPalete;
 use App\Models\Notificacao;
 use App\Models\Palete;
@@ -16,20 +15,20 @@ use App\Models\TipoPalete;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class DocumentoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+
+    public function index(): Factory|View|Application
     {
 
         $documentos = Documento::paginate(10);
@@ -40,20 +39,14 @@ class DocumentoController extends Controller
         return view('pages.admin.documento.documento', compact('documentos', 'tiposDocumento', 'clientes', 'tipoPaletes', 'taxas'));
     }
 
-    public function getTiposPalete($id)
+    public function getTiposPalete($id): JsonResponse
     {
-        // Obtém o documento e carrega os tipos de palete associados
         $documento = Documento::with('tipo_palete')->findOrFail($id);
 
-        // Retorna os tipos de palete
         return response()->json($documento->tipo_palete);
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+    public function create(): Factory|View|Application
     {
         $tiposDocumentos = TipoDocumento::all();
         $clientes = Cliente::all();
@@ -62,9 +55,6 @@ class DocumentoController extends Controller
         return view('pages.documento.documento', compact('tiposDocumentos', 'clientes', 'taxas'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request): JsonResponse
     {
         try {
@@ -121,7 +111,7 @@ class DocumentoController extends Controller
                 'documento' => Documento::with('tipo_documento', 'cliente', 'user')->find($documento->id),
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $documentoErrors = [];
             $linhasErrors = [];
 
@@ -141,7 +131,7 @@ class DocumentoController extends Controller
                 ],
             ], 422);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return response()->json([
                 'success' => false,
@@ -150,7 +140,7 @@ class DocumentoController extends Controller
         }
     }
 
-    private function addNotification($documentoId, $tipoDocumentoId)
+    private function addNotification($documentoId, $tipoDocumentoId): void
     {
 
         $message = $tipoDocumentoId == 1 ? "Nova solicitação de entrega!!" : "Nova solicitação de retirada!!";
@@ -169,6 +159,9 @@ class DocumentoController extends Controller
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function gerarPDF($id): Response
     {
 
@@ -213,16 +206,13 @@ class DocumentoController extends Controller
                 break;
 
             default:
-                throw new \Exception("Tipo de documento não reconhecido.");
+                throw new Exception("Tipo de documento não reconhecido.");
         }
 
         return $pdf->download($nomeArquivo);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function show($id): JsonResponse
     {
         try {
             $documento = Documento::with(['tipo_palete' => function($query) {
@@ -245,7 +235,7 @@ class DocumentoController extends Controller
                 'linhas' => $linhas
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao carregar os dados: ' . $e->getMessage(),
@@ -253,53 +243,32 @@ class DocumentoController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id): JsonResponse
     {
         $userId = Auth::id();
 
-        try {
-            $data = $request->validate([
-                'documento' => 'required|array',
-                'documento.numero' => 'required|numeric|min:0',
-                'documento.data' => 'required|date',
-                'documento.observacao' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 .,]*$/'],
-                'documento.previsao' => 'required|date',
-                'documento.taxa_id' => 'required|integer|exists:taxa,id',
-                'documento.matricula' => ['nullable', 'string', 'max:45', 'regex:/^[A-Z0-9]{2}-[A-Z0-9]{2}-[A-Z0-9]{2}$/'],
-                'documento.morada' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]*$/'],
-                'documento.data_entrada' => 'nullable|date',
-                'documento.data_saida' => 'nullable|date',
-                'documento.previsao_descarga' => 'nullable|date',
-                'documento.extra' => 'nullable|numeric|min:0',
-                'documento.total' => 'nullable|numeric|min:0',
-                'documento_tipo_palete' => 'required|array',
-                'documento_tipo_palete.*.documento_id' => 'required|integer',
-                'documento_tipo_palete.*.tipo_palete' => 'required|integer',
-                'documento_tipo_palete.*.quantidade' => 'required|integer|min:1',
-                'documento_tipo_palete.*.artigo' => 'required|integer|exists:artigo,id',
-                'documento_tipo_palete.*.deleted' => 'boolean',
-                'documento_tipo_palete.*.id' => 'nullable|integer',
-            ]);
-        } catch (ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dados inválidos.',
-                'errors' => $e->validator->errors()
-            ], 400);
-        }
-
-        Log::info('Dados recebidos para atualização do documento', $data);
+        $data = $request->validate([
+            'documento' => 'required|array',
+            'documento.numero' => 'required|numeric|min:0',
+            'documento.data' => 'required|date',
+            'documento.observacao' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 .,]*$/'],
+            'documento.previsao' => 'required|date',
+            'documento.taxa_id' => 'required|integer|exists:taxa,id',
+            'documento.matricula' => ['nullable', 'string', 'max:45', 'regex:/^[A-Z0-9]{2}-[A-Z0-9]{2}-[A-Z0-9]{2}$/'],
+            'documento.morada' => ['nullable', 'string', 'max:255', 'regex:/^[a-zA-Z0-9 ]*$/'],
+            'documento.data_entrada' => 'nullable|date',
+            'documento.data_saida' => 'nullable|date',
+            'documento.previsao_descarga' => 'nullable|date',
+            'documento.extra' => 'nullable|numeric|min:0',
+            'documento.total' => 'nullable|numeric|min:0',
+            'documento_tipo_palete' => 'required|array',
+            'documento_tipo_palete.*.documento_id' => 'required|integer',
+            'documento_tipo_palete.*.tipo_palete' => 'required|integer',
+            'documento_tipo_palete.*.quantidade' => 'required|integer|min:1',
+            'documento_tipo_palete.*.artigo' => 'required|integer|exists:artigo,id',
+            'documento_tipo_palete.*.deleted' => 'boolean',
+            'documento_tipo_palete.*.id' => 'nullable|integer',
+        ]);
 
         $documento = Documento::find($id);
 
@@ -367,9 +336,6 @@ class DocumentoController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id): JsonResponse
     {
         $userId = Auth::id();
@@ -394,7 +360,7 @@ class DocumentoController extends Controller
                 'message' => 'Documento removido com sucesso!',
                 'redirect' => route('documento.index')
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Erro ao remover documento'
@@ -409,7 +375,7 @@ class DocumentoController extends Controller
         return response()->json($artigos);
     }
 
-    public function faturacao($clienteId)
+    public function faturacao($clienteId): JsonResponse
     {
         $cliente = Cliente::find($clienteId);
 
