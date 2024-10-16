@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Armazem extends Model
 {
@@ -36,8 +35,4 @@ class Armazem extends Model
         return $this->hasMany(Armazem::class,'armazem_id');
     }
 
-    public function linha_documento(): HasMany
-    {
-        return $this->hasMany(Armazem::class, 'armazem_id');
-    }
 }

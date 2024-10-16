@@ -5,33 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Cliente;
 use App\Models\TipoPalete;
 use App\Models\User;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ClienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+
+    public function index(): Factory|View|Application
     {
         $users = User::all();
         $clientes = Cliente::with('user')->paginate(10);
         return view('pages.admin.cliente.cliente', compact('clientes', 'users'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
 
@@ -65,26 +56,7 @@ class ClienteController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
@@ -117,10 +89,7 @@ class ClienteController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         $cliente = Cliente::find($id);
 
@@ -140,7 +109,7 @@ class ClienteController extends Controller
         ]);
     }
 
-    public function search(Request $request)
+    public function search(Request $request): Application|Factory|View|JsonResponse|RedirectResponse
     {
         $search = $request->input('query');
 

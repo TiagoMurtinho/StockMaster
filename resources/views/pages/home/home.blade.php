@@ -3,7 +3,6 @@
 @section('content')
 
     <div class="container">
-
         <section class="section dashboard">
             <div class="row">
             <div class="col-12">
@@ -27,7 +26,6 @@
                 </div>
             </div>
         </section>
-
     </div>
 
 @endsection

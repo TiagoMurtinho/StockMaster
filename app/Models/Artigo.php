@@ -30,11 +30,6 @@ class Artigo extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function linha_documento(): HasMany
-    {
-        return $this->hasMany(LinhaDocumento::class, 'artigo_id');
-    }
-
     public function palete(): HasMany
     {
         return $this->hasMany(Palete::class, 'artigo_id');

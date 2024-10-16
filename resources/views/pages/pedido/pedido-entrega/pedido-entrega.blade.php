@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <div class="container mt-5">
         <div class="actions-card">
             <div class="card">
@@ -26,9 +27,7 @@
                                     <td class="align-middle text-center">{{ $documento->cliente->nome }}</td>
                                     <td class="align-middle text-center">{{ $documento->numero }}</td>
                                     <td class="align-middle text-center">
-
                                             {{ $documento->previsao }}
-
                                     </td>
                                     <td class="align-middle text-center">
                                         @php

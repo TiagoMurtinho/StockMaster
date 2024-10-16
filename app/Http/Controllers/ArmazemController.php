@@ -3,21 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Armazem;
-use App\Models\Cliente;
-use App\Models\District;
 use App\Models\TipoPalete;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 
 class ArmazemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
+
+    public function index(): Factory|View|Application
     {
         $tipoPaletes = TipoPalete::all();
         $users = User::all();
@@ -25,17 +24,6 @@ class ArmazemController extends Controller
         return view('pages.admin.armazem.armazem', compact('armazens', 'users', 'tipoPaletes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -66,25 +54,6 @@ class ArmazemController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -116,9 +85,6 @@ class ArmazemController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id): JsonResponse
     {
         $armazem = Armazem::find($id);
@@ -139,7 +105,7 @@ class ArmazemController extends Controller
         ]);
     }
 
-    public function search(Request $request)
+    public function search(Request $request): Application|Factory|View|JsonResponse|RedirectResponse
     {
         $search = $request->input('query');
 

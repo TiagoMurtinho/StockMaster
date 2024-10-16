@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Armazem;
 use App\Models\Taxa;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class TaxaSeeder extends Seeder

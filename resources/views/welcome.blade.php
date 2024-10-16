@@ -18,7 +18,6 @@
             </div>
         </div>
     </section>
-
 </div>
 
     @include('auth.login')

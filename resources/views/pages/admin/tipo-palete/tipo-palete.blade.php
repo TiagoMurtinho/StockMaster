@@ -38,7 +38,6 @@
                                     </td>
                                 </tr>
                                 @include('pages.admin.tipo-palete.modals.tipo-palete-delete-modal')
-
                             @endforeach
                             </tbody>
                         </table>
@@ -47,7 +46,6 @@
                 </div>
             </div>
         </div>
-
 
     @include('pages.admin.tipo-palete.modals.tipo-palete-edit-modal')
     @include('pages.admin.tipo-palete.modals.tipo-palete-add-modal')

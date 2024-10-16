@@ -2,11 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Cliente;
-use App\Models\Palete;
-use App\Models\TipoPalete;
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -17,7 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(UserSeeder::class);
-/*        $this->call(TipoPaleteSeeder::class);
+        $this->call(TipoPaleteSeeder::class);
         $this->call(TipoDocumentoSeeder::class);
         $this->call(ClienteSeeder::class);
         $this->call(ArtigoSeeder::class);
@@ -32,6 +27,6 @@ class DatabaseSeeder extends Seeder
         $this->call(LinhaDocumentoTipoTresSeeder::class);
         $this->call(DocumentoTipoQuatroSeeder::class);
         $this->call(LinhaDocumentoTipoQuaatroSeeder::class);
-        $this->call(DocumentoTipoCincoSeeder::class);*/
+        $this->call(DocumentoTipoCincoSeeder::class);
     }
 }

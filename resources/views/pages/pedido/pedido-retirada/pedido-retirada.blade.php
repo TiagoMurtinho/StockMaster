@@ -38,7 +38,6 @@
                                         {{ $totalQuantidade }} {{ __('retirada.paletes') }}
                                     </td>
                                 </tr>
-
                             @endforeach
                             </tbody>
                         </table>
@@ -47,7 +46,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 
     @include('pages.pedido.pedido-retirada.modals.retirada-modal')

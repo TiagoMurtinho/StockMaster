@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class NotificacaoUser extends Model
 {
@@ -19,12 +20,12 @@ class NotificacaoUser extends Model
         'is_read',
     ];
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function notificacao()
+    public function notificacao(): BelongsTo
     {
         return $this->belongsTo(Notificacao::class);
     }

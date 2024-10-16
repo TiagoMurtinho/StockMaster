@@ -3,35 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Taxa;
-use App\Models\TipoPalete;
 use App\Models\User;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class TaxaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): Factory|View|Application
     {
         $users = User::all();
         $taxas = Taxa::with('user')->paginate(10);
         return view('pages.admin.taxa.taxa', compact('taxas', 'users'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
@@ -59,26 +49,7 @@ class TaxaController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'nome' => ['required', 'string', 'max:45', 'regex:/^[a-zA-Z0-9 ]*$/'],
@@ -114,10 +85,7 @@ class TaxaController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(string $id): JsonResponse
     {
         $taxa = Taxa::find($id);
 
@@ -137,7 +105,7 @@ class TaxaController extends Controller
         ]);
     }
 
-    public function search(Request $request)
+    public function search(Request $request): Application|Factory|View|JsonResponse|RedirectResponse
     {
         $search = $request->input('query');
 
