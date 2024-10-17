@@ -38,31 +38,27 @@ class AppServiceProvider extends ServiceProvider
 
             $deviceId = $request->cookie('device_id');
 
-            Log::info('Device ID: ' . $deviceId);
-
             $key = 'global:' . $deviceId;
 
             $currentAttempts = RateLimiter::attempts($key);
-            Log::info('Attempts: ' . $currentAttempts);
 
-            if (RateLimiter::tooManyAttempts($key, 5)) {
+            if (RateLimiter::tooManyAttempts($key, 3)) {
                 return response()->json([
                     'message' => 'Too many requests.'
                 ], 429);
             }
 
-            RateLimiter::hit($key);
+            RateLimiter::hit($key, 1);
 
-            Log::info('Hit registered for Device ID: ' . $deviceId);
-            return Limit::perSecond(5)->by($deviceId);
+            return Limit::perSecond(3)->by($deviceId);
         });
 
         RateLimiter::for('home', function (Request $request) {
             if (!$request->hasCookie('device_id')) {
-                return Limit::perSecond(20)->by($request->ip());
+                return Limit::perSecond(50)->by($request->ip());
             } else {
                 $deviceId = $request->cookie('device_id');
-                return Limit::perSecond(5)->by($deviceId);
+                return Limit::perSecond(3)->by($deviceId);
             }
         });
     }
