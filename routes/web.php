@@ -18,9 +18,9 @@ use App\Models\{ChMessage, Cliente, Taxa, TipoPalete};
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [DeviceController::class, 'generateDeviceId'])->middleware('throttle:home');
+Route::get('/', [DeviceController::class, 'generateDeviceId']);
 
-Route::middleware(['throttle:global', 'custom'])->group(function () {
+Route::middleware(['custom'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
